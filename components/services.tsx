@@ -1,116 +1,61 @@
-'use client'
-
 import Image from 'next/image'
-import { useRef, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
 
 const services = [
   {
-    id: 'sell',
-    label: 'Sell',
-    title: 'Sell with a plan, not a guess.',
-    body: 'A thoughtful approach to timing, repairs, pricing, and next steps — so you know what your home is worth and what it takes to get there.',
-    points: ['Pricing strategy grounded in local comps', 'Inherited and as-is sales', 'Time-sensitive moves', 'Private, off-MLS options'],
-    image: '/images/property-front-800.webp',
-    cta: 'Get a pricing plan',
-  },
-  {
-    id: 'buy',
     label: 'Buy',
-    title: 'Find the home that actually fits.',
-    body: 'Whether you are local or relocating from LA, see what your budget really buys and which neighborhoods match the way you live.',
-    points: ['Honest neighborhood guidance', 'Relocation from Southern California', 'Condition and repair perspective', 'Only homes that fit your goals'],
-    image: '/images/house-800.webp',
-    cta: 'Start your search',
+    body: 'See what your budget really buys and which neighborhoods match the way you live — local or relocating from LA.',
+    image: '/images/property/28211-seabiscuit-way-1.webp',
+    alt: 'Stallion Springs home on three-quarters of an acre',
   },
   {
-    id: 'invest',
+    label: 'Sell',
+    body: 'Timing, repairs, pricing, and a plan — including inherited, as-is, and private off-MLS sales.',
+    image: '/images/property/958-fairway-dr-2.webp',
+    alt: 'Renovated Stockdale Country Club home',
+  },
+  {
     label: 'Invest',
-    title: 'Run the real numbers first.',
-    body: 'Talk through rentals, flips, land, and value-add opportunities with a practical eye — including whether to hold or sell what you already own.',
-    points: ['Rentals and flips', 'Land and new builds', 'Hold-or-sell analysis', 'Off-market deal alerts'],
-    image: '/images/investing-800.webp',
-    cta: 'Talk investments',
+    body: 'Rentals, flips, land, and value-add — with the real numbers first, and honest hold-or-sell advice.',
+    image: '/images/property/chalet-tehachapi-1.webp',
+    alt: 'Twenty acres with valley views in Tehachapi',
   },
 ]
 
 export function Services() {
-  const [current, setCurrent] = useState(0)
-  const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
-  const s = services[current]
-
-  function onKeyDown(e: React.KeyboardEvent) {
-    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
-    e.preventDefault()
-    const next = (current + (e.key === 'ArrowRight' ? 1 : -1) + services.length) % services.length
-    setCurrent(next)
-    tabRefs.current[next]?.focus()
-  }
-
   return (
-    <section id="services" aria-labelledby="services-heading" className="border-t border-ink py-20 md:py-28">
-      <div className="mx-auto max-w-[90rem] px-5 md:px-8">
-        <p className="label text-muted-foreground">How Nathanael helps</p>
-        <h2 id="services-heading" className="mt-3 max-w-2xl text-2xl font-medium text-balance md:text-3xl">
-          {"Wherever you're starting, there's a clear next step. Pick a direction."}
-        </h2>
-
-        <div role="tablist" aria-label="Services" onKeyDown={onKeyDown} className="mt-10 flex flex-wrap gap-x-8 border-b border-ink md:gap-x-14">
-          {services.map((it, i) => (
-            <button
-              key={it.id}
-              ref={(el) => {
-                tabRefs.current[i] = el
-              }}
-              role="tab"
-              type="button"
-              id={`tab-${it.id}`}
-              aria-selected={i === current}
-              aria-controls="service-panel"
-              tabIndex={i === current ? 0 : -1}
-              onClick={() => setCurrent(i)}
-              className={cn(
-                'wide -mb-px border-b-4 pb-2 text-5xl font-extrabold uppercase leading-none tracking-tight transition-colors md:text-8xl',
-                i === current ? 'border-poppy text-foreground' : 'border-transparent text-foreground/35 hover:text-foreground/60',
-              )}
-            >
-              {it.label}
-            </button>
-          ))}
-        </div>
-
-        <div
-          role="tabpanel"
-          id="service-panel"
-          aria-labelledby={`tab-${s.id}`}
-          className="mt-10 grid gap-10 lg:grid-cols-12 lg:gap-14"
-        >
-          <div key={s.image} className="rise relative aspect-[16/10] overflow-hidden bg-muted lg:col-span-7">
-            <Image src={s.image} alt="" fill sizes="(min-width: 1024px) 55vw, 100vw" className="object-cover" />
-          </div>
-          <div key={s.id} className="rise flex flex-col justify-between gap-8 lg:col-span-5">
-            <div>
-              <h3 className="wide text-3xl font-bold uppercase leading-tight tracking-tight text-balance md:text-4xl">{s.title}</h3>
-              <p className="mt-5 leading-relaxed text-pretty">{s.body}</p>
-              <ul className="mt-8 border-t border-ink">
-                {s.points.map((p) => (
-                  <li key={p} className="flex items-center gap-4 border-b border-border py-3">
-                    <span aria-hidden="true" className="size-2 shrink-0 bg-poppy" />
-                    <span>{p}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+    <section id="services" aria-label="Buy, sell, or invest" className="scroll-mt-16">
+      <ul className="grid gap-px bg-ink-foreground md:grid-cols-3">
+        {services.map((s) => (
+          <li key={s.label}>
             <a
               href="#contact"
-              className="label flex items-center justify-between gap-2 bg-ink px-6 py-4 text-ink-foreground transition-colors hover:bg-poppy hover:text-ink"
+              className="group relative flex h-[26rem] items-end justify-center overflow-hidden bg-ink text-ink-foreground md:h-[34rem]"
             >
-              {s.cta} <ArrowRight className="size-4" aria-hidden="true" />
+              <Image
+                src={s.image}
+                alt={s.alt}
+                fill
+                sizes="(min-width: 768px) 33vw, 100vw"
+                className="object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-110"
+              />
+              <span
+                aria-hidden="true"
+                className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/20 to-transparent transition-colors duration-700 group-hover:bg-ink/35"
+              />
+              <span className="relative flex flex-col items-center gap-4 px-8 pb-10 text-center">
+                <span className="font-display text-4xl font-medium tracking-[0.08em]">{s.label}</span>
+                <span className="grid max-w-xs grid-rows-[0fr] opacity-0 transition-all duration-700 group-hover:grid-rows-[1fr] group-hover:opacity-100 group-focus-visible:grid-rows-[1fr] group-focus-visible:opacity-100 max-md:grid-rows-[1fr] max-md:opacity-100">
+                  <span className="overflow-hidden text-sm leading-relaxed text-ink-foreground/85">{s.body}</span>
+                </span>
+                <span className="label flex items-center gap-2 text-poppy">
+                  Start here <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                </span>
+              </span>
             </a>
-          </div>
-        </div>
-      </div>
+          </li>
+        ))}
+      </ul>
     </section>
   )
 }

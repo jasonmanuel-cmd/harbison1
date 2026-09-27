@@ -1,149 +1,169 @@
 'use client'
 
 import Image from 'next/image'
-import { useRef, useState } from 'react'
-import { ArrowUpRight } from 'lucide-react'
-import { formatPrice, listings, type City, type Listing } from '@/lib/site'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { formatPrice, listings, type Listing } from '@/lib/site'
+import { Reveal } from '@/components/reveal'
 import { cn } from '@/lib/utils'
 
-type Filter = 'All' | City
-const filters: Filter[] = ['All', 'Tehachapi', 'Bakersfield']
+const INTERVAL = 7000
+const pad = (n: number) => String(n).padStart(2, '0')
 
-const columns = 'lg:grid-cols-[3.5rem_minmax(0,1fr)_10rem_7rem_13rem_9rem_1.5rem]'
-
-function bedBath(l: Listing) {
-  return l.beds ? `${l.beds} bd / ${l.baths} ba` : 'Land'
-}
-
-function footprint(l: Listing) {
-  return l.sqft ? `${l.sqft.toLocaleString('en-US')} sf · ${l.lot}` : l.lot
+function facts(l: Listing) {
+  const parts = [l.beds ? `${l.beds} Beds` : null, l.baths ? `${l.baths} Baths` : null]
+  parts.push(l.sqft ? `${l.sqft.toLocaleString('en-US')} Sq Ft` : l.lot)
+  return parts.filter(Boolean).join('  ·  ')
 }
 
 export function Listings() {
-  const [filter, setFilter] = useState<Filter>('All')
-  const [active, setActive] = useState<string | null>(null)
-  const previewRef = useRef<HTMLDivElement>(null)
-  const rows = filter === 'All' ? listings : listings.filter((l) => l.city === filter)
+  const [current, setCurrent] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const stripRef = useRef<HTMLUListElement>(null)
+  const total = listings.length
+  const l = listings[current]
 
-  function followPointer(e: React.MouseEvent) {
-    const el = previewRef.current
-    if (!el) return
-    el.style.transform = `translate3d(${e.clientX + 28}px, ${e.clientY - 120}px, 0)`
-  }
+  const go = (delta: number) => setCurrent((v) => (v + delta + total) % total)
+
+  useEffect(() => {
+    if (paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const t = setTimeout(() => setCurrent((v) => (v + 1) % total), INTERVAL)
+    return () => clearTimeout(t)
+  }, [current, paused, total])
+
+  useEffect(() => {
+    const strip = stripRef.current
+    const item = strip?.children[current] as HTMLElement | undefined
+    if (!strip || !item) return
+    strip.scrollTo({ left: item.offsetLeft - strip.offsetLeft - 20, behavior: 'smooth' })
+  }, [current])
 
   return (
-    <section id="listings" aria-labelledby="listings-heading" className="border-t border-ink py-20 md:py-28">
-      <div className="mx-auto max-w-[90rem] px-5 md:px-8">
-        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="label text-muted-foreground">Current &amp; recent listings</p>
-            <h2
-              id="listings-heading"
-              className="wide mt-3 text-5xl font-extrabold uppercase leading-none tracking-tight md:text-8xl"
-            >
-              The Register
-            </h2>
-          </div>
-          <div role="group" aria-label="Filter by city" className="flex self-start border border-ink lg:self-auto">
-            {filters.map((f) => (
-              <button
-                key={f}
-                type="button"
-                aria-pressed={filter === f}
-                onClick={() => setFilter(f)}
-                className={cn(
-                  'label px-4 py-3 transition-colors',
-                  filter === f ? 'bg-poppy text-ink' : 'hover:bg-secondary',
-                )}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div
-          aria-hidden="true"
-          className={cn('label mt-14 hidden gap-6 border-b border-ink pb-3 text-muted-foreground lg:grid', columns)}
-        >
-          <span>No.</span>
-          <span>Address</span>
-          <span>City</span>
-          <span>Bd / Ba</span>
-          <span>Interior / Lot</span>
-          <span className="text-right">Price</span>
-          <span />
-        </div>
-
-        <ol
-          onMouseMove={followPointer}
-          onMouseLeave={() => setActive(null)}
-          className="mt-10 border-t border-ink lg:mt-0 lg:border-t-0"
-        >
-          {rows.map((l, i) => (
-            <li key={l.slug} onMouseEnter={() => setActive(l.slug)} className="border-b border-border">
-              <a
-                href="#contact"
-                className={cn(
-                  'group grid grid-cols-[5.5rem_minmax(0,1fr)] gap-x-4 gap-y-1 py-5 lg:items-center lg:gap-6 lg:py-6',
-                  columns,
-                )}
-              >
-                <span className="relative row-span-3 aspect-square overflow-hidden bg-muted lg:hidden">
-                  <Image src={l.image} alt="" fill sizes="88px" className="object-cover" />
-                </span>
-                <span className="label hidden text-muted-foreground lg:block">{String(i + 1).padStart(2, '0')}</span>
-                <span className="min-w-0">
-                  <span className="wide block truncate text-lg font-bold uppercase tracking-tight transition-colors md:text-2xl lg:group-hover:hl">
-                    {l.address}
-                  </span>
-                  <span className="block truncate text-sm text-muted-foreground">
-                    {l.neighborhood ?? `${l.city}, CA ${l.zip}`}
-                  </span>
-                </span>
-                <span className="hidden text-sm lg:block">
-                  {l.city}, {l.zip}
-                </span>
-                <span className="label hidden lg:block">{bedBath(l)}</span>
-                <span className="label hidden text-muted-foreground lg:block">{footprint(l)}</span>
-                <span className="label col-start-2 text-muted-foreground lg:hidden">
-                  {l.city} · {bedBath(l)}
-                </span>
-                <span className="wide col-start-2 text-lg font-bold tracking-tight lg:col-start-auto lg:text-right lg:text-xl">
-                  {formatPrice(l.price)}
-                </span>
-                <ArrowUpRight
-                  className="hidden size-5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 lg:block"
-                  aria-hidden="true"
-                />
-                <span className="sr-only">Ask Nathanael about {l.address}</span>
-              </a>
-            </li>
-          ))}
-        </ol>
-
-        <p className="label mt-8 text-muted-foreground">Select any property to ask about availability or a showing.</p>
-      </div>
+    <section id="listings" aria-labelledby="listings-heading" className="scroll-mt-16 bg-background pt-24 md:pt-32">
+      <Reveal className="mx-auto max-w-[90rem] px-5 text-center md:px-8">
+        <p className="eyebrow text-muted-foreground">Tehachapi & Bakersfield</p>
+        <h2 id="listings-heading" className="mt-5 text-4xl font-medium tracking-wide text-balance md:text-6xl">
+          Property Collection
+        </h2>
+      </Reveal>
 
       <div
-        ref={previewRef}
-        aria-hidden="true"
-        className={cn(
-          'pointer-events-none fixed left-0 top-0 z-50 hidden aspect-[4/3] w-80 overflow-hidden bg-muted shadow-2xl transition-opacity duration-200 lg:block',
-          active ? 'opacity-100' : 'opacity-0',
-        )}
+        role="region"
+        aria-roledescription="carousel"
+        aria-label="Featured properties"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onFocus={() => setPaused(true)}
+        onBlur={() => setPaused(false)}
+        className="relative mt-14 h-[78svh] min-h-[32rem] overflow-hidden bg-ink text-ink-foreground md:mt-16"
       >
-        {listings.map((l) => (
-          <Image
-            key={l.slug}
-            src={l.image}
-            alt=""
-            fill
-            sizes="320px"
-            loading="eager"
-            className={cn('object-cover transition-opacity duration-300', active === l.slug ? 'opacity-100' : 'opacity-0')}
-          />
+        {listings.map((item, i) => (
+          <div
+            key={item.slug}
+            aria-hidden={i !== current}
+            className={cn(
+              'absolute inset-0 transition-opacity duration-[1400ms] ease-in-out',
+              i === current ? 'opacity-100' : 'opacity-0',
+            )}
+          >
+            <Image
+              src={item.image}
+              alt={`${item.address}, ${item.city}, CA`}
+              fill
+              sizes="100vw"
+              loading={i < 2 ? 'eager' : 'lazy'}
+              className="kenburns object-cover"
+              style={{ '--kx': i % 2 ? '2%' : '-2%', '--ky': i % 3 ? '-1.5%' : '1.5%', '--kd': '16s' } as CSSProperties}
+            />
+          </div>
         ))}
+        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/25 to-ink/10" />
+
+        <div className="absolute inset-x-0 bottom-0 mx-auto flex max-w-[90rem] flex-col gap-8 px-5 pb-10 md:px-8 md:pb-14 lg:flex-row lg:items-end lg:justify-between">
+          <div key={l.slug} className="rise max-w-3xl" aria-live="polite">
+            <p className="eyebrow text-poppy">{l.neighborhood ?? `${l.city}, CA`}</p>
+            <h3 className="mt-3 text-4xl font-medium tracking-wide text-balance md:text-6xl">{l.address}</h3>
+            <p className="mt-3 text-ink-foreground/85">
+              {l.city}, CA {l.zip}
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-3">
+              <span className="font-display text-2xl tracking-wide md:text-3xl">{formatPrice(l.price)}</span>
+              <span className="label text-ink-foreground/80">{facts(l)}</span>
+            </div>
+            <p className="mt-4 hidden max-w-xl text-sm leading-relaxed text-ink-foreground/75 md:block">{l.blurb}</p>
+          </div>
+
+          <div className="flex items-center gap-4 self-start lg:self-end">
+            <button
+              type="button"
+              onClick={() => go(-1)}
+              className="flex size-12 items-center justify-center rounded-full border border-ink-foreground/50 transition-colors hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink"
+            >
+              <ChevronLeft className="size-5" aria-hidden="true" />
+              <span className="sr-only">Previous property</span>
+            </button>
+            <span className="label min-w-20 text-center tabular-nums">
+              {pad(current + 1)} <span className="text-ink-foreground/40">|</span> {pad(total)}
+            </span>
+            <button
+              type="button"
+              onClick={() => go(1)}
+              className="flex size-12 items-center justify-center rounded-full border border-ink-foreground/50 transition-colors hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink"
+            >
+              <ChevronRight className="size-5" aria-hidden="true" />
+              <span className="sr-only">Next property</span>
+            </button>
+          </div>
+        </div>
+
+        <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-0.5 bg-ink-foreground/15">
+          {!paused && (
+            <span
+              key={current}
+              className="progress block h-full w-full bg-poppy"
+              style={{ '--pd': `${INTERVAL}ms` } as CSSProperties}
+            />
+          )}
+        </span>
+      </div>
+
+      <div className="mx-auto max-w-[90rem] py-10 md:py-12">
+        <ul ref={stripRef} className="flex snap-x gap-4 overflow-x-auto px-5 pb-4 md:px-8" aria-label="All properties">
+          {listings.map((item, i) => (
+            <li key={item.slug} className="w-56 shrink-0 snap-start md:w-64">
+              <button
+                type="button"
+                onClick={() => setCurrent(i)}
+                aria-current={i === current}
+                className="group flex w-full flex-col text-left"
+              >
+                <span
+                  className={cn(
+                    'relative block aspect-[4/3] overflow-hidden bg-muted ring-2 ring-offset-2 transition-shadow',
+                    i === current ? 'ring-poppy' : 'ring-transparent',
+                  )}
+                >
+                  <Image
+                    src={item.image}
+                    alt=""
+                    fill
+                    sizes="256px"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                </span>
+                <span className="mt-3 truncate font-display text-lg tracking-wide">{item.address}</span>
+                <span className="label text-muted-foreground">
+                  {item.city} · {formatPrice(item.price)}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-6 flex justify-center px-5">
+          <a href="#contact" className="pill bg-ink text-ink-foreground hover:bg-poppy hover:text-ink">
+            Ask about a property
+          </a>
+        </div>
       </div>
     </section>
   )

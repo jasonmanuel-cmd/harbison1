@@ -1,4 +1,9 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { contact } from '@/lib/site'
+import { Reveal } from '@/components/reveal'
 
 const reviews = [
   {
@@ -33,52 +38,90 @@ const reviews = [
   },
 ]
 
+const arrow =
+  'flex size-12 shrink-0 items-center justify-center rounded-full border border-foreground/30 transition-colors hover:border-foreground hover:bg-ink hover:text-ink-foreground'
+
 export function Testimonials() {
-  const [lead, ...rest] = reviews
+  const [current, setCurrent] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const r = reviews[current]
+  const go = (d: number) => setCurrent((v) => (v + d + reviews.length) % reviews.length)
+
+  useEffect(() => {
+    if (paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const t = setTimeout(() => setCurrent((v) => (v + 1) % reviews.length), 8000)
+    return () => clearTimeout(t)
+  }, [current, paused])
+
   return (
-    <section id="reviews" aria-labelledby="reviews-heading" className="border-t border-ink py-20 md:py-28">
-      <div className="mx-auto grid max-w-[90rem] gap-10 px-5 md:px-8 lg:grid-cols-12">
-        <div className="flex flex-col justify-between gap-6 lg:col-span-4">
-          <div>
-            <p className="label text-muted-foreground">Client notes</p>
-            <h2 id="reviews-heading" className="wide mt-3 text-4xl font-extrabold uppercase leading-none tracking-tight md:text-5xl">
-              In their words.
+    <section id="reviews" aria-labelledby="reviews-heading" className="relative z-10 scroll-mt-16 py-24 md:py-32">
+      <div className="mx-auto max-w-5xl px-5 md:px-8">
+        <Reveal className="flex items-end justify-center gap-5">
+          <span aria-hidden="true" className="font-display text-[8rem] leading-[0.7] text-poppy md:text-[11rem]">
+            “
+          </span>
+          <div className="pb-1">
+            <p className="eyebrow text-muted-foreground">Testimonials</p>
+            <h2 id="reviews-heading" className="mt-3 text-4xl font-medium tracking-wide md:text-6xl">
+              Client Stories
             </h2>
           </div>
+        </Reveal>
+
+        <div
+          className="mt-14 flex items-center gap-6 md:gap-10"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
+          <button type="button" onClick={() => go(-1)} className={`${arrow} hidden md:flex`}>
+            <ChevronLeft className="size-5" aria-hidden="true" />
+            <span className="sr-only">Previous review</span>
+          </button>
+          <figure key={current} className="rise min-h-64 flex-1 text-center" aria-live="polite">
+            <blockquote className="text-xl leading-relaxed text-pretty md:text-2xl">{`“${r.quote}”`}</blockquote>
+            <figcaption className="eyebrow mt-8 text-muted-foreground">{r.who}</figcaption>
+          </figure>
+          <button type="button" onClick={() => go(1)} className={`${arrow} hidden md:flex`}>
+            <ChevronRight className="size-5" aria-hidden="true" />
+            <span className="sr-only">Next review</span>
+          </button>
+        </div>
+
+        <div className="mt-8 flex items-center justify-center gap-4">
+          <button type="button" onClick={() => go(-1)} className={`${arrow} md:hidden`}>
+            <ChevronLeft className="size-5" aria-hidden="true" />
+            <span className="sr-only">Previous review</span>
+          </button>
+          <div className="flex gap-1" role="group" aria-label="Choose a review">
+            {reviews.map((rv, i) => (
+              <button
+                key={rv.who}
+                type="button"
+                onClick={() => setCurrent(i)}
+                aria-current={i === current}
+                aria-label={`Review ${i + 1}`}
+                className="flex size-6 items-center justify-center"
+              >
+                <span className={`block size-2 rounded-full transition-colors ${i === current ? 'bg-poppy' : 'bg-foreground/20'}`} />
+              </button>
+            ))}
+          </div>
+          <button type="button" onClick={() => go(1)} className={`${arrow} md:hidden`}>
+            <ChevronRight className="size-5" aria-hidden="true" />
+            <span className="sr-only">Next review</span>
+          </button>
+        </div>
+
+        <div className="mt-10 flex justify-center">
           <a
             href={contact.reviews}
             target="_blank"
             rel="noopener noreferrer"
-            className="label inline-flex min-h-11 items-center self-start underline decoration-poppy decoration-2 underline-offset-8 hover:hl"
+            className="pill bg-ink text-ink-foreground hover:bg-poppy hover:text-ink"
           >
-            Read all reviews on Google
+            Read reviews on Google
           </a>
         </div>
-        <figure className="lg:col-span-8">
-          <blockquote className="text-3xl font-medium leading-snug tracking-tight text-balance md:text-5xl">
-            <span aria-hidden="true" className="text-poppy">
-              “
-            </span>
-            {lead.quote}
-            <span aria-hidden="true" className="text-poppy">
-              ”
-            </span>
-          </blockquote>
-          <figcaption className="label mt-6 text-muted-foreground">{lead.who}</figcaption>
-        </figure>
-      </div>
-
-      <div className="mx-auto mt-16 max-w-[90rem] px-5 md:px-8">
-        <ul className="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4" aria-label="More client reviews">
-          {rest.map((r) => (
-            <li key={r.who} className="w-80 shrink-0 snap-start md:w-96">
-              <figure className="flex h-full flex-col justify-between gap-6 border-t-2 border-ink pt-5">
-                <blockquote className="leading-relaxed">{`“${r.quote}”`}</blockquote>
-                <figcaption className="label text-muted-foreground">{r.who}</figcaption>
-              </figure>
-            </li>
-          ))}
-        </ul>
       </div>
     </section>
   )

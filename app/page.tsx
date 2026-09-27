@@ -6,8 +6,10 @@ import { FloatingKeys } from '@/components/floating-keys'
 import { Hero } from '@/components/hero'
 import { Listings } from '@/components/listings'
 import { Services } from '@/components/services'
-import { MobileActionBar, SiteFooter } from '@/components/site-footer'
+import { ConnectPill, MobileActionBar, SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
+import { Standard } from '@/components/standard'
+import { Statement } from '@/components/statement'
 import { Testimonials } from '@/components/testimonials'
 
 const jsonLd = {
@@ -25,19 +27,27 @@ export default function Page() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <FloatingKeys />
       <SiteHeader />
-      <main className="relative z-10">
+      <main className="relative">
         <Hero />
-        <Listings />
+        <Standard />
         <Services />
-        <Areas />
         <About />
-        <Testimonials />
+        <div className="relative isolate">
+          <FloatingKeys />
+          <Listings />
+        </div>
+        <Areas />
+        <Statement />
+        <div className="relative isolate">
+          <FloatingKeys />
+          <Testimonials />
+        </div>
         <Faq />
         <Contact />
       </main>
       <SiteFooter />
+      <ConnectPill />
       <MobileActionBar />
     </>
   )

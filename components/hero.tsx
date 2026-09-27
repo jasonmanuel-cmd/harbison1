@@ -1,67 +1,114 @@
-import Image from 'next/image'
-import { ArrowDownRight, ArrowRight } from 'lucide-react'
-import { contact } from '@/lib/site'
+'use client'
 
-const display = 'wide font-extrabold uppercase leading-[0.86] tracking-tight text-[clamp(2.75rem,9.2vw,9.5rem)]'
+import Image from 'next/image'
+import { useEffect, useState, type CSSProperties } from 'react'
+import { cn } from '@/lib/utils'
+
+const slides = [
+  { src: '/images/hero-1600.webp', kx: '-2%', ky: '-1%' },
+  { src: '/images/property/2300-weybridge-dr-1.webp', kx: '2%', ky: '-2%' },
+  { src: '/images/property/28751-gleneagle-ct-1.webp', kx: '-3%', ky: '1%' },
+  { src: '/images/property/958-fairway-dr-1.webp', kx: '2%', ky: '1.5%' },
+  { src: '/images/property/2206-ribble-valley-dr-1.webp', kx: '-1.5%', ky: '-2%' },
+]
+
+const INTERVAL = 6500
 
 export function Hero() {
-  return (
-    <section id="top" aria-labelledby="hero-heading" className="overflow-hidden">
-      <div className="mx-auto max-w-[90rem] px-5 pt-10 md:px-8 md:pt-14">
-        <div className="rise label flex flex-wrap items-center justify-between gap-3 text-muted-foreground">
-          <span>Kern County, California</span>
-          <span className="hidden md:inline">Tehachapi — Bakersfield — Stallion Springs — California City</span>
-          <span>DRE #{contact.dre}</span>
-        </div>
-        <h1 id="hero-heading" className={`rise mt-6 ${display}`} style={{ animationDelay: '80ms' }}>
-          <span className="block">It&apos;s not what</span>
-          <span className="block">you do.</span>
-          <span className="sr-only"> It&apos;s how you do it.</span>
-        </h1>
-      </div>
+  const [current, setCurrent] = useState(0)
 
-      <div className="rise relative mt-8 md:mt-10" style={{ animationDelay: '200ms' }}>
-        <div className="relative aspect-[4/3] w-full bg-muted md:aspect-[21/8]">
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const t = setInterval(() => setCurrent((v) => (v + 1) % slides.length), INTERVAL)
+    return () => clearInterval(t)
+  }, [])
+
+  return (
+    <section
+      id="top"
+      aria-labelledby="hero-heading"
+      className="relative flex h-svh min-h-[36rem] items-center justify-center overflow-hidden bg-ink text-ink-foreground"
+    >
+      {slides.map((s, i) => (
+        <div
+          key={s.src}
+          aria-hidden="true"
+          className={cn(
+            'absolute inset-0 transition-opacity duration-[1800ms] ease-in-out',
+            i === current ? 'opacity-100' : 'opacity-0',
+          )}
+        >
           <Image
-            src="/images/hero-1600.webp"
-            alt="A Kern County home represented by Harbison Standard"
+            src={s.src}
+            alt=""
             fill
-            priority
+            priority={i === 0}
             sizes="100vw"
-            className="object-cover"
+            className="kenburns object-cover"
+            style={{ '--kx': s.kx, '--ky': s.ky, '--kd': `${18 + i * 2}s` } as CSSProperties}
           />
         </div>
-        <div className="label absolute bottom-0 left-0 flex items-center gap-4 bg-ink px-4 py-3 text-ink-foreground md:left-8">
-          <span>35.13° N</span>
-          <span aria-hidden="true" className="size-1.5 bg-poppy" />
-          <span>118.45° W</span>
+      ))}
+      <div aria-hidden="true" className="absolute inset-0 bg-ink/45" />
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-ink/70 to-transparent" />
+
+      <div className="relative z-10 flex flex-col items-center px-5 text-center">
+        <p className="eyebrow rise text-ink-foreground/85" style={{ animationDelay: '200ms' }}>
+          Tehachapi · Bakersfield · Kern County
+        </p>
+        <h1
+          id="hero-heading"
+          className="title-in mt-6 font-display text-[clamp(2.75rem,9vw,7.5rem)] font-medium leading-none text-balance"
+        >
+          Harbison Standard
+        </h1>
+        <p
+          className="rise mt-6 max-w-xl text-xs font-semibold uppercase leading-relaxed tracking-[0.38em] text-ink-foreground/90 md:text-sm"
+          style={{ animationDelay: '700ms' }}
+        >
+          {"It's not what you do. It's "}
+          <span className="text-poppy">how</span>
+          {' you do it.'}
+        </p>
+        <div className="rise mt-10 flex flex-wrap justify-center gap-3" style={{ animationDelay: '1000ms' }}>
+          <a href="#listings" className="pill bg-poppy text-ink hover:bg-ink-foreground">
+            View properties
+          </a>
+          <a href="#contact" className="pill border border-ink-foreground/70 hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink">
+            {"Let's connect"}
+          </a>
         </div>
       </div>
 
-      <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-10 md:px-8 md:py-14 lg:grid-cols-12 lg:items-end">
-        <p aria-hidden="true" className={`rise lg:col-span-7 ${display}`} style={{ animationDelay: '320ms' }}>
-          It&apos;s <span className="hl">how</span> you do it.
-        </p>
-        <div className="rise flex flex-col gap-6 lg:col-span-5 lg:pb-3" style={{ animationDelay: '440ms' }}>
-          <p className="max-w-md text-lg leading-relaxed text-pretty">
-            Buy, sell, and invest across Tehachapi, Bakersfield, and all of Kern County with Nathanael Harbison —
-            practical advice, direct communication, and a clear next step.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <a
-              href="#contact"
-              className="label flex items-center gap-2 bg-poppy px-6 py-4 text-ink transition-colors hover:bg-ink hover:text-ink-foreground"
+      <div className="absolute inset-x-0 bottom-8 z-10 mx-auto flex max-w-[90rem] items-end justify-between px-5 md:px-8">
+        <div className="flex gap-2" role="group" aria-label="Hero slides">
+          {slides.map((s, i) => (
+            <button
+              key={s.src}
+              type="button"
+              onClick={() => setCurrent(i)}
+              aria-label={`Show photo ${i + 1} of ${slides.length}`}
+              aria-current={i === current}
+              className="flex h-11 w-8 items-center md:w-12"
             >
-              Start a conversation <ArrowRight className="size-4" aria-hidden="true" />
-            </a>
-            <a
-              href="#listings"
-              className="label flex items-center gap-2 border-2 border-foreground bg-background px-6 py-4 transition-colors hover:bg-poppy hover:text-ink"
-            >
-              View listings <ArrowDownRight className="size-4" aria-hidden="true" />
-            </a>
-          </div>
+              <span className="block h-0.5 w-full overflow-hidden bg-ink-foreground/30">
+                {i === current && (
+                  <span
+                    key={current}
+                    className="progress block h-full w-full bg-poppy"
+                    style={{ '--pd': `${INTERVAL}ms` } as CSSProperties}
+                  />
+                )}
+              </span>
+            </button>
+          ))}
         </div>
+        <a href="#standard" className="hidden flex-col items-center gap-3 md:flex" aria-label="Scroll to content">
+          <span className="eyebrow text-ink-foreground/80">Scroll</span>
+          <span className="block h-14 w-px overflow-hidden bg-ink-foreground/20">
+            <span className="scroll-cue block h-full w-full bg-ink-foreground" />
+          </span>
+        </a>
       </div>
     </section>
   )

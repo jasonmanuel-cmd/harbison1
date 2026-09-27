@@ -1,104 +1,133 @@
+'use client'
+
 import Image from 'next/image'
-import { ArrowUpRight } from 'lucide-react'
+import { useState } from 'react'
+import { ChevronRight } from 'lucide-react'
 import { listings } from '@/lib/site'
+import { Reveal } from '@/components/reveal'
+import { cn } from '@/lib/utils'
 
 const places = [
   {
-    city: 'Tehachapi',
-    setting: 'Mountain',
-    elevation: '3,970 ft',
+    name: 'Tehachapi',
+    tag: 'Mountain · Elev. 3,970 ft',
     image: '/images/property/28751-gleneagle-ct-1.webp',
-    alt: 'Stallion Springs home with mountain views in Tehachapi',
-    body: 'Four real seasons, room to breathe, and land to build on. Acreage, new construction, and quiet mountain communities an hour from the valley.',
-    communities: ['Stallion Springs', 'Golden Hills', 'Bear Valley Springs', 'Cummings Valley'],
+    body: 'Four real seasons, room to breathe, and land to build on — an hour from the valley.',
   },
   {
-    city: 'Bakersfield',
-    setting: 'Valley',
-    elevation: '404 ft',
+    name: 'Stallion Springs',
+    tag: 'Tehachapi',
+    image: '/images/property/28211-seabiscuit-way-1.webp',
+    body: 'Quiet, spacious lots with sweeping mountain views and room for horses.',
+  },
+  {
+    name: 'Golden Hills',
+    tag: 'Tehachapi',
+    image: '/images/property/21204-stage-dr-1.webp',
+    body: 'New construction and generous lots on the west side of Tehachapi.',
+  },
+  {
+    name: 'Cummings Valley',
+    tag: 'Tehachapi · Land',
+    image: '/images/property/chalet-tehachapi-1.webp',
+    body: 'Acreage with valley and mountain views, ready for a custom build.',
+  },
+  {
+    name: 'Bakersfield',
+    tag: 'Valley · Elev. 404 ft',
+    image: '/images/property/2206-ribble-valley-dr-1.webp',
+    body: 'Established neighborhoods, gated communities, and steady rental demand.',
+  },
+  {
+    name: 'Seven Oaks',
+    tag: 'Bakersfield',
     image: '/images/property/2300-weybridge-dr-1.webp',
-    alt: 'Seven Oaks estate on the golf course in Bakersfield',
-    body: 'Established neighborhoods, golf-course estates, gated communities, and steady rental demand — from Seven Oaks to East Bakersfield.',
-    communities: ['Seven Oaks', 'Stockdale', 'Grand Island', 'East Bakersfield'],
-  },
-] as const
-
-const guides = [
-  {
-    title: 'Why Tehachapi?',
-    body: 'Affordable land, four seasons, and a growing local economy.',
+    body: 'Golf-course estates and gated enclaves, including Grand Island.',
   },
   {
-    title: 'Sell privately',
-    body: 'No MLS, no Zillow, no open houses. A confidential, as-is close.',
-  },
-  {
-    title: 'Off-market deals',
-    body: 'Probate, pre-foreclosure, FSBO — alerts before they go public.',
+    name: 'Stockdale',
+    tag: 'Bakersfield',
+    image: '/images/property/958-fairway-dr-1.webp',
+    body: 'Mature trees and country-club living in one of Bakersfield’s classic addresses.',
   },
 ]
 
-export function Areas() {
-  return (
-    <section id="areas" aria-labelledby="areas-heading" className="border-t border-ink py-20 md:py-28">
-      <div className="mx-auto max-w-[90rem] px-5 md:px-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <h2 id="areas-heading" className="wide text-4xl font-extrabold uppercase leading-none tracking-tight text-balance md:text-7xl">
-            Two elevations.
-            <br />
-            One county.
-          </h2>
-          <p className="max-w-sm leading-relaxed text-muted-foreground">
-            Same mountains, bigger opportunities. Serving clients across Kern County, including California City.
-          </p>
-        </div>
+function countFor(name: string) {
+  return listings.filter((l) => l.city === name || (l.neighborhood ?? '').includes(name)).length
+}
 
-        <div className="mt-14 grid gap-14 lg:grid-cols-2 lg:gap-8">
-          {places.map((p) => {
-            const count = listings.filter((l) => l.city === p.city).length
-            return (
-              <article key={p.city} className="flex min-w-0 flex-col">
-                <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                  <Image src={p.image} alt={p.alt} fill sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover" />
-                  <span className="label absolute left-0 top-0 flex items-center gap-3 bg-ink px-4 py-3 text-ink-foreground">
-                    <span aria-hidden="true" className="size-1.5 bg-poppy" />
-                    {p.setting} · Elev. {p.elevation}
-                  </span>
-                </div>
-                <h3 className="wide mt-6 break-words text-[clamp(2rem,10vw,3.75rem)] font-extrabold uppercase leading-none tracking-tight">
-                  {p.city}
-                </h3>
-                <p className="mt-4 max-w-lg leading-relaxed text-muted-foreground">{p.body}</p>
-                <ul className="label mt-6 flex flex-wrap gap-x-4 gap-y-2 text-muted-foreground">
-                  {p.communities.map((c) => (
-                    <li key={c}>{c}</li>
-                  ))}
-                </ul>
+export function Areas() {
+  const [current, setCurrent] = useState(0)
+  const p = places[current]
+  const count = countFor(p.name)
+
+  return (
+    <section id="areas" aria-labelledby="areas-heading" className="scroll-mt-16 bg-secondary py-24 md:py-32">
+      <div className="mx-auto grid max-w-[90rem] gap-12 px-5 md:px-8 lg:grid-cols-[22rem_minmax(0,1fr)] lg:gap-16">
+        <Reveal className="flex flex-col">
+          <p className="eyebrow text-muted-foreground">Where we work</p>
+          <h2 id="areas-heading" className="mt-5 text-4xl font-medium tracking-wide md:text-5xl">
+            Neighborhoods
+          </h2>
+          <ul className="mt-10 flex flex-col" role="list">
+            {places.map((place, i) => (
+              <li key={place.name}>
+                <button
+                  type="button"
+                  onClick={() => setCurrent(i)}
+                  onMouseEnter={() => setCurrent(i)}
+                  aria-pressed={i === current}
+                  className={cn(
+                    'label flex min-h-14 w-full items-center justify-between gap-4 border-b py-4 text-left tracking-[0.2em] transition-colors',
+                    i === current ? 'border-foreground text-foreground' : 'border-border text-muted-foreground hover:text-foreground',
+                  )}
+                >
+                  {place.name}
+                  <ChevronRight
+                    className={cn('size-4 transition-all', i === current ? 'translate-x-0 opacity-100' : '-translate-x-2 opacity-0')}
+                    aria-hidden="true"
+                  />
+                </button>
+              </li>
+            ))}
+          </ul>
+          <a href="#listings" className="pill mt-10 self-start bg-ink text-ink-foreground hover:bg-poppy hover:text-ink">
+            View all properties
+          </a>
+        </Reveal>
+
+        <Reveal delay={150}>
+          <div className="relative aspect-[4/5] overflow-hidden bg-ink text-ink-foreground sm:aspect-[4/3] lg:aspect-auto lg:h-full lg:min-h-[36rem]">
+            {places.map((place, i) => (
+              <Image
+                key={place.name}
+                src={place.image}
+                alt={i === current ? `Home in ${place.name}` : ''}
+                fill
+                sizes="(min-width: 1024px) 60vw, 100vw"
+                className={cn(
+                  'object-cover transition-[opacity,transform] duration-[1200ms] ease-out',
+                  i === current ? 'scale-100 opacity-100' : 'scale-110 opacity-0',
+                )}
+              />
+            ))}
+            <div aria-hidden="true" className="absolute inset-0 bg-ink/35" />
+            <div key={p.name} className="rise absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center" aria-live="polite">
+              <p className="eyebrow text-ink-foreground/85">{p.tag}</p>
+              <p className="font-display text-5xl font-medium tracking-wide text-balance md:text-7xl">{p.name}</p>
+              <p className="max-w-md leading-relaxed text-ink-foreground/90">{p.body}</p>
+              {count > 0 && (
                 <a
                   href="#listings"
-                  className="label mt-8 flex min-h-12 items-center justify-between gap-4 border-t border-ink py-3 hover:bg-poppy"
+                  className="pill mt-4 border border-ink-foreground/70 hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink"
                 >
-                  {count} {p.city} properties on the register
-                  <ArrowUpRight className="size-4" aria-hidden="true" />
+                  {count} {count === 1 ? 'property' : 'properties'}
                 </a>
-              </article>
-            )
-          })}
-        </div>
-
-        <ul className="mt-20 grid border-t border-ink md:grid-cols-3">
-          {guides.map((g) => (
-            <li key={g.title} className="border-b border-border md:border-b-0 md:border-r md:last:border-r-0">
-              <a href="#contact" className="group flex h-full flex-col gap-3 py-8 md:px-8 md:first:pl-0">
-                <span className="flex items-center justify-between gap-4">
-                  <span className="wide text-xl font-bold uppercase tracking-tight group-hover:hl">{g.title}</span>
-                  <ArrowUpRight className="size-5 shrink-0" aria-hidden="true" />
-                </span>
-                <span className="text-sm leading-relaxed text-muted-foreground">{g.body}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
+              )}
+            </div>
+          </div>
+          <p className="mt-4 text-sm text-muted-foreground">Also serving California City and the rest of Kern County.</p>
+        </Reveal>
       </div>
     </section>
   )

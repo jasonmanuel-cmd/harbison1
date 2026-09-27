@@ -29,19 +29,19 @@ export function Contact() {
   const mailto = `mailto:${contact.email}?subject=${encodeURIComponent(`${goal} — ${name}`)}&body=${encodeURIComponent(body)}`
 
   return (
-    <section id="contact" aria-labelledby="contact-heading" className="bg-ink py-20 text-ink-foreground md:py-28">
+    <section id="contact" aria-labelledby="contact-heading" className="scroll-mt-16 bg-ink py-24 text-ink-foreground md:py-32">
       <div className="mx-auto max-w-[90rem] px-5 md:px-8">
-        <p className="label text-ink-foreground/60">Direct line · Call or text</p>
+        <p className="eyebrow text-ink-foreground/60">Direct line · Call or text</p>
         <a
           href={contact.phoneHref}
-          className="wide mt-4 block text-[clamp(2.5rem,9vw,9rem)] font-extrabold leading-none tracking-tight transition-colors hover:text-poppy"
+          className="mt-5 block font-display text-[clamp(2.5rem,8vw,7rem)] font-medium leading-none tracking-wide transition-colors hover:text-poppy"
         >
           {contact.phone}
         </a>
 
         <div className="mt-16 grid gap-12 border-t border-ink-foreground/20 pt-12 lg:grid-cols-12">
           <div className="flex flex-col gap-6 lg:col-span-5">
-            <h2 id="contact-heading" className="wide text-3xl font-extrabold uppercase leading-none tracking-tight text-balance md:text-5xl">
+            <h2 id="contact-heading" className="text-4xl font-medium leading-tight tracking-wide text-balance md:text-5xl">
               Good things start with a conversation.
             </h2>
             <p className="max-w-md leading-relaxed text-ink-foreground/70">
@@ -65,7 +65,7 @@ export function Contact() {
             </ul>
           </div>
 
-          <div className="border border-ink-foreground/20 p-6 md:p-10 lg:col-span-7">
+          <div className="rounded-sm border border-ink-foreground/20 bg-ink-foreground/[0.03] p-6 md:p-10 lg:col-span-7">
             <ol className="flex gap-2" aria-label="Progress">
               {['Your goal', 'Your details', 'Review'].map((label, i) => (
                 <li key={label} className="flex-1">
@@ -82,7 +82,7 @@ export function Contact() {
 
             {step === 0 && (
               <fieldset className="mt-8">
-                <legend className="wide text-2xl font-bold uppercase tracking-tight">{"What's your next move?"}</legend>
+                <legend className="font-display text-2xl tracking-wide">{"What's your next move?"}</legend>
                 <div className="mt-6 grid gap-3 sm:grid-cols-2">
                   {goals.map((g) => (
                     <button
@@ -114,7 +114,7 @@ export function Contact() {
                   setStep(2)
                 }}
               >
-                <h3 className="wide text-2xl font-bold uppercase tracking-tight">A few details</h3>
+                <h3 className="font-display text-2xl tracking-wide">A few details</h3>
                 <div className="grid gap-5 sm:grid-cols-2">
                   <Field label="Your name" id="name">
                     <input id="name" required value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" className={inputClass} />
@@ -133,7 +133,7 @@ export function Contact() {
                         onClick={() => setTimeline(t)}
                         aria-pressed={timeline === t}
                         className={cn(
-                          'border px-4 py-2 text-sm transition-colors',
+                          'min-h-11 rounded-full border px-5 text-sm transition-colors',
                           timeline === t ? 'border-poppy bg-poppy text-ink' : 'border-ink-foreground/25 hover:border-ink-foreground/60',
                         )}
                       >
@@ -149,7 +149,7 @@ export function Contact() {
                   <button type="button" onClick={() => setStep(0)} className="label inline-flex items-center gap-2 px-2 py-3">
                     <ArrowLeft className="size-4" aria-hidden="true" /> Back
                   </button>
-                  <button type="submit" className="label inline-flex items-center gap-2 bg-poppy px-7 py-4 text-ink hover:bg-ink-foreground">
+                  <button type="submit" className="pill bg-poppy text-ink hover:bg-ink-foreground">
                     Review <ArrowRight className="size-4" aria-hidden="true" />
                   </button>
                 </div>
@@ -158,7 +158,7 @@ export function Contact() {
 
             {step === 2 && (
               <div className="mt-8">
-                <h3 className="wide text-2xl font-bold uppercase tracking-tight">Look good?</h3>
+                <h3 className="font-display text-2xl tracking-wide">Look good?</h3>
                 <dl className="mt-6 grid gap-4 text-sm sm:grid-cols-2">
                   <Summary term="Goal" value={goal} />
                   <Summary term="Timeline" value={timeline || 'Not specified'} />
@@ -170,7 +170,7 @@ export function Contact() {
                   <button type="button" onClick={() => setStep(1)} className="label inline-flex items-center justify-center gap-2 px-2 py-3">
                     <ArrowLeft className="size-4" aria-hidden="true" /> Edit
                   </button>
-                  <a href={mailto} className="label inline-flex items-center justify-center gap-2 bg-poppy px-7 py-4 text-ink hover:bg-ink-foreground">
+                  <a href={mailto} className="pill bg-poppy text-ink hover:bg-ink-foreground">
                     Send to Nathanael <ArrowRight className="size-4" aria-hidden="true" />
                   </a>
                 </div>

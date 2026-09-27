@@ -1,17 +1,16 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Archivo, JetBrains_Mono } from 'next/font/google'
+import { Nunito_Sans, Outfit } from 'next/font/google'
 import './globals.css'
 
-const archivo = Archivo({
+const outfit = Outfit({
   subsets: ['latin'],
-  axes: ['wdth'],
-  variable: '--font-archivo',
+  variable: '--font-outfit',
 })
 
-const jetbrains = JetBrains_Mono({
+const nunito = Nunito_Sans({
   subsets: ['latin'],
-  variable: '--font-jetbrains',
+  variable: '--font-nunito',
 })
 
 export const metadata: Metadata = {
@@ -30,7 +29,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#ffffff',
+  themeColor: '#0c1a3a',
   colorScheme: 'light',
 }
 
@@ -40,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${archivo.variable} ${jetbrains.variable} bg-background`}>
+    <html lang="en" className={`${outfit.variable} ${nunito.variable} bg-background`}>
       <body className="overflow-x-clip antialiased [-webkit-text-size-adjust:100%]">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
