@@ -32,38 +32,38 @@ const steps = [
 
 export function Faq() {
   return (
-    <section id="faq" aria-labelledby="faq-heading" className="bg-background py-20 md:py-28">
-      <div className="mx-auto grid max-w-7xl gap-16 px-5 md:px-8 lg:grid-cols-12">
-        <div className="lg:col-span-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-brass">The process</p>
-          <h2 className="mt-3 text-4xl font-medium text-balance md:text-5xl">Three steps. No pressure.</h2>
-          <ol className="mt-10 flex flex-col gap-8">
-            {steps.map((s, i) => (
-              <li key={s.title} className="flex gap-5">
-                <span className="font-serif text-4xl leading-none text-brass" aria-hidden="true">
-                  {i + 1}
-                </span>
-                <div>
-                  <h3 className="font-sans text-base font-semibold">{s.title}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
+    <section id="faq" aria-labelledby="faq-heading" className="py-20 md:py-28">
+      <div className="mx-auto max-w-[90rem] px-5 md:px-8">
+        <h2 className="wide text-4xl font-extrabold uppercase leading-none tracking-tight md:text-6xl">
+          Three steps. No pressure.
+        </h2>
+        <ol className="mt-12 grid border-t border-ink md:grid-cols-3">
+          {steps.map((s, i) => (
+            <li key={s.title} className="flex flex-col gap-3 border-b border-border py-8 md:border-b-0 md:border-r md:px-8 md:first:pl-0 md:last:border-r-0">
+              <span className="wide text-6xl font-extrabold leading-none text-poppy" aria-hidden="true">
+                {i + 1}
+              </span>
+              <h3 className="text-lg font-semibold">{s.title}</h3>
+              <p className="leading-relaxed text-muted-foreground">{s.body}</p>
+            </li>
+          ))}
+        </ol>
 
-        <div className="lg:col-span-7">
-          <h2 id="faq-heading" className="text-4xl font-medium text-balance md:text-5xl">
-            Quick answers, before you reach out.
-          </h2>
-          <div className="mt-8 border-t border-border">
+        <div className="mt-24 grid gap-10 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <p className="label text-muted-foreground">Before you reach out</p>
+            <h2 id="faq-heading" className="mt-3 text-3xl font-medium text-balance md:text-4xl">
+              Quick answers.
+            </h2>
+          </div>
+          <div className="border-t border-ink lg:col-span-8">
             {faqs.map((f) => (
               <details key={f.q} className="group border-b border-border">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-lg font-medium [&::-webkit-details-marker]:hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-lg font-medium md:text-xl [&::-webkit-details-marker]:hidden">
                   {f.q}
-                  <Plus className="size-5 shrink-0 text-brass transition-transform group-open:rotate-45" aria-hidden="true" />
+                  <Plus className="size-5 shrink-0 transition-transform group-open:rotate-45" aria-hidden="true" />
                 </summary>
-                <p className="pb-6 leading-relaxed text-muted-foreground">{f.a}</p>
+                <p className="max-w-2xl pb-6 leading-relaxed text-muted-foreground">{f.a}</p>
               </details>
             ))}
           </div>

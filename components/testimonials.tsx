@@ -36,39 +36,49 @@ const reviews = [
 export function Testimonials() {
   const [lead, ...rest] = reviews
   return (
-    <section id="reviews" aria-labelledby="reviews-heading" className="bg-background py-20 md:py-28">
-      <div className="mx-auto max-w-7xl px-5 md:px-8">
-        <h2 id="reviews-heading" className="sr-only">
-          What clients say
-        </h2>
-        <figure className="mx-auto max-w-4xl text-center">
-          <blockquote className="font-serif text-3xl leading-snug text-balance italic md:text-5xl">
-            {`“${lead.quote}”`}
-          </blockquote>
-          <figcaption className="mt-6 text-xs font-semibold uppercase tracking-[0.3em] text-brass">{lead.who}</figcaption>
-        </figure>
-
-        <div className="mt-16 grid gap-5 md:grid-cols-2 lg:grid-cols-5">
-          {rest.map((r) => (
-            <figure key={r.who} className="flex flex-col justify-between gap-6 rounded-md border border-border bg-card p-6">
-              <blockquote className="text-sm leading-relaxed text-foreground/85">{`“${r.quote}”`}</blockquote>
-              <figcaption className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                {r.who}
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-
-        <div className="mt-10 text-center">
+    <section id="reviews" aria-labelledby="reviews-heading" className="bg-secondary py-20 md:py-28">
+      <div className="mx-auto grid max-w-[90rem] gap-10 px-5 md:px-8 lg:grid-cols-12">
+        <div className="flex flex-col justify-between gap-6 lg:col-span-4">
+          <div>
+            <p className="label text-muted-foreground">Client notes</p>
+            <h2 id="reviews-heading" className="wide mt-3 text-4xl font-extrabold uppercase leading-none tracking-tight md:text-5xl">
+              In their words.
+            </h2>
+          </div>
           <a
             href={contact.reviews}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm font-semibold underline decoration-brass underline-offset-8"
+            className="label self-start underline decoration-poppy decoration-2 underline-offset-8 hover:text-poppy"
           >
             Read all reviews on Google
           </a>
         </div>
+        <figure className="lg:col-span-8">
+          <blockquote className="text-3xl font-medium leading-snug tracking-tight text-balance md:text-5xl">
+            <span aria-hidden="true" className="text-poppy">
+              “
+            </span>
+            {lead.quote}
+            <span aria-hidden="true" className="text-poppy">
+              ”
+            </span>
+          </blockquote>
+          <figcaption className="label mt-6 text-muted-foreground">{lead.who}</figcaption>
+        </figure>
+      </div>
+
+      <div className="mx-auto mt-16 max-w-[90rem] px-5 md:px-8">
+        <ul className="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4" aria-label="More client reviews">
+          {rest.map((r) => (
+            <li key={r.who} className="w-80 shrink-0 snap-start md:w-96">
+              <figure className="flex h-full flex-col justify-between gap-6 border-t-2 border-ink pt-5">
+                <blockquote className="leading-relaxed">{`“${r.quote}”`}</blockquote>
+                <figcaption className="label text-muted-foreground">{r.who}</figcaption>
+              </figure>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )

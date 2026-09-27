@@ -2,7 +2,6 @@ import { About } from '@/components/about'
 import { Areas } from '@/components/areas'
 import { Contact } from '@/components/contact'
 import { Faq } from '@/components/faq'
-import { Featured } from '@/components/featured'
 import { Hero } from '@/components/hero'
 import { Listings } from '@/components/listings'
 import { Services } from '@/components/services'
@@ -28,12 +27,11 @@ export default function Page() {
       <SiteHeader />
       <main>
         <Hero />
-        <Featured />
-        <About />
         <Listings />
         <Services />
-        <Testimonials />
         <Areas />
+        <About />
+        <Testimonials />
         <Faq />
         <Contact />
       </main>

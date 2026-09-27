@@ -5,8 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: var(--font-manrope), system-ui, sans-serif;
-  --font-serif: var(--font-cormorant), Georgia, serif;
+  --font-sans: var(--font-archivo), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -28,38 +28,50 @@
   --color-ring: var(--ring);
   --color-ink: var(--ink);
   --color-ink-foreground: var(--ink-foreground);
-  --color-brass: var(--brass);
+  --color-poppy: var(--poppy);
 
-  --radius-sm: calc(var(--radius) - 2px);
+  --radius-sm: var(--radius);
   --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) + 2px);
-  --radius-xl: calc(var(--radius) + 6px);
+  --radius-lg: var(--radius);
+  --radius-xl: var(--radius);
 }
 
 :root {
-  color-scheme: light;
-  --background: #f2f1ed;
-  --foreground: #17191b;
-  --card: #fbfbf9;
-  --card-foreground: #17191b;
-  --popover: #fbfbf9;
-  --popover-foreground: #17191b;
-  --primary: #17191b;
-  --primary-foreground: #fbfbf9;
-  --secondary: #e7e5df;
-  --secondary-foreground: #17191b;
-  --muted: #e7e5df;
-  --muted-foreground: #5e625d;
-  --accent: #b38b3f;
-  --accent-foreground: #17191b;
-  --destructive: #b3261e;
-  --border: rgb(23 25 27 / 0.12);
-  --input: rgb(23 25 27 / 0.18);
-  --ring: #b38b3f;
-  --ink: #17191b;
-  --ink-foreground: #f2f1ed;
-  --brass: #b38b3f;
-  --radius: 0.375rem;
+  color-scheme: dark;
+  --background: #0c1a3a;
+  --foreground: #f3ecdc;
+  --card: #122347;
+  --card-foreground: #f3ecdc;
+  --popover: #122347;
+  --popover-foreground: #f3ecdc;
+  --primary: #d4a845;
+  --primary-foreground: #07112a;
+  --secondary: #122347;
+  --secondary-foreground: #f3ecdc;
+  --muted: #122347;
+  --muted-foreground: #b3b0a6;
+  --accent: #d4a845;
+  --accent-foreground: #07112a;
+  --destructive: #e5484d;
+  --border: rgb(243 236 220 / 0.14);
+  --input: rgb(243 236 220 / 0.24);
+  --ring: #d4a845;
+  --ink: #07112a;
+  --ink-foreground: #f3ecdc;
+  --poppy: #d4a845;
+  --radius: 2px;
+}
+
+@utility wide {
+  font-stretch: 125%;
+}
+
+@utility label {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 @layer base {
@@ -72,17 +84,16 @@
   body {
     @apply bg-background text-foreground font-sans;
   }
-  h1,
-  h2,
-  h3 {
-    @apply font-serif;
+  ::selection {
+    background: var(--poppy);
+    color: var(--ink);
   }
 }
 
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(24px);
   }
   to {
     opacity: 1;

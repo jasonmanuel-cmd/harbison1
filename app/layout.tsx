@@ -1,18 +1,17 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Cormorant_Garamond, Manrope } from 'next/font/google'
+import { Archivo, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 
-const cormorant = Cormorant_Garamond({
+const archivo = Archivo({
   subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  style: ['normal', 'italic'],
-  variable: '--font-cormorant',
+  axes: ['wdth'],
+  variable: '--font-archivo',
 })
 
-const manrope = Manrope({
+const jetbrains = JetBrains_Mono({
   subsets: ['latin'],
-  variable: '--font-manrope',
+  variable: '--font-jetbrains',
 })
 
 export const metadata: Metadata = {
@@ -28,7 +27,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#17191b',
+  themeColor: '#0c1a3a',
   colorScheme: 'light',
 }
 
@@ -38,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${manrope.variable} bg-background`}>
+    <html lang="en" className={`${archivo.variable} ${jetbrains.variable} bg-background`}>
       <body className="antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

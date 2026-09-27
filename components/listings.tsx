@@ -1,141 +1,150 @@
 'use client'
 
 import Image from 'next/image'
-import { useMemo, useState } from 'react'
-import { formatPrice, listings, type Listing } from '@/lib/site'
+import { useRef, useState } from 'react'
+import { ArrowUpRight } from 'lucide-react'
+import { formatPrice, listings, type City, type Listing } from '@/lib/site'
 import { cn } from '@/lib/utils'
 
-const filters = ['All', 'Tehachapi', 'Bakersfield', 'Land'] as const
-type Filter = (typeof filters)[number]
+type Filter = 'All' | City
+const filters: Filter[] = ['All', 'Tehachapi', 'Bakersfield']
 
-const sorts = {
-  'price-desc': { label: 'Price: high to low', fn: (a: Listing, b: Listing) => b.price - a.price },
-  'price-asc': { label: 'Price: low to high', fn: (a: Listing, b: Listing) => a.price - b.price },
-  'sqft-desc': { label: 'Largest homes', fn: (a: Listing, b: Listing) => (b.sqft ?? 0) - (a.sqft ?? 0) },
+const columns = 'lg:grid-cols-[3.5rem_minmax(0,1fr)_10rem_7rem_13rem_9rem_1.5rem]'
+
+function bedBath(l: Listing) {
+  return l.beds ? `${l.beds} bd / ${l.baths} ba` : 'Land'
 }
-type SortKey = keyof typeof sorts
 
-function matches(l: Listing, f: Filter) {
-  if (f === 'All') return true
-  if (f === 'Land') return !l.beds
-  return l.city === f
+function footprint(l: Listing) {
+  return l.sqft ? `${l.sqft.toLocaleString('en-US')} sf · ${l.lot}` : l.lot
 }
 
 export function Listings() {
   const [filter, setFilter] = useState<Filter>('All')
-  const [sort, setSort] = useState<SortKey>('price-desc')
+  const [active, setActive] = useState<string | null>(null)
+  const previewRef = useRef<HTMLDivElement>(null)
+  const rows = filter === 'All' ? listings : listings.filter((l) => l.city === filter)
 
-  const visible = useMemo(
-    () => listings.filter((l) => matches(l, filter)).sort(sorts[sort].fn),
-    [filter, sort],
-  )
+  function followPointer(e: React.MouseEvent) {
+    const el = previewRef.current
+    if (!el) return
+    el.style.transform = `translate3d(${e.clientX + 28}px, ${e.clientY - 120}px, 0)`
+  }
 
   return (
-    <section id="listings" aria-labelledby="listings-heading" className="bg-secondary py-20 md:py-28">
-      <div className="mx-auto max-w-7xl px-5 md:px-8">
-        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+    <section id="listings" aria-labelledby="listings-heading" className="border-t border-ink py-20 md:py-28">
+      <div className="mx-auto max-w-[90rem] px-5 md:px-8">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-brass">Available now</p>
-            <h2 id="listings-heading" className="mt-3 text-4xl font-medium text-balance md:text-6xl">
-              Find your next property.
+            <p className="label text-muted-foreground">Current &amp; recent listings</p>
+            <h2
+              id="listings-heading"
+              className="wide mt-3 text-5xl font-extrabold uppercase leading-none tracking-tight md:text-8xl"
+            >
+              The Register
             </h2>
           </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div role="group" aria-label="Filter listings" className="flex flex-wrap gap-2">
-              {filters.map((f) => {
-                const count = listings.filter((l) => matches(l, f)).length
-                return (
-                  <button
-                    key={f}
-                    type="button"
-                    onClick={() => setFilter(f)}
-                    aria-pressed={filter === f}
-                    className={cn(
-                      'rounded-full border px-4 py-2 text-sm font-medium transition-colors',
-                      filter === f
-                        ? 'border-ink bg-ink text-ink-foreground'
-                        : 'border-border bg-card text-foreground hover:border-foreground/40',
-                    )}
-                  >
-                    {f} <span className="opacity-60">{count}</span>
-                  </button>
-                )
-              })}
-            </div>
-            <label className="flex items-center gap-2 text-sm">
-              <span className="sr-only">Sort listings</span>
-              <select
-                value={sort}
-                onChange={(e) => setSort(e.target.value as SortKey)}
-                className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium"
+          <div role="group" aria-label="Filter by city" className="flex self-start border border-ink lg:self-auto">
+            {filters.map((f) => (
+              <button
+                key={f}
+                type="button"
+                aria-pressed={filter === f}
+                onClick={() => setFilter(f)}
+                className={cn(
+                  'label px-4 py-3 transition-colors',
+                  filter === f ? 'bg-poppy text-ink' : 'hover:bg-secondary',
+                )}
               >
-                {Object.entries(sorts).map(([key, s]) => (
-                  <option key={key} value={key}>
-                    {s.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+                {f}
+              </button>
+            ))}
           </div>
         </div>
 
-        <p className="mt-6 text-sm text-muted-foreground" aria-live="polite">
-          Showing {visible.length} {visible.length === 1 ? 'property' : 'properties'}
-        </p>
+        <div
+          aria-hidden="true"
+          className={cn('label mt-14 hidden gap-6 border-b border-ink pb-3 text-muted-foreground lg:grid', columns)}
+        >
+          <span>No.</span>
+          <span>Address</span>
+          <span>City</span>
+          <span>Bd / Ba</span>
+          <span>Interior / Lot</span>
+          <span className="text-right">Price</span>
+          <span />
+        </div>
 
-        <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {visible.map((l) => (
-            <li key={l.slug}>
-              <ListingCard listing={l} />
+        <ol
+          onMouseMove={followPointer}
+          onMouseLeave={() => setActive(null)}
+          className="mt-10 border-t border-ink lg:mt-0 lg:border-t-0"
+        >
+          {rows.map((l, i) => (
+            <li key={l.slug} onMouseEnter={() => setActive(l.slug)} className="border-b border-border">
+              <a
+                href="#contact"
+                className={cn(
+                  'group grid grid-cols-[5.5rem_minmax(0,1fr)] gap-x-4 gap-y-1 py-5 lg:items-center lg:gap-6 lg:py-6',
+                  columns,
+                )}
+              >
+                <span className="relative row-span-3 aspect-square overflow-hidden bg-muted lg:hidden">
+                  <Image src={l.image} alt="" fill sizes="88px" className="object-cover" />
+                </span>
+                <span className="label hidden text-muted-foreground lg:block">{String(i + 1).padStart(2, '0')}</span>
+                <span className="min-w-0">
+                  <span className="wide block truncate text-lg font-bold uppercase tracking-tight transition-colors md:text-2xl lg:group-hover:text-poppy">
+                    {l.address}
+                  </span>
+                  <span className="block truncate text-sm text-muted-foreground">
+                    {l.neighborhood ?? `${l.city}, CA ${l.zip}`}
+                  </span>
+                </span>
+                <span className="hidden text-sm lg:block">
+                  {l.city}, {l.zip}
+                </span>
+                <span className="label hidden lg:block">{bedBath(l)}</span>
+                <span className="label hidden text-muted-foreground lg:block">{footprint(l)}</span>
+                <span className="label col-start-2 text-muted-foreground lg:hidden">
+                  {l.city} · {bedBath(l)}
+                </span>
+                <span className="wide col-start-2 text-lg font-bold tracking-tight lg:col-start-auto lg:text-right lg:text-xl">
+                  {formatPrice(l.price)}
+                </span>
+                <ArrowUpRight
+                  className="hidden size-5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 lg:block"
+                  aria-hidden="true"
+                />
+                <span className="sr-only">Ask Nathanael about {l.address}</span>
+              </a>
             </li>
           ))}
-        </ul>
+        </ol>
+
+        <p className="label mt-8 text-muted-foreground">Select any property to ask about availability or a showing.</p>
+      </div>
+
+      <div
+        ref={previewRef}
+        aria-hidden="true"
+        className={cn(
+          'pointer-events-none fixed left-0 top-0 z-50 hidden aspect-[4/3] w-80 overflow-hidden bg-muted shadow-2xl transition-opacity duration-200 lg:block',
+          active ? 'opacity-100' : 'opacity-0',
+        )}
+      >
+        {listings.map((l) => (
+          <Image
+            key={l.slug}
+            src={l.image}
+            alt=""
+            fill
+            sizes="320px"
+            loading="eager"
+            className={cn('object-cover transition-opacity duration-300', active === l.slug ? 'opacity-100' : 'opacity-0')}
+          />
+        ))}
       </div>
     </section>
-  )
-}
-
-function ListingCard({ listing: l }: { listing: Listing }) {
-  const facts = [
-    l.beds && `${l.beds} bd`,
-    l.baths && `${l.baths} ba`,
-    l.sqft && `${l.sqft.toLocaleString()} sqft`,
-    l.lot,
-  ].filter(Boolean)
-
-  return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-md border border-border bg-card">
-      <div className="relative aspect-[3/2] overflow-hidden bg-muted">
-        <Image
-          src={l.image}
-          alt={`${l.address}, ${l.city}`}
-          fill
-          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
-        />
-        <span className="absolute top-3 left-3 rounded-full bg-card/95 px-3 py-1 text-xs font-semibold text-foreground">
-          Available
-        </span>
-      </div>
-      <div className="flex flex-1 flex-col p-5">
-        <p className="font-serif text-3xl">{formatPrice(l.price)}</p>
-        <h3 className="mt-1 font-sans text-base font-semibold">{l.address}</h3>
-        <p className="text-sm text-muted-foreground">
-          {l.neighborhood ? `${l.neighborhood} · ` : ''}
-          {l.city}, CA {l.zip}
-        </p>
-        <p className="mt-3 line-clamp-2 flex-1 text-sm leading-relaxed text-muted-foreground">{l.blurb}</p>
-        <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-4">
-          <p className="text-xs font-medium text-foreground/80">{facts.join(' · ')}</p>
-          <a
-            href={`mailto:nate85.realtor@gmail.com?subject=${encodeURIComponent(`Showing request: ${l.address}`)}`}
-            className="shrink-0 text-sm font-semibold underline decoration-brass underline-offset-4"
-          >
-            Ask<span className="sr-only"> about {l.address}</span>
-          </a>
-        </div>
-      </div>
-    </article>
   )
 }

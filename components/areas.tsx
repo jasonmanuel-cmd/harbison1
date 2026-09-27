@@ -1,63 +1,102 @@
 import Image from 'next/image'
 import { ArrowUpRight } from 'lucide-react'
+import { listings } from '@/lib/site'
 
-const communities = ['Tehachapi', 'Bakersfield', 'Stallion Springs', 'California City', 'Golden Hills', 'Seven Oaks']
+const places = [
+  {
+    city: 'Tehachapi',
+    setting: 'Mountain',
+    elevation: '3,970 ft',
+    image: '/images/property/28751-gleneagle-ct-1.webp',
+    alt: 'Stallion Springs home with mountain views in Tehachapi',
+    body: 'Four real seasons, room to breathe, and land to build on. Acreage, new construction, and quiet mountain communities an hour from the valley.',
+    communities: ['Stallion Springs', 'Golden Hills', 'Bear Valley Springs', 'Cummings Valley'],
+  },
+  {
+    city: 'Bakersfield',
+    setting: 'Valley',
+    elevation: '404 ft',
+    image: '/images/property/2300-weybridge-dr-1.webp',
+    alt: 'Seven Oaks estate on the golf course in Bakersfield',
+    body: 'Established neighborhoods, golf-course estates, gated communities, and steady rental demand — from Seven Oaks to East Bakersfield.',
+    communities: ['Seven Oaks', 'Stockdale', 'Grand Island', 'East Bakersfield'],
+  },
+] as const
 
 const guides = [
   {
     title: 'Why Tehachapi?',
-    body: 'Affordable land, four real seasons, and a growing local economy — what makes this mountain community different.',
+    body: 'Affordable land, four seasons, and a growing local economy.',
   },
   {
-    title: 'Sell your house privately',
-    body: 'No MLS, no Zillow, no open houses. A confidential, as-is, fast close for homeowners who want a quiet sale.',
+    title: 'Sell privately',
+    body: 'No MLS, no Zillow, no open houses. A confidential, as-is close.',
   },
   {
     title: 'Off-market deals',
-    body: 'Private opportunities — tax-defaulted, pre-foreclosure, probate, FSBO. Get alerts before they hit Zillow.',
+    body: 'Probate, pre-foreclosure, FSBO — alerts before they go public.',
   },
 ]
 
 export function Areas() {
   return (
-    <section aria-labelledby="areas-heading" className="bg-ink text-ink-foreground">
-      <div className="mx-auto grid max-w-7xl lg:grid-cols-2">
-        <div className="relative min-h-80 lg:min-h-full">
-          <Image
-            src="/images/property/chalet-tehachapi-1.webp"
-            alt="Cummings Valley land with views to the Tehachapi Mountains"
-            fill
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            className="object-cover"
-          />
-        </div>
-        <div className="px-5 py-20 md:px-12 md:py-24">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-brass">Same mountains. Bigger opportunities.</p>
-          <h2 id="areas-heading" className="mt-3 text-4xl font-medium text-balance md:text-5xl">
-            Serving clients across Kern County.
+    <section id="areas" aria-labelledby="areas-heading" className="bg-ink py-20 text-ink-foreground md:py-28">
+      <div className="mx-auto max-w-[90rem] px-5 md:px-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <h2 id="areas-heading" className="wide text-4xl font-extrabold uppercase leading-none tracking-tight text-balance md:text-7xl">
+            Two elevations.
+            <br />
+            One county.
           </h2>
-          <ul className="mt-8 flex flex-wrap gap-2">
-            {communities.map((c) => (
-              <li key={c} className="rounded-full border border-ink-foreground/20 px-4 py-2 text-sm">
-                {c}
-              </li>
-            ))}
-          </ul>
-
-          <ul className="mt-12 flex flex-col">
-            {guides.map((g) => (
-              <li key={g.title} className="border-t border-ink-foreground/15 last:border-b">
-                <a href="#contact" className="group flex items-start justify-between gap-6 py-6">
-                  <div>
-                    <h3 className="text-2xl font-medium group-hover:text-brass">{g.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-ink-foreground/65">{g.body}</p>
-                  </div>
-                  <ArrowUpRight className="mt-1 size-5 shrink-0 text-brass" aria-hidden="true" />
-                </a>
-              </li>
-            ))}
-          </ul>
+          <p className="max-w-sm leading-relaxed text-ink-foreground/70">
+            Same mountains, bigger opportunities. Serving clients across Kern County, including California City.
+          </p>
         </div>
+
+        <div className="mt-14 grid gap-14 lg:grid-cols-2 lg:gap-8">
+          {places.map((p) => {
+            const count = listings.filter((l) => l.city === p.city).length
+            return (
+              <article key={p.city} className="flex flex-col">
+                <div className="relative aspect-[4/3] overflow-hidden bg-ink-foreground/10">
+                  <Image src={p.image} alt={p.alt} fill sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover" />
+                  <span className="label absolute left-0 top-0 flex items-center gap-3 bg-ink px-4 py-3">
+                    <span aria-hidden="true" className="size-1.5 bg-poppy" />
+                    {p.setting} · Elev. {p.elevation}
+                  </span>
+                </div>
+                <h3 className="wide mt-6 text-5xl font-extrabold uppercase leading-none tracking-tight md:text-6xl">{p.city}</h3>
+                <p className="mt-4 max-w-lg leading-relaxed text-ink-foreground/75">{p.body}</p>
+                <ul className="label mt-6 flex flex-wrap gap-x-4 gap-y-2 text-ink-foreground/60">
+                  {p.communities.map((c) => (
+                    <li key={c}>{c}</li>
+                  ))}
+                </ul>
+                <a
+                  href="#listings"
+                  className="label mt-8 flex items-center justify-between border-t border-ink-foreground/20 pt-4 hover:text-poppy"
+                >
+                  {count} {p.city} properties on the register
+                  <ArrowUpRight className="size-4" aria-hidden="true" />
+                </a>
+              </article>
+            )
+          })}
+        </div>
+
+        <ul className="mt-20 grid border-t border-ink-foreground/20 md:grid-cols-3">
+          {guides.map((g) => (
+            <li key={g.title} className="border-b border-ink-foreground/20 md:border-b-0 md:border-r md:last:border-r-0">
+              <a href="#contact" className="group flex h-full flex-col gap-3 py-8 md:px-8 md:first:pl-0">
+                <span className="flex items-center justify-between gap-4">
+                  <span className="wide text-xl font-bold uppercase tracking-tight group-hover:text-poppy">{g.title}</span>
+                  <ArrowUpRight className="size-5 shrink-0 text-poppy" aria-hidden="true" />
+                </span>
+                <span className="text-sm leading-relaxed text-ink-foreground/65">{g.body}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )

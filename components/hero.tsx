@@ -1,68 +1,67 @@
 import Image from 'next/image'
-import { ArrowRight } from 'lucide-react'
+import { ArrowDownRight, ArrowRight } from 'lucide-react'
 import { contact } from '@/lib/site'
 
-const credentials = [
-  `REALTOR® · DRE #${contact.dre}`,
-  'Serving all of Kern County',
-  'Buyers · Sellers · Investors',
-  'Call or text direct',
-]
+const display = 'wide font-extrabold uppercase leading-[0.86] tracking-tight text-[clamp(2.75rem,9.2vw,9.5rem)]'
 
 export function Hero() {
   return (
-    <section id="top" className="relative isolate flex min-h-svh flex-col bg-ink text-ink-foreground">
-      <Image
-        src="/images/hero-1600.webp"
-        alt="Modern home overlooking Cummings Valley and the Tehachapi Mountains"
-        fill
-        priority
-        sizes="100vw"
-        className="-z-10 object-cover"
-      />
-      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-ink/45" />
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 -z-10 h-3/4 bg-gradient-to-t from-ink via-ink/70 to-transparent"
-      />
-
-      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col justify-end px-5 pt-32 pb-12 md:px-8 md:pb-16">
-        <p className="rise text-xs font-semibold uppercase tracking-[0.3em] text-brass">
-          Tehachapi · Bakersfield · Kern County
-        </p>
-        <h1 className="rise mt-5 max-w-4xl text-5xl leading-[0.95] font-medium text-balance [animation-delay:120ms] sm:text-6xl md:text-8xl">
-          {"It's not what you do."}
-          <span className="block italic text-brass">{"It's how you do it."}</span>
+    <section id="top" aria-labelledby="hero-heading" className="overflow-hidden">
+      <div className="mx-auto max-w-[90rem] px-5 pt-10 md:px-8 md:pt-14">
+        <div className="rise label flex flex-wrap items-center justify-between gap-3 text-muted-foreground">
+          <span>Kern County, California</span>
+          <span className="hidden md:inline">Tehachapi — Bakersfield — Stallion Springs — California City</span>
+          <span>DRE #{contact.dre}</span>
+        </div>
+        <h1 id="hero-heading" className={`rise mt-6 ${display}`} style={{ animationDelay: '80ms' }}>
+          <span className="block">It&apos;s not what</span>
+          <span className="block">you do.</span>
+          <span className="sr-only"> It&apos;s how you do it.</span>
         </h1>
-        <p className="rise mt-6 max-w-xl text-base leading-relaxed text-pretty text-ink-foreground/80 [animation-delay:240ms] md:text-lg">
-          Buy, sell, and invest in Kern County with Nathanael Harbison. Practical advice, thoughtful preparation, and
-          a clear next step for your property goals.
-        </p>
-        <div className="rise mt-8 flex flex-col gap-3 [animation-delay:360ms] sm:flex-row">
-          <a
-            href="#listings"
-            className="inline-flex items-center justify-center gap-2 rounded-sm bg-brass px-7 py-4 text-sm font-semibold text-ink transition-opacity hover:opacity-90"
-          >
-            Browse current listings
-            <ArrowRight className="size-4" aria-hidden="true" />
-          </a>
-          <a
-            href="#contact"
-            className="inline-flex items-center justify-center rounded-sm border border-ink-foreground/30 px-7 py-4 text-sm font-semibold text-ink-foreground transition-colors hover:border-brass hover:text-brass"
-          >
-            {"What's my home worth?"}
-          </a>
+      </div>
+
+      <div className="rise relative mt-8 md:mt-10" style={{ animationDelay: '200ms' }}>
+        <div className="relative aspect-[4/3] w-full bg-muted md:aspect-[21/8]">
+          <Image
+            src="/images/hero-1600.webp"
+            alt="A Kern County home represented by Harbison Standard"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        </div>
+        <div className="label absolute bottom-0 left-0 flex items-center gap-4 bg-ink px-4 py-3 text-ink-foreground md:left-8">
+          <span>35.13° N</span>
+          <span aria-hidden="true" className="size-1.5 bg-poppy" />
+          <span>118.45° W</span>
         </div>
       </div>
 
-      <div className="border-t border-ink-foreground/10">
-        <ul className="mx-auto grid max-w-7xl grid-cols-2 gap-y-3 px-5 py-5 md:grid-cols-4 md:px-8">
-          {credentials.map((c) => (
-            <li key={c} className="text-xs font-medium uppercase tracking-[0.18em] text-ink-foreground/70">
-              {c}
-            </li>
-          ))}
-        </ul>
+      <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-10 md:px-8 md:py-14 lg:grid-cols-12 lg:items-end">
+        <p aria-hidden="true" className={`rise lg:col-span-7 ${display}`} style={{ animationDelay: '320ms' }}>
+          It&apos;s <span className="text-poppy">how</span> you do it.
+        </p>
+        <div className="rise flex flex-col gap-6 lg:col-span-5 lg:pb-3" style={{ animationDelay: '440ms' }}>
+          <p className="max-w-md text-lg leading-relaxed text-pretty">
+            Buy, sell, and invest across Tehachapi, Bakersfield, and all of Kern County with Nathanael Harbison —
+            practical advice, direct communication, and a clear next step.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <a
+              href="#contact"
+              className="label flex items-center gap-2 bg-poppy px-6 py-4 text-ink transition-colors hover:bg-foreground"
+            >
+              Start a conversation <ArrowRight className="size-4" aria-hidden="true" />
+            </a>
+            <a
+              href="#listings"
+              className="label flex items-center gap-2 border border-poppy px-6 py-4 transition-colors hover:bg-poppy hover:text-ink"
+            >
+              View listings <ArrowDownRight className="size-4" aria-hidden="true" />
+            </a>
+          </div>
+        </div>
       </div>
     </section>
   )
