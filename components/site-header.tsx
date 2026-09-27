@@ -39,7 +39,7 @@ export function SiteHeader() {
 
         <a
           href={contact.phoneHref}
-          className="label flex items-center gap-2 bg-poppy px-4 py-3 text-ink transition-colors hover:bg-foreground"
+          className="label flex items-center gap-2 bg-poppy px-4 py-3 text-ink transition-colors hover:bg-ink hover:text-ink-foreground"
         >
           <Phone className="size-4" aria-hidden="true" />
           <span className="hidden sm:inline">{contact.phone}</span>

@@ -94,7 +94,7 @@ export function Listings() {
                 </span>
                 <span className="label hidden text-muted-foreground lg:block">{String(i + 1).padStart(2, '0')}</span>
                 <span className="min-w-0">
-                  <span className="wide block truncate text-lg font-bold uppercase tracking-tight transition-colors md:text-2xl lg:group-hover:text-poppy">
+                  <span className="wide block truncate text-lg font-bold uppercase tracking-tight transition-colors md:text-2xl lg:group-hover:hl">
                     {l.address}
                   </span>
                   <span className="block truncate text-sm text-muted-foreground">

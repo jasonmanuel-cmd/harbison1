@@ -2,6 +2,7 @@ import { About } from '@/components/about'
 import { Areas } from '@/components/areas'
 import { Contact } from '@/components/contact'
 import { Faq } from '@/components/faq'
+import { FloatingKeys } from '@/components/floating-keys'
 import { Hero } from '@/components/hero'
 import { Listings } from '@/components/listings'
 import { Services } from '@/components/services'
@@ -24,8 +25,9 @@ export default function Page() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <FloatingKeys />
       <SiteHeader />
-      <main>
+      <main className="relative z-10">
         <Hero />
         <Listings />
         <Services />

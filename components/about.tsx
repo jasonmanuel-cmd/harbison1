@@ -65,7 +65,7 @@ export function About() {
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline decoration-poppy decoration-2 underline-offset-8 hover:text-poppy"
+                  className="underline decoration-poppy decoration-2 underline-offset-8 hover:hl"
                 >
                   {s.label}
                 </a>

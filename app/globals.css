@@ -37,24 +37,24 @@
 }
 
 :root {
-  color-scheme: dark;
-  --background: #0c1a3a;
-  --foreground: #f3ecdc;
-  --card: #122347;
-  --card-foreground: #f3ecdc;
-  --popover: #122347;
-  --popover-foreground: #f3ecdc;
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #0c1a3a;
+  --card: #ffffff;
+  --card-foreground: #0c1a3a;
+  --popover: #ffffff;
+  --popover-foreground: #0c1a3a;
   --primary: #d4a845;
   --primary-foreground: #07112a;
-  --secondary: #122347;
-  --secondary-foreground: #f3ecdc;
-  --muted: #122347;
-  --muted-foreground: #b3b0a6;
+  --secondary: rgb(12 26 58 / 0.05);
+  --secondary-foreground: #0c1a3a;
+  --muted: rgb(12 26 58 / 0.06);
+  --muted-foreground: rgb(12 26 58 / 0.68);
   --accent: #d4a845;
   --accent-foreground: #07112a;
-  --destructive: #e5484d;
-  --border: rgb(243 236 220 / 0.14);
-  --input: rgb(243 236 220 / 0.24);
+  --destructive: #c5282d;
+  --border: rgb(12 26 58 / 0.14);
+  --input: rgb(12 26 58 / 0.24);
   --ring: #d4a845;
   --ink: #07112a;
   --ink-foreground: #f3ecdc;
@@ -64,6 +64,12 @@
 
 @utility wide {
   font-stretch: 125%;
+}
+
+@utility hl {
+  background-image: linear-gradient(transparent 58%, var(--poppy) 58%, var(--poppy) 92%, transparent 92%);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 @utility label {
@@ -105,8 +111,25 @@
   animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--r, 0deg));
+  }
+  50% {
+    transform: translate3d(12px, -28px, 0) rotate(calc(var(--r, 0deg) + 14deg));
+  }
+}
+
+.drift {
+  animation: drift var(--d, 18s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  will-change: transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .rise {
+  .rise,
+  .drift {
     animation: none;
   }
   html {

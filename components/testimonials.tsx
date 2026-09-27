@@ -36,7 +36,7 @@ const reviews = [
 export function Testimonials() {
   const [lead, ...rest] = reviews
   return (
-    <section id="reviews" aria-labelledby="reviews-heading" className="bg-secondary py-20 md:py-28">
+    <section id="reviews" aria-labelledby="reviews-heading" className="border-t border-ink py-20 md:py-28">
       <div className="mx-auto grid max-w-[90rem] gap-10 px-5 md:px-8 lg:grid-cols-12">
         <div className="flex flex-col justify-between gap-6 lg:col-span-4">
           <div>
@@ -49,7 +49,7 @@ export function Testimonials() {
             href={contact.reviews}
             target="_blank"
             rel="noopener noreferrer"
-            className="label self-start underline decoration-poppy decoration-2 underline-offset-8 hover:text-poppy"
+            className="label self-start underline decoration-poppy decoration-2 underline-offset-8 hover:hl"
           >
             Read all reviews on Google
           </a>

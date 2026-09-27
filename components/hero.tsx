@@ -40,7 +40,7 @@ export function Hero() {
 
       <div className="mx-auto grid max-w-[90rem] gap-10 px-5 py-10 md:px-8 md:py-14 lg:grid-cols-12 lg:items-end">
         <p aria-hidden="true" className={`rise lg:col-span-7 ${display}`} style={{ animationDelay: '320ms' }}>
-          It&apos;s <span className="text-poppy">how</span> you do it.
+          It&apos;s <span className="hl">how</span> you do it.
         </p>
         <div className="rise flex flex-col gap-6 lg:col-span-5 lg:pb-3" style={{ animationDelay: '440ms' }}>
           <p className="max-w-md text-lg leading-relaxed text-pretty">
@@ -50,13 +50,13 @@ export function Hero() {
           <div className="flex flex-wrap gap-3">
             <a
               href="#contact"
-              className="label flex items-center gap-2 bg-poppy px-6 py-4 text-ink transition-colors hover:bg-foreground"
+              className="label flex items-center gap-2 bg-poppy px-6 py-4 text-ink transition-colors hover:bg-ink hover:text-ink-foreground"
             >
               Start a conversation <ArrowRight className="size-4" aria-hidden="true" />
             </a>
             <a
               href="#listings"
-              className="label flex items-center gap-2 border border-poppy px-6 py-4 transition-colors hover:bg-poppy hover:text-ink"
+              className="label flex items-center gap-2 border-2 border-foreground bg-background px-6 py-4 transition-colors hover:bg-poppy hover:text-ink"
             >
               View listings <ArrowDownRight className="size-4" aria-hidden="true" />
             </a>

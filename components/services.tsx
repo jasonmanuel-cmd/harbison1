@@ -49,7 +49,7 @@ export function Services() {
   }
 
   return (
-    <section id="services" aria-labelledby="services-heading" className="bg-secondary py-20 md:py-28">
+    <section id="services" aria-labelledby="services-heading" className="border-t border-ink py-20 md:py-28">
       <div className="mx-auto max-w-[90rem] px-5 md:px-8">
         <p className="label text-muted-foreground">How Nathanael helps</p>
         <h2 id="services-heading" className="mt-3 max-w-2xl text-2xl font-medium text-balance md:text-3xl">
