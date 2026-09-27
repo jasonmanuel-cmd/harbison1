@@ -127,20 +127,20 @@
 
 @keyframes kenburns {
   from {
-    transform: scale(1.06) translate3d(0, 0, 0);
+  transform: scale(1.16) translate3d(-5.5%, 0, 0);
   }
   to {
-    transform: scale(1.22) translate3d(var(--kx, -4%), var(--ky, -2%), 0);
+  transform: scale(1.16) translate3d(5.5%, 0, 0);
   }
-}
-
-.kenburns {
-  transform: scale(1.06);
+  }
+  
+  .kenburns {
+  transform: scale(1.16) translate3d(-5.5%, 0, 0);
   will-change: transform;
 }
 
 .kenburns[data-active='true'] {
-  animation: kenburns var(--kd, 9s) cubic-bezier(0.33, 0, 0.3, 1) forwards;
+  animation: kenburns var(--kd, 9s) cubic-bezier(0.45, 0, 0.55, 1) forwards;
 }
 
 @keyframes shimmer {

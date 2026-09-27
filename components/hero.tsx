@@ -7,9 +7,7 @@ import { cn } from '@/lib/utils'
 const slides = [
   { src: '/images/hero-1600.webp', kx: '-4%', ky: '-2%' },
   { src: '/images/property/2300-weybridge-dr-1.webp', kx: '4%', ky: '-2.5%' },
-  { src: '/images/property/28751-gleneagle-ct-1.webp', kx: '-4.5%', ky: '2%' },
   { src: '/images/property/958-fairway-dr-1.webp', kx: '3.5%', ky: '2%' },
-  { src: '/images/property/2206-ribble-valley-dr-1.webp', kx: '-3%', ky: '-2.5%' },
 ]
 
 function SplitWord({ word, startDelay, className }: { word: string; startDelay: number; className?: string }) {
@@ -74,11 +72,11 @@ export function Hero() {
           />
         </div>
       ))}
-      <div aria-hidden="true" className="absolute inset-x-0 top-0 z-[2] h-[45%] bg-gradient-to-b from-ink/80 via-ink/35 to-transparent md:h-40 md:via-ink/20" />
-      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 z-[2] h-[40%] bg-gradient-to-t from-ink/90 via-ink/50 to-transparent" />
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 z-[2] h-[45%] bg-gradient-to-b from-ink/80 via-ink/35 to-transparent md:h-[55%] md:from-ink/75 md:via-ink/40" />
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 z-[2] h-[40%] bg-gradient-to-t from-ink/90 via-ink/50 to-transparent md:h-32 md:from-ink/60" />
 
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-[90rem] flex-col justify-between px-5 pb-[max(5.25rem,calc(env(safe-area-inset-bottom)+4.5rem))] pt-24 md:flex-row md:items-end md:gap-10 md:px-8 md:pb-28 md:pt-0">
-        <div className="flex flex-col items-center text-center md:items-start md:text-left">
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-[90rem] flex-col justify-between px-5 pb-[max(5.25rem,calc(env(safe-area-inset-bottom)+4.5rem))] pt-24 md:justify-start md:gap-5 md:px-8 md:pb-0 md:pt-[17vh]">
+        <div className="flex flex-col items-center text-center">
           <p
             className="eyebrow rise text-[0.65rem] tracking-[0.2em] text-ink-foreground/85 sm:text-xs sm:tracking-[0.32em]"
             style={{ animationDelay: '200ms' }}
@@ -88,16 +86,16 @@ export function Hero() {
           <h1
             id="hero-heading"
             aria-label="Harbison Standard"
-            className="mt-3 flex flex-col items-center font-display font-extrabold uppercase leading-[0.9] tracking-[-0.04em] text-[clamp(2rem,10vw,4.5rem)] md:-ml-[0.04em] md:mt-4 md:items-start md:text-[clamp(2.75rem,4.4vw,4.25rem)]"
+            className="mt-3 flex flex-col items-center font-display font-extrabold uppercase leading-[0.9] tracking-[-0.04em] text-[clamp(2rem,10vw,4.5rem)] md:mt-4 md:flex-row md:gap-[0.3em] md:text-[clamp(2.5rem,4.6vw,4.5rem)]"
           >
             <SplitWord word="Harbison" startDelay={250} />
             <SplitWord word="Standard" startDelay={650} className="gold-outline" />
           </h1>
         </div>
 
-        <div className="flex flex-col items-center text-center md:items-end md:text-right">
+        <div className="flex flex-col items-center text-center">
           <p
-            className="rise flex flex-wrap items-center justify-center gap-x-2 text-pretty text-base leading-snug text-ink-foreground/95 sm:text-lg md:justify-end md:text-xl"
+            className="rise flex flex-wrap items-center justify-center gap-x-2 text-pretty text-base leading-snug text-ink-foreground/95 sm:text-lg md:text-xl"
             style={{ animationDelay: '1300ms' }}
           >
             <span>{"It's not what you do."}</span>
