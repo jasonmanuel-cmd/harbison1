@@ -4,7 +4,7 @@ import { contact } from '@/lib/site'
 
 export function SiteFooter() {
   return (
-    <footer className="bg-ink pb-20 text-ink-foreground lg:pb-0">
+    <footer className="bg-ink pb-[calc(5rem+env(safe-area-inset-bottom))] text-ink-foreground lg:pb-0">
       <div className="mx-auto max-w-[90rem] px-5 md:px-8">
         <div className="flex justify-center py-12">
           <Image
@@ -31,7 +31,10 @@ export function MobileActionBar() {
     { href: `mailto:${contact.email}`, label: 'Email', icon: Mail },
   ]
   return (
-    <nav aria-label="Quick contact" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-3 border-t border-ink-foreground/20 bg-ink text-ink-foreground lg:hidden">
+    <nav
+      aria-label="Quick contact"
+      className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-3 border-t border-ink-foreground/20 bg-ink pb-[env(safe-area-inset-bottom)] text-ink-foreground lg:hidden"
+    >
       {actions.map(({ href, label, icon: Icon }) => (
         <a key={label} href={href} className="label flex items-center justify-center gap-2 py-4 first:bg-poppy first:text-ink">
           <Icon className="size-4" aria-hidden="true" />

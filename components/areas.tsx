@@ -57,7 +57,7 @@ export function Areas() {
           {places.map((p) => {
             const count = listings.filter((l) => l.city === p.city).length
             return (
-              <article key={p.city} className="flex flex-col">
+              <article key={p.city} className="flex min-w-0 flex-col">
                 <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                   <Image src={p.image} alt={p.alt} fill sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover" />
                   <span className="label absolute left-0 top-0 flex items-center gap-3 bg-ink px-4 py-3 text-ink-foreground">
@@ -65,7 +65,9 @@ export function Areas() {
                     {p.setting} · Elev. {p.elevation}
                   </span>
                 </div>
-                <h3 className="wide mt-6 text-5xl font-extrabold uppercase leading-none tracking-tight md:text-6xl">{p.city}</h3>
+                <h3 className="wide mt-6 break-words text-[clamp(2rem,10vw,3.75rem)] font-extrabold uppercase leading-none tracking-tight">
+                  {p.city}
+                </h3>
                 <p className="mt-4 max-w-lg leading-relaxed text-muted-foreground">{p.body}</p>
                 <ul className="label mt-6 flex flex-wrap gap-x-4 gap-y-2 text-muted-foreground">
                   {p.communities.map((c) => (
@@ -74,7 +76,7 @@ export function Areas() {
                 </ul>
                 <a
                   href="#listings"
-                  className="label mt-8 flex items-center justify-between border-t border-ink pt-4 hover:bg-poppy"
+                  className="label mt-8 flex min-h-12 items-center justify-between gap-4 border-t border-ink py-3 hover:bg-poppy"
                 >
                   {count} {p.city} properties on the register
                   <ArrowUpRight className="size-4" aria-hidden="true" />

@@ -27,6 +27,9 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
   themeColor: '#ffffff',
   colorScheme: 'light',
 }
@@ -38,7 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${archivo.variable} ${jetbrains.variable} bg-background`}>
-      <body className="antialiased">
+      <body className="overflow-x-clip antialiased [-webkit-text-size-adjust:100%]">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

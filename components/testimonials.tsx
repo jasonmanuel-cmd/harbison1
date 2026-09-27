@@ -49,7 +49,7 @@ export function Testimonials() {
             href={contact.reviews}
             target="_blank"
             rel="noopener noreferrer"
-            className="label self-start underline decoration-poppy decoration-2 underline-offset-8 hover:hl"
+            className="label inline-flex min-h-11 items-center self-start underline decoration-poppy decoration-2 underline-offset-8 hover:hl"
           >
             Read all reviews on Google
           </a>

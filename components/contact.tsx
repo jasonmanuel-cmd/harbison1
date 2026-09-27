@@ -48,16 +48,16 @@ export function Contact() {
               Buying your first home, planning a sale, or seeing potential in a property? Tell Nathanael what you have in
               mind. Most messages get a reply within 24 hours.
             </p>
-            <ul className="label flex flex-col gap-3">
+            <ul className="label flex flex-col">
               <li>
-                <a href={contact.smsHref} className="underline decoration-poppy decoration-2 underline-offset-8 hover:text-poppy">
+                <a href={contact.smsHref} className="inline-flex min-h-11 items-center underline decoration-poppy decoration-2 underline-offset-8 hover:text-poppy">
                   Send a text
                 </a>
               </li>
               <li>
                 <a
                   href={`mailto:${contact.email}`}
-                  className="break-all underline decoration-poppy decoration-2 underline-offset-8 hover:text-poppy"
+                  className="inline-flex min-h-11 items-center break-all underline decoration-poppy decoration-2 underline-offset-8 hover:text-poppy"
                 >
                   {contact.email}
                 </a>

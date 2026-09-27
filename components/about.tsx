@@ -58,14 +58,14 @@ export function About() {
             ))}
           </dl>
 
-          <ul className="label mt-10 flex flex-wrap gap-x-8 gap-y-3">
+          <ul className="label mt-8 flex flex-wrap gap-x-8">
             {socials.map((s) => (
               <li key={s.label}>
                 <a
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline decoration-poppy decoration-2 underline-offset-8 hover:hl"
+                  className="inline-flex min-h-11 items-center underline decoration-poppy decoration-2 underline-offset-8 hover:hl"
                 >
                   {s.label}
                 </a>
