@@ -127,16 +127,49 @@
 
 @keyframes kenburns {
   from {
-    transform: scale(1.02) translate3d(0, 0, 0);
+    transform: scale(1.06) translate3d(0, 0, 0);
   }
   to {
-    transform: scale(1.16) translate3d(var(--kx, -2%), var(--ky, -1.5%), 0);
+    transform: scale(1.22) translate3d(var(--kx, -4%), var(--ky, -2%), 0);
   }
 }
 
 .kenburns {
-  animation: kenburns var(--kd, 20s) ease-in-out infinite alternate;
+  transform: scale(1.06);
   will-change: transform;
+}
+
+.kenburns[data-active='true'] {
+  animation: kenburns var(--kd, 9s) cubic-bezier(0.33, 0, 0.3, 1) forwards;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 50%;
+  }
+  to {
+    background-position: -100% 50%;
+  }
+}
+
+.gold-text {
+  background-image: linear-gradient(
+    100deg,
+    #b8862f 0%,
+    #f1d68a 22%,
+    #d4a845 42%,
+    #fff3cf 52%,
+    #d4a845 62%,
+    #f1d68a 82%,
+    #b8862f 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 14px rgb(12 26 58 / 0.55));
+  animation: shimmer 7s linear infinite;
 }
 
 @keyframes title-in {
@@ -242,6 +275,8 @@
   .rise,
   .drift,
   .kenburns,
+  .kenburns[data-active='true'],
+  .gold-text,
   .title-in,
   .scroll-cue,
   .progress {
