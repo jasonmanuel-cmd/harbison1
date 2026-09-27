@@ -1,11 +1,12 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Nunito_Sans, Outfit } from 'next/font/google'
+import { Nunito_Sans, Syne } from 'next/font/google'
 import './globals.css'
 
-const outfit = Outfit({
+const syne = Syne({
   subsets: ['latin'],
-  variable: '--font-outfit',
+  weight: ['500', '600', '700', '800'],
+  variable: '--font-syne',
 })
 
 const nunito = Nunito_Sans({
@@ -39,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${outfit.variable} ${nunito.variable} bg-background`}>
+    <html lang="en" className={`${syne.variable} ${nunito.variable} bg-background`}>
       <body className="overflow-x-clip antialiased [-webkit-text-size-adjust:100%]">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

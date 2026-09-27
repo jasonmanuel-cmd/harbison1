@@ -12,6 +12,18 @@ const slides = [
   { src: '/images/property/2206-ribble-valley-dr-1.webp', kx: '-3%', ky: '-2.5%' },
 ]
 
+function SplitWord({ word, startDelay, className }: { word: string; startDelay: number; className?: string }) {
+  return (
+    <span aria-hidden="true" className="block overflow-hidden whitespace-nowrap px-[0.04em] pb-[0.06em]">
+      {word.split('').map((char, i) => (
+        <span key={i} className={cn('letter', className)} style={{ animationDelay: `${startDelay + i * 55}ms` }}>
+          {char}
+        </span>
+      ))}
+    </span>
+  )
+}
+
 const INTERVAL = 6500
 const FADE = 1800
 
@@ -74,25 +86,22 @@ export function Hero() {
         </p>
         <h1
           id="hero-heading"
-          className="title-in mt-5 flex flex-col items-center font-display font-medium leading-[0.95] md:mt-6 md:flex-row md:gap-[0.25em]"
+          aria-label="Harbison Standard"
+          className="mt-6 flex flex-col items-center font-display font-extrabold uppercase leading-[0.9] tracking-[-0.04em] text-[clamp(2.1rem,10.5vw,8rem)] md:mt-8 md:text-[clamp(4rem,8.6vw,8rem)]"
         >
-          <span className="text-[clamp(3.25rem,15vw,7.5rem)] md:text-[clamp(4rem,9vw,7.5rem)]">Harbison</span>
-          <span className="gold-text -mr-[0.12em] pb-[0.08em] pr-[0.12em] text-[clamp(3.25rem,15vw,7.5rem)] italic md:text-[clamp(4rem,9vw,7.5rem)]">
-            Standard
-          </span>
+          <SplitWord word="Harbison" startDelay={250} />
+          <SplitWord word="Standard" startDelay={650} className="gold-outline" />
         </h1>
-        <span aria-hidden="true" className="rise mt-6 flex items-center gap-3" style={{ animationDelay: '500ms' }}>
-          <span className="block h-px w-10 bg-poppy md:w-16" />
-          <span className="block size-1.5 rotate-45 bg-poppy" />
-          <span className="block h-px w-10 bg-poppy md:w-16" />
-        </span>
         <p
-          className="rise mt-6 max-w-xs text-balance text-[0.7rem] font-semibold uppercase leading-relaxed tracking-[0.24em] text-ink-foreground/90 sm:max-w-xl sm:text-xs sm:tracking-[0.38em] md:text-sm"
-          style={{ animationDelay: '700ms' }}
+          className="rise mt-8 flex max-w-sm flex-wrap items-center justify-center gap-x-3 gap-y-1 text-pretty text-lg leading-snug text-ink-foreground/95 sm:max-w-none sm:text-xl md:mt-10 md:text-2xl"
+          style={{ animationDelay: '1300ms' }}
         >
-          {"It's not what you do. It's "}
-          <span className="text-poppy">how</span>
-          {' you do it.'}
+          <span>{"It's not what you do."}</span>
+          <span>
+            {"It's "}
+            <span className="font-display font-bold italic text-poppy">how</span>
+            {' you do it.'}
+          </span>
         </p>
         <div
           className="rise mt-10 flex w-full max-w-xs flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center"
