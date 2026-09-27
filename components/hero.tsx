@@ -74,52 +74,60 @@ export function Hero() {
           />
         </div>
       ))}
-      <div aria-hidden="true" className="absolute inset-0 bg-ink/45" />
-      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-ink/70 to-transparent" />
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 z-[2] h-[45%] bg-gradient-to-b from-ink/80 via-ink/35 to-transparent md:h-40 md:via-ink/20" />
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 z-[2] h-[40%] bg-gradient-to-t from-ink/90 via-ink/50 to-transparent" />
 
-      <div className="relative z-10 flex w-full max-w-5xl flex-col items-center px-6 text-center">
-        <p
-          className="eyebrow rise text-[0.65rem] tracking-[0.2em] text-ink-foreground/85 sm:text-xs sm:tracking-[0.32em]"
-          style={{ animationDelay: '200ms' }}
-        >
-          Tehachapi · Bakersfield · Kern County
-        </p>
-        <h1
-          id="hero-heading"
-          aria-label="Harbison Standard"
-          className="mt-6 flex flex-col items-center font-display font-extrabold uppercase leading-[0.9] tracking-[-0.04em] text-[clamp(2.1rem,10.5vw,8rem)] md:mt-8 md:text-[clamp(4rem,8.6vw,8rem)]"
-        >
-          <SplitWord word="Harbison" startDelay={250} />
-          <SplitWord word="Standard" startDelay={650} className="gold-outline" />
-        </h1>
-        <p
-          className="rise mt-8 flex max-w-sm flex-wrap items-center justify-center gap-x-3 gap-y-1 text-pretty text-lg leading-snug text-ink-foreground/95 sm:max-w-none sm:text-xl md:mt-10 md:text-2xl"
-          style={{ animationDelay: '1300ms' }}
-        >
-          <span>{"It's not what you do."}</span>
-          <span>
-            {"It's "}
-            <span className="font-display font-bold italic text-poppy">how</span>
-            {' you do it.'}
-          </span>
-        </p>
-        <div
-          className="rise mt-10 flex w-full max-w-xs flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center"
-          style={{ animationDelay: '1000ms' }}
-        >
-          <a href="#listings" className="pill justify-center bg-poppy text-ink hover:bg-ink-foreground">
-            View properties
-          </a>
-          <a
-            href="#contact"
-            className="pill justify-center border border-ink-foreground/70 hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink"
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-[90rem] flex-col justify-between px-5 pb-[max(5.25rem,calc(env(safe-area-inset-bottom)+4.5rem))] pt-24 md:flex-row md:items-end md:gap-10 md:px-8 md:pb-28 md:pt-0">
+        <div className="flex flex-col items-center text-center md:items-start md:text-left">
+          <p
+            className="eyebrow rise text-[0.65rem] tracking-[0.2em] text-ink-foreground/85 sm:text-xs sm:tracking-[0.32em]"
+            style={{ animationDelay: '200ms' }}
           >
-            {"Let's connect"}
-          </a>
+            Tehachapi · Bakersfield · Kern County
+          </p>
+          <h1
+            id="hero-heading"
+            aria-label="Harbison Standard"
+            className="mt-3 flex flex-col items-center font-display font-extrabold uppercase leading-[0.9] tracking-[-0.04em] text-[clamp(2rem,10vw,4.5rem)] md:-ml-[0.04em] md:mt-4 md:items-start md:text-[clamp(2.75rem,4.4vw,4.25rem)]"
+          >
+            <SplitWord word="Harbison" startDelay={250} />
+            <SplitWord word="Standard" startDelay={650} className="gold-outline" />
+          </h1>
+        </div>
+
+        <div className="flex flex-col items-center text-center md:items-end md:text-right">
+          <p
+            className="rise flex flex-wrap items-center justify-center gap-x-2 text-pretty text-base leading-snug text-ink-foreground/95 sm:text-lg md:justify-end md:text-xl"
+            style={{ animationDelay: '1300ms' }}
+          >
+            <span>{"It's not what you do."}</span>
+            <span>
+              {"It's "}
+              <span className="font-display font-bold italic text-poppy">how</span>
+              {' you do it.'}
+            </span>
+          </p>
+          <div
+            className="rise mt-4 flex w-full max-w-sm gap-2 sm:w-auto sm:max-w-none sm:gap-3 md:mt-5"
+            style={{ animationDelay: '1000ms' }}
+          >
+            <a
+              href="#listings"
+              className="pill min-w-0 flex-1 justify-center whitespace-nowrap bg-poppy px-3 text-[0.68rem] tracking-[0.12em] text-ink hover:bg-ink-foreground sm:flex-none sm:px-8 sm:text-xs sm:tracking-[0.2em]"
+            >
+              View properties
+            </a>
+            <a
+              href="#contact"
+              className="pill min-w-0 flex-1 justify-center whitespace-nowrap border border-ink-foreground/70 px-3 text-[0.68rem] tracking-[0.12em] hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink sm:flex-none sm:px-8 sm:text-xs sm:tracking-[0.2em]"
+            >
+              {"Let's connect"}
+            </a>
+          </div>
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-[max(1.5rem,env(safe-area-inset-bottom))] z-10 mx-auto flex max-w-[90rem] items-end justify-center px-5 md:bottom-8 md:justify-between md:px-8">
+      <div className="absolute inset-x-0 bottom-[max(1.5rem,env(safe-area-inset-bottom))] z-10 mx-auto hidden max-w-[90rem] items-end justify-center px-5 md:bottom-8 md:flex md:justify-end md:gap-10 md:px-8">
         <div className="flex gap-2" role="group" aria-label="Hero slides">
           {slides.map((s, i) => (
             <button
