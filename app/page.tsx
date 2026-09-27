@@ -1,47 +1,44 @@
+import { About } from '@/components/about'
+import { Areas } from '@/components/areas'
+import { Contact } from '@/components/contact'
+import { Faq } from '@/components/faq'
+import { Featured } from '@/components/featured'
+import { Hero } from '@/components/hero'
+import { Listings } from '@/components/listings'
+import { Services } from '@/components/services'
+import { MobileActionBar, SiteFooter } from '@/components/site-footer'
+import { SiteHeader } from '@/components/site-header'
+import { Testimonials } from '@/components/testimonials'
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'RealEstateAgent',
+  name: 'Harbison Standard — Nathanael Harbison',
+  url: 'https://www.harbisonstandard.com',
+  telephone: '+1-661-472-7499',
+  email: 'nate85.realtor@gmail.com',
+  image: 'https://www.harbisonstandard.com/assets/headshot.webp',
+  areaServed: ['Tehachapi, CA', 'Bakersfield, CA', 'California City, CA', 'Stallion Springs, CA', 'Kern County, CA'],
+}
+
 export default function Page() {
   return (
-    <main
-      style={{
-        colorScheme: 'light dark',
-        position: 'relative',
-        display: 'flex',
-        minHeight: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'light-dark(#fff, #000)',
-        color: 'light-dark(#000, #fff)',
-      }}
-    >
-      <svg
-        aria-hidden="true"
-        style={{ width: 80, height: 80 }}
-        width={80}
-        height={80}
-        fill="none"
-        viewBox="0 0 20 20"
-        xmlns="http://www.w3.org/2000/svg"
-        stroke="currentColor"
-        strokeWidth="0.5"
-      >
-        <path
-          d="M14.2 14.2H17V6.9375C17 4.76288 15.2371 3 13.0625 3H5.8V5.8M14.2 14.2V7.79063L7.79062 14.2H14.2ZM14.2 14.2V17H6.9375C4.76288 17 3 15.2371 3 13.0625V5.8H5.8M5.8 5.8V12.2313L12.2313 5.8H5.8Z"
-          strokeLinejoin="round"
-        />
-      </svg>
-      <p
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: 'calc(50% + 56px)',
-          transform: 'translateX(-50%)',
-          whiteSpace: 'nowrap',
-          fontSize: '14px',
-          fontWeight: 500,
-          color: 'light-dark(#71717a, #a1a1aa)',
-        }}
-      >
-        Your v0 generation will show here.
-      </p>
-    </main>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <SiteHeader />
+      <main>
+        <Hero />
+        <Featured />
+        <About />
+        <Listings />
+        <Services />
+        <Testimonials />
+        <Areas />
+        <Faq />
+        <Contact />
+      </main>
+      <SiteFooter />
+      <MobileActionBar />
+    </>
   )
 }
