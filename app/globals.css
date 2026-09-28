@@ -29,6 +29,7 @@
   --color-ink: var(--ink);
   --color-ink-foreground: var(--ink-foreground);
   --color-poppy: var(--poppy);
+--color-gold: var(--gold);
 
   --radius-sm: var(--radius);
   --radius-md: var(--radius);
@@ -59,6 +60,15 @@
   --ink: #0c1a3a;
   --ink-foreground: #ffffff;
   --poppy: #d4a845;
+  /* The brand gold is tuned for the dark navy, where it scores 7.75:1. On a
+     white surface it only manages 2.21:1 and fails WCAG AA, so light
+     backgrounds use this darker shade of the same hue instead (4.53:1).
+     Verified by scripts/contrast.mjs — do not substitute one for the other. */
+  --gold: #90722f;
+  /* Lowest opacity of ink-foreground that still clears 4.5:1 on every dark
+     surface used here (#0c1a3a, #132140, #33415c). Anything dimmer failed.
+     Verified by scripts/opacity.mjs. */
+  --ink-foreground-muted: #a1a6b3;
   --radius: 2px;
 }
 

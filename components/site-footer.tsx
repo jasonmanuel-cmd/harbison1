@@ -28,7 +28,7 @@ export function SiteFooter() {
         <div className="flex flex-col items-center gap-10 py-16 text-center">
           <Link href="/" aria-label="Harbison Standard, back to top">
             <Image
-              src="/images/harbison-logo-crop.png"
+              src="/images/harbison-logo-crop.webp"
               alt="Harbison Standard — Real Estate, Development, Investing"
               width={804}
               height={272}
@@ -61,7 +61,7 @@ export function SiteFooter() {
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="label inline-flex min-h-11 items-center text-ink-foreground/50 transition-colors hover:text-poppy"
+                  className="label inline-flex min-h-11 items-center text-ink-foreground/60 transition-colors hover:text-poppy"
                 >
                   {s.label}
                 </a>
@@ -69,13 +69,13 @@ export function SiteFooter() {
             ))}
           </ul>
         </div>
-        <div className="eyebrow flex flex-col gap-3 border-t border-ink-foreground/15 py-8 text-center text-[0.6875rem] text-ink-foreground/55 md:flex-row md:justify-between md:text-left">
+        <div className="eyebrow flex flex-col gap-3 border-t border-ink-foreground/15 py-8 text-center text-[0.6875rem] text-ink-foreground/65 md:flex-row md:justify-between md:text-left">
           <span>
             © {new Date().getFullYear()} Harbison Standard · Nathanael Harbison, REALTOR® · DRE #{contact.dre}
           </span>
           <span>Tehachapi · Bakersfield · Kern County, CA</span>
         </div>
-        <div className="border-t border-ink-foreground/15 py-6 text-center text-xs text-ink-foreground/40">
+        <div className="border-t border-ink-foreground/15 py-6 text-center text-xs text-ink-foreground/60">
           Equal Housing Opportunity
         </div>
       </div>

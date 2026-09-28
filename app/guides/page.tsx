@@ -22,22 +22,20 @@ export default function GuidesPage() {
         <div className="mx-auto max-w-[90rem] px-5 md:px-8">
           <ul className="grid gap-px bg-foreground/10 sm:grid-cols-2 lg:grid-cols-3">
             {guides.map((g, i) => (
-              <Reveal key={g.slug} delay={(i % 3) * 80}>
-                <li className="bg-background">
-                  <Link
-                    href={`/${g.slug}`}
-                    className="group flex h-full flex-col gap-4 p-8 transition-colors hover:bg-secondary"
-                  >
-                    <span className="font-display text-4xl font-medium text-poppy/50">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <h2 className="font-display text-2xl tracking-wide">{g.title}</h2>
-                    <p className="text-sm leading-relaxed text-muted-foreground">{g.body}</p>
-                    <span className="label mt-auto flex items-center gap-2 text-poppy">
-                      Read more <span aria-hidden="true">→</span>
-                    </span>
-                  </Link>
-                </li>
+              <Reveal key={g.slug} as="li" delay={(i % 3) * 80} className="bg-background">
+                <Link
+                  href={`/${g.slug}`}
+                  className="group flex h-full flex-col gap-4 p-8 transition-colors hover:bg-secondary"
+                >
+                  <span className="font-display text-4xl font-medium text-gold/70">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <h2 className="font-display text-2xl tracking-wide">{g.title}</h2>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{g.body}</p>
+                  <span className="label mt-auto flex items-center gap-2 text-gold">
+                    Read more <span aria-hidden="true">→</span>
+                  </span>
+                </Link>
               </Reveal>
             ))}
           </ul>

@@ -15,7 +15,7 @@ export default function RelocatePage() {
       eyebrow="Relocate"
       title={relocateContent.title}
       intro={relocateContent.intro}
-      image="/images/property/28211-seabiscuit-way-1.jpg"
+      image="/images/property/28211-seabiscuit-way-1.webp"
       points={relocateContent.points}
       outro={relocateContent.outro}
     >

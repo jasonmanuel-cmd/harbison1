@@ -75,7 +75,7 @@ export function SiteHeader() {
 
         <Link href="/" className="shrink-0" aria-label="Harbison Standard, back to top" onClick={() => setOpen(false)}>
           <Image
-            src="/images/harbison-logo-crop.png"
+            src="/images/harbison-logo-crop.webp"
             alt="Harbison Standard — Real Estate, Development, Investing"
             width={804}
             height={272}
@@ -136,7 +136,7 @@ export function SiteHeader() {
             <a href={`mailto:${contact.email}`} className="break-all text-ink-foreground/80 hover:text-poppy">
               {contact.email}
             </a>
-            <p className="eyebrow text-ink-foreground/50">DRE #{contact.dre}</p>
+            <p className="eyebrow text-ink-foreground/60">DRE #{contact.dre}</p>
           </div>
         </div>
       </div>

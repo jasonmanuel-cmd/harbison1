@@ -18,9 +18,39 @@ function SplitWord({ word, startDelay, className }: { word: string; startDelay: 
 export function Hero() {
   const [videoReady, setVideoReady] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
+  const [allowVideo, setAllowVideo] = useState(false)
 
   useEffect(() => {
-    setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    setReducedMotion(reduceMotion)
+    if (reduceMotion) return
+
+    // The clip is ~8 MB. On a phone over cellular that is the single largest
+    // cost on the page and it pushes LCP out past 5s, for a decoration that a
+    // still frame conveys just as well. So it only loads on wide viewports
+    // that have not asked for reduced data, and only after the page has
+    // painted, which keeps the video off the critical path entirely.
+    const wide = window.matchMedia('(min-width: 1024px)')
+    const saveData = window.matchMedia('(prefers-reduced-data: reduce)')
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection
+    const onData = connection?.saveData === true || saveData.matches
+
+    const decide = () => setAllowVideo(wide.matches && !onData && !reduceMotion)
+    decide()
+    wide.addEventListener('change', decide)
+    saveData.addEventListener('change', decide)
+
+    // One idle callback, so first paint and the hero text are never waiting.
+    const idle = window.requestIdleCallback
+      ? window.requestIdleCallback(() => decide(), { timeout: 3000 })
+      : window.setTimeout(decide, 2500)
+
+    return () => {
+      wide.removeEventListener('change', decide)
+      saveData.removeEventListener('change', decide)
+      if (window.cancelIdleCallback && typeof idle === 'number') window.cancelIdleCallback(idle)
+      else window.clearTimeout(idle as number)
+    }
   }, [])
 
   return (
@@ -34,19 +64,23 @@ export function Hero() {
         {/* Poster image — always rendered as fallback underneath */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/video/hero-poster.jpg"
+          src="/video/hero-poster.webp"
           alt=""
+          fetchPriority="high"
+          decoding="async"
           className={cn('h-full w-full object-cover transition-opacity duration-1000', videoReady ? 'opacity-0' : 'opacity-100')}
         />
-        {!reducedMotion && (
+        {allowVideo && (
           <video
             className={cn('absolute inset-0 h-full w-full object-cover transition-opacity duration-1000', videoReady ? 'opacity-100' : 'opacity-0')}
             autoPlay
             muted
             loop
             playsInline
-            preload="metadata"
-            poster="/video/hero-poster.jpg"
+            // The <source> is only mounted once the decision above is made, so
+            // preload is irrelevant here; nothing is requested until then.
+            preload="none"
+            poster="/video/hero-poster.webp"
             onCanPlay={() => setVideoReady(true)}
           >
             <source src="/video/hero.mp4" type="video/mp4" />

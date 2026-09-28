@@ -15,7 +15,7 @@ export default function OffMarketPage() {
       eyebrow="Off-Market"
       title={offMarketContent.title}
       intro={offMarketContent.intro}
-      image="/images/property/2206-ribble-valley-dr-1.jpg"
+      image="/images/property/2206-ribble-valley-dr-1.webp"
       points={offMarketContent.points}
     >
       <div className="rounded-sm border border-border bg-background p-6 text-foreground md:p-8">

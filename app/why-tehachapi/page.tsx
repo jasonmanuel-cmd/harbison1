@@ -15,7 +15,7 @@ export default function WhyTehachapiPage() {
       eyebrow="Tehachapi · Elev. 3,970 ft"
       title={whyTehachapiContent.title}
       intro={whyTehachapiContent.intro}
-      image="/images/property/28751-gleneagle-ct-1.jpg"
+      image="/images/property/28751-gleneagle-ct-1.webp"
       points={whyTehachapiContent.points}
     >
       <div className="rounded-sm border border-border bg-background p-6 text-foreground md:p-8">

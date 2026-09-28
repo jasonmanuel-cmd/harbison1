@@ -23,11 +23,11 @@ export function Standard() {
         </Reveal>
         <dl className="mt-16 grid gap-12 sm:grid-cols-3">
           {stats.map((s, i) => (
-            <Reveal key={s.label} delay={i * 120}>
-              <div className="flex flex-col-reverse items-center gap-3">
-                <dt className="label text-muted-foreground">{s.label}</dt>
-                <dd className="font-display text-5xl font-medium md:text-6xl">{s.value}</dd>
-              </div>
+            /* Reveal must be the element that directly contains the dt/dd, or
+               the list semantics break. */
+            <Reveal key={s.label} delay={i * 120} className="flex flex-col-reverse items-center gap-3">
+              <dt className="label text-muted-foreground">{s.label}</dt>
+              <dd className="font-display text-5xl font-medium md:text-6xl">{s.value}</dd>
             </Reveal>
           ))}
         </dl>

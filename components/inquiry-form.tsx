@@ -147,7 +147,7 @@ export function InquiryForm({ defaultGoal = '', defaultInterest = '', dark = tru
           <Mail className="size-4" aria-hidden="true" />
           Open email and send
         </a>
-        <p className={cn('mt-2 text-xs', dark ? 'text-ink-foreground/50' : 'text-muted-foreground')}>
+        <p className={cn('mt-2 text-xs', dark ? 'text-ink-foreground/60' : 'text-muted-foreground')}>
           Prefer to talk? Call or text{' '}
           <a href={contact.phoneHref} className="underline underline-offset-4 hover:text-poppy">
             {contact.phone}
@@ -256,7 +256,7 @@ export function InquiryForm({ defaultGoal = '', defaultInterest = '', dark = tru
         <div>
           <label htmlFor="inq-age" className={labelClass}>
             Your age range{' '}
-            <span className={cn('text-xs font-normal', dark ? 'text-ink-foreground/45' : 'text-muted-foreground')}>
+            <span className={cn('text-xs font-normal', dark ? 'text-ink-foreground/60' : 'text-muted-foreground')}>
               (optional)
             </span>
           </label>
@@ -295,7 +295,7 @@ export function InquiryForm({ defaultGoal = '', defaultInterest = '', dark = tru
             </>
           )}
         </button>
-        <p className={cn('mt-3 text-xs leading-relaxed', dark ? 'text-ink-foreground/50' : 'text-muted-foreground')}>
+        <p className={cn('mt-3 text-xs leading-relaxed', dark ? 'text-ink-foreground/60' : 'text-muted-foreground')}>
           No mailing-list signup. Your information is used to respond to this real-estate request. The age range is
           optional and only used if you choose to share it.
         </p>

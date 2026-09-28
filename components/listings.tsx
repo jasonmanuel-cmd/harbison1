@@ -103,7 +103,7 @@ export function Listings() {
               <span className="sr-only">Previous property</span>
             </button>
             <span className="label min-w-20 text-center tabular-nums">
-              {pad(current + 1)} <span className="text-ink-foreground/40">|</span> {pad(total)}
+              {pad(current + 1)} <span className="text-ink-foreground/60">|</span> {pad(total)}
             </span>
             <button
               type="button"

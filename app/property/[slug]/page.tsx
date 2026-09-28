@@ -93,7 +93,7 @@ export default async function PropertyPage({ params }: Props) {
             </div>
           </Reveal>
           {p.attribution && (
-            <p className="mt-6 text-xs text-ink-foreground/40">{p.attribution}</p>
+            <p className="mt-6 text-xs text-ink-foreground/60">{p.attribution}</p>
           )}
         </div>
       </section>

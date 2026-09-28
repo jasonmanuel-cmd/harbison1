@@ -15,7 +15,7 @@ export default function LandPage() {
       eyebrow="Land"
       title={landContent.title}
       intro={landContent.intro}
-      image="/images/property/chalet-tehachapi-1.jpg"
+      image="/images/property/chalet-tehachapi-1.webp"
       points={landContent.points}
     >
       <div className="rounded-sm border border-border bg-background p-6 text-foreground md:p-8">

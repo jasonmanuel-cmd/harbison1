@@ -41,17 +41,20 @@ export function Faq() {
         </Reveal>
         <ol className="mt-16 grid gap-10 md:grid-cols-3">
           {steps.map((s, i) => (
-            <Reveal key={s.title} delay={i * 120}>
-              <li className="flex flex-col items-center gap-4 text-center">
-                <span
-                  aria-hidden="true"
-                  className="flex size-14 items-center justify-center rounded-full border border-poppy font-display text-xl text-foreground"
-                >
-                  {i + 1}
-                </span>
-                <h3 className="text-xl tracking-wide">{s.title}</h3>
-                <p className="max-w-xs leading-relaxed text-muted-foreground">{s.body}</p>
-              </li>
+            <Reveal
+              key={s.title}
+              as="li"
+              delay={i * 120}
+              className="flex flex-col items-center gap-4 text-center"
+            >
+              <span
+                aria-hidden="true"
+                className="flex size-14 items-center justify-center rounded-full border border-gold font-display text-xl text-foreground"
+              >
+                {i + 1}
+              </span>
+              <h3 className="text-xl tracking-wide">{s.title}</h3>
+              <p className="max-w-xs leading-relaxed text-muted-foreground">{s.body}</p>
             </Reveal>
           ))}
         </ol>

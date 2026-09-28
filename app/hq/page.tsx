@@ -25,7 +25,7 @@ export default async function HqPage() {
             <code className="bg-ink-foreground/10 px-1.5 py-0.5 text-xs">HQ_SECRET</code> in the deployment
             environment, then redeploy.
           </p>
-          <p className="mt-4 text-sm text-ink-foreground/50">
+          <p className="mt-4 text-sm text-ink-foreground/60">
             The public site is unaffected and all lead forms still work.
           </p>
         </div>

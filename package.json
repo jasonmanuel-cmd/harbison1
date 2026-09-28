@@ -5,8 +5,13 @@
   "packageManager": "pnpm@12.3.4",
   "scripts": {
     "dev": "next dev",
+    "images:manifest": "node scripts/generate-image-manifest.mjs",
+    "prebuild": "node scripts/generate-image-manifest.mjs",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "audit:contrast": "node scripts/contrast.mjs && node scripts/opacity.mjs",
+    "prune:originals": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prune-originals.ps1"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

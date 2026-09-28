@@ -36,7 +36,29 @@ export type Listing = {
   date?: string
 }
 
-const img = (slug: string, n: number) => `/images/property/${slug}-${n}.jpg`
+// ---------------------------------------------------------------------------
+// Gallery images
+// ---------------------------------------------------------------------------
+// Images are served as WebP. The previous JPEG originals were converted and
+// removed; WebP has been in universal browser support since 2020, so no
+// <picture> fallback is needed.
+//
+// The image list comes from a build-time generated manifest rather than a
+// hardcoded count. Every listing previously claimed 24 photos while several
+// only ever had 6 to 22, so those galleries shipped broken image slots to
+// visitors. The manifest is produced by scripts/generate-image-manifest.mjs,
+// which scans the directory — see that file for why it cannot be read at
+// runtime.
+import { propertyImages } from './property-images.generated'
+
+/** The full gallery for a listing, discovered from the build-time manifest. */
+const img = (slug: string): string[] => propertyImages[slug] ?? []
+
+/**
+ * The single image used for a listing's card and social preview. Falls back to
+ * a neutral placeholder so a listing can never reference a missing file.
+ */
+const lead = (slug: string): string => propertyImages[slug]?.[0] ?? '/images/hero-1600.webp'
 
 export const listings: Listing[] = [
   {
@@ -52,8 +74,8 @@ export const listings: Listing[] = [
     neighborhood: 'Seven Oaks Estate',
     blurb:
       'Stunning 7,000+ sq ft estate with a $1,000,000+ remodel on the 9th hole of the Islands course, a short walk from the Seven Oaks clubhouse.',
-    image: img('2300-weybridge-dr', 1),
-    images: Array.from({ length: 24 }, (_, i) => img('2300-weybridge-dr', i + 1)),
+    image: lead('2300-weybridge-dr'),
+    images: img('2300-weybridge-dr'),
     status: 'Available',
     attribution: 'Listing courtesy of William Gordon, Watson Realty.',
     mls: 'V137657',
@@ -75,8 +97,8 @@ export const listings: Listing[] = [
     neighborhood: 'Stockdale Country Club',
     blurb:
       'Beautifully renovated home in the prestigious Stockdale Country Club. New Presidential roof, updated 200-amp electrical, and a renovated pool.',
-    image: img('958-fairway-dr', 1),
-    images: Array.from({ length: 24 }, (_, i) => img('958-fairway-dr', i + 1)),
+    image: lead('958-fairway-dr'),
+    images: img('958-fairway-dr'),
     status: 'Available',
     attribution: 'Listing courtesy of Cecilia Clark, Emerge Real Estate.',
     mls: 'OC26184352',
@@ -98,8 +120,8 @@ export const listings: Listing[] = [
     neighborhood: 'Stallion Springs',
     blurb:
       'An exceptional Stallion Springs home offering space, privacy, thoughtful design, and freedom on three-quarters of an acre.',
-    image: img('28211-seabiscuit-way', 1),
-    images: Array.from({ length: 24 }, (_, i) => img('28211-seabiscuit-way', i + 1)),
+    image: lead('28211-seabiscuit-way'),
+    images: img('28211-seabiscuit-way'),
     status: 'Available',
     attribution: 'Listing courtesy of Adonae Faris, Tehachapi Summit Real Estate.',
     mls: '9994413',
@@ -121,8 +143,8 @@ export const listings: Listing[] = [
     neighborhood: 'Grand Island · Seven Oaks',
     blurb:
       'Prestigious Gibbons & Wheelan home in the gated Grand Island community, with a tiered stone-entry staircase and stacked-stone pillars.',
-    image: img('2206-ribble-valley-dr', 1),
-    images: Array.from({ length: 24 }, (_, i) => img('2206-ribble-valley-dr', i + 1)),
+    image: lead('2206-ribble-valley-dr'),
+    images: img('2206-ribble-valley-dr'),
     status: 'Available',
     attribution: 'Listing courtesy of Jeff Jackson, Cal Connect Realty Group Inc.',
     mls: 'NS26187383',
@@ -143,8 +165,8 @@ export const listings: Listing[] = [
     lot: '0.48 acre lot',
     neighborhood: 'West Golden Hills',
     blurb: 'Brand new construction in West Golden Hills with a desirable split-wing floor plan on a spacious lot.',
-    image: img('21204-stage-dr', 1),
-    images: Array.from({ length: 24 }, (_, i) => img('21204-stage-dr', i + 1)),
+    image: lead('21204-stage-dr'),
+    images: img('21204-stage-dr'),
     status: 'Available',
     attribution: 'Listing courtesy of Descygene Simunovich, Miramar Intl Tehachapi.',
     mls: '9994415',
@@ -165,8 +187,8 @@ export const listings: Listing[] = [
     lot: '0.27 acre lot',
     neighborhood: 'Stallion Springs',
     blurb: 'Luxury, convenience, and low-maintenance living in a beautifully crafted 2018 Stallion Springs home.',
-    image: img('18211-sulky-ln', 1),
-    images: Array.from({ length: 24 }, (_, i) => img('18211-sulky-ln', i + 1)),
+    image: lead('18211-sulky-ln'),
+    images: img('18211-sulky-ln'),
     status: 'Available',
     attribution: 'Listing courtesy of Heather McKinley, Keller Williams Tehachapi.',
     mls: '9994314',
@@ -187,8 +209,8 @@ export const listings: Listing[] = [
     lot: '0.47 acre lot',
     neighborhood: 'Stallion Springs',
     blurb: 'Sweeping mountain views and refined living in a serene Stallion Springs setting.',
-    image: img('28751-gleneagle-ct', 1),
-    images: Array.from({ length: 24 }, (_, i) => img('28751-gleneagle-ct', i + 1)),
+    image: lead('28751-gleneagle-ct'),
+    images: img('28751-gleneagle-ct'),
     status: 'Available',
     attribution: 'Listing courtesy of Chrystle Deal & Monique Weese, LRS Realty & Management, Inc.',
     mls: '202603588',
@@ -209,8 +231,8 @@ export const listings: Listing[] = [
     lot: '6,570 sq ft lot',
     neighborhood: 'Summit Villas · 55+',
     blurb: 'Owned solar, no lease, no loan. Resort-like living in a gated 55+ community of only 12 custom homes.',
-    image: img('2901-summit-cir', 1),
-    images: Array.from({ length: 24 }, (_, i) => img('2901-summit-cir', i + 1)),
+    image: lead('2901-summit-cir'),
+    images: img('2901-summit-cir'),
     status: 'Available',
     attribution: 'Listing courtesy of Bradley Barnett, Century 21 Select Real Estate.',
     mls: '202607788',
@@ -230,8 +252,8 @@ export const listings: Listing[] = [
     sqft: 1680,
     lot: '8,276 sq ft lot',
     blurb: 'Dining room, breakfast area, large family room, central heat and air, and alley access.',
-    image: img('3109-mount-vernon-ave', 1),
-    images: Array.from({ length: 24 }, (_, i) => img('3109-mount-vernon-ave', i + 1)),
+    image: lead('3109-mount-vernon-ave'),
+    images: img('3109-mount-vernon-ave'),
     status: 'Available',
     attribution: 'Listing courtesy of Jorge Solis, Infinity Real Estate Services.',
     mls: '202607149',
@@ -251,8 +273,8 @@ export const listings: Listing[] = [
     sqft: 1350,
     lot: '10,000 sq ft lot',
     blurb: 'Beautifully updated home on a quiet cul-de-sac, set on an expansive 10,000 sq ft lot.',
-    image: img('909-oberlin-ct', 1),
-    images: Array.from({ length: 24 }, (_, i) => img('909-oberlin-ct', i + 1)),
+    image: lead('909-oberlin-ct'),
+    images: img('909-oberlin-ct'),
     status: 'Available',
     attribution: 'Listing courtesy of Jesus H Garcia, The Mora Partners Inc.',
     mls: '202608755',
@@ -271,8 +293,8 @@ export const listings: Listing[] = [
     baths: 2,
     lot: '6,969 sq ft lot',
     blurb: 'Extensively remodeled, move-in ready home on an oversized East Bakersfield lot, including new plumbing.',
-    image: img('505-jeffrey-st', 1),
-    images: Array.from({ length: 18 }, (_, i) => img('505-jeffrey-st', i + 1)),
+    image: lead('505-jeffrey-st'),
+    images: img('505-jeffrey-st'),
     status: 'Available',
     attribution: 'Listing courtesy of Karmen Domani, Real Broker.',
     mls: '202608357',
@@ -290,8 +312,8 @@ export const listings: Listing[] = [
     lot: '13,068 sq ft lot',
     neighborhood: 'Land',
     blurb: 'Prime Tehachapi land ready for your future build, whether a primary house or multi-family.',
-    image: img('22208-mariposa', 1),
-    images: Array.from({ length: 6 }, (_, i) => img('22208-mariposa', i + 1)),
+    image: lead('22208-mariposa'),
+    images: img('22208-mariposa'),
     status: 'Available',
     date: '2026-09-16',
     description:
@@ -307,8 +329,8 @@ export const listings: Listing[] = [
     neighborhood: 'Cummings Valley · Land',
     blurb:
       '20± acres with phenomenal views across the valley to the Tehachapi Mountains. Building pad cleared and gated ranch entry in place.',
-    image: img('chalet-tehachapi', 1),
-    images: Array.from({ length: 7 }, (_, i) => img('chalet-tehachapi', i + 1)),
+    image: lead('chalet-tehachapi'),
+    images: img('chalet-tehachapi'),
     status: 'Available',
     date: '2026-09-16',
     description:
@@ -328,7 +350,9 @@ export const listings: Listing[] = [
     blurb:
       'Fully reimagined luxury residence with Boney Mountain views, chef\'s kitchen, 400+ sq ft bonus room, and top-rated schools. Move-in ready.',
     image: '/images/585-n-wendy-dr-newbury-park-ca-800.webp',
-    images: Array.from({ length: 18 }, (_, i) => `/images/property/wendy${i + 1}.jpg`),
+    // This property's photos are named wendy1..wendy18 rather than
+    // <slug>-<n>, so pass the prefix explicitly. The count is read from disk.
+    images: img('585-n-wendy-dr'),
     status: 'Available',
     date: '2026-09-16',
     description:

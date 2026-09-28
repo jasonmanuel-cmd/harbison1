@@ -15,7 +15,7 @@ export default function PrivateSalePage() {
       eyebrow="Private Sale Program"
       title={privateSaleContent.title}
       intro={privateSaleContent.intro}
-      image="/images/property/958-fairway-dr-1.jpg"
+      image="/images/property/958-fairway-dr-1.webp"
       points={privateSaleContent.points}
       outro={privateSaleContent.areas}
     >

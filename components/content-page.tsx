@@ -24,13 +24,16 @@ export function ContentPage({ eyebrow, title, intro, image, points, outro, child
             <div className="lg:col-span-7">
               <ol className="flex flex-col gap-8">
                 {points.map((point, i) => (
-                  <Reveal key={i} delay={i * 60}>
-                    <li className="flex gap-6 border-t border-foreground/15 pt-6">
-                      <span aria-hidden="true" className="font-display text-3xl font-medium text-poppy/60">
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-                      <p className="text-lg leading-relaxed text-muted-foreground text-pretty">{point}</p>
-                    </li>
+                  <Reveal
+                    key={i}
+                    as="li"
+                    delay={i * 60}
+                    className="flex gap-6 border-t border-foreground/15 pt-6"
+                  >
+                    <span aria-hidden="true" className="font-display text-3xl font-medium text-gold/70">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <p className="text-lg leading-relaxed text-muted-foreground text-pretty">{point}</p>
                   </Reveal>
                 ))}
               </ol>

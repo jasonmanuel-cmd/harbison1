@@ -107,7 +107,7 @@ function Card({
     <section className={cn('border border-ink-foreground/15 bg-ink-foreground/[0.02] p-5', className)}>
       <div className="flex items-baseline justify-between gap-4">
         <h2 className="font-display text-sm uppercase tracking-[0.18em] text-ink-foreground/70">{title}</h2>
-        {hint && <span className="text-xs text-ink-foreground/40">{hint}</span>}
+        {hint && <span className="text-xs text-ink-foreground/60">{hint}</span>}
       </div>
       <div className="mt-4">{children}</div>
     </section>
@@ -117,15 +117,15 @@ function Card({
 function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div className="border border-ink-foreground/15 bg-ink-foreground/[0.02] p-5">
-      <p className="text-xs uppercase tracking-[0.16em] text-ink-foreground/50">{label}</p>
+      <p className="text-xs uppercase tracking-[0.16em] text-ink-foreground/60">{label}</p>
       <p className="mt-2 font-display text-3xl leading-none text-ink-foreground">{value}</p>
-      {sub && <p className="mt-2 text-xs text-ink-foreground/45">{sub}</p>}
+      {sub && <p className="mt-2 text-xs text-ink-foreground/60">{sub}</p>}
     </div>
   )
 }
 
 function BarList({ items, empty = 'No data yet' }: { items: Bucket[]; empty?: string }) {
-  if (items.length === 0) return <p className="text-sm text-ink-foreground/40">{empty}</p>
+  if (items.length === 0) return <p className="text-sm text-ink-foreground/60">{empty}</p>
   const max = Math.max(...items.map((i) => i.value), 1)
   return (
     <ul className="flex flex-col gap-2">
@@ -142,7 +142,7 @@ function BarList({ items, empty = 'No data yet' }: { items: Bucket[]; empty?: st
               />
             </div>
           </div>
-          <span className="tabular-nums text-ink-foreground/55">{item.value}</span>
+          <span className="tabular-nums text-ink-foreground/65">{item.value}</span>
         </li>
       ))}
     </ul>
@@ -150,7 +150,7 @@ function BarList({ items, empty = 'No data yet' }: { items: Bucket[]; empty?: st
 }
 
 function TrafficChart({ daily }: { daily: Day[] }) {
-  if (daily.length === 0) return <p className="text-sm text-ink-foreground/40">No data yet</p>
+  if (daily.length === 0) return <p className="text-sm text-ink-foreground/60">No data yet</p>
   const max = Math.max(...daily.map((d) => d.sessions), 1)
   return (
     <div>
@@ -164,7 +164,7 @@ function TrafficChart({ daily }: { daily: Day[] }) {
           />
         ))}
       </div>
-      <div className="mt-2 flex justify-between text-[11px] text-ink-foreground/40">
+      <div className="mt-2 flex justify-between text-[11px] text-ink-foreground/60">
         <span>{daily[0]?.day}</span>
         <span>{daily[daily.length - 1]?.day}</span>
       </div>
@@ -242,11 +242,11 @@ function LeadsPanel({ onSaved }: { onSaved: () => void }) {
     return <p className="text-sm text-poppy">{error}</p>
   }
   if (leads === null) {
-    return <p className="text-sm text-ink-foreground/40">Loading leads…</p>
+    return <p className="text-sm text-ink-foreground/60">Loading leads…</p>
   }
   if (leads.length === 0) {
     return (
-      <p className="text-sm text-ink-foreground/40">
+      <p className="text-sm text-ink-foreground/60">
         No leads yet. They appear here the moment someone submits a form on the site — and each one is also
         emailed, so nothing is trapped in this dashboard.
       </p>
@@ -355,7 +355,7 @@ function LeadsPanel({ onSaved }: { onSaved: () => void }) {
                       .filter(([, v]) => v)
                       .map(([k, v]) => (
                         <div key={k} className="flex justify-between gap-3 sm:col-span-1">
-                          <dt className="text-ink-foreground/45">{k}</dt>
+                          <dt className="text-ink-foreground/60">{k}</dt>
                           <dd className="text-right text-ink-foreground/85">{v}</dd>
                         </div>
                       ))}
@@ -369,7 +369,7 @@ function LeadsPanel({ onSaved }: { onSaved: () => void }) {
 
                   <label
                     htmlFor={`notes-${lead.id}`}
-                    className="mt-4 block text-xs uppercase tracking-[0.14em] text-ink-foreground/50"
+                    className="mt-4 block text-xs uppercase tracking-[0.14em] text-ink-foreground/60"
                   >
                     Internal notes
                   </label>
@@ -382,7 +382,7 @@ function LeadsPanel({ onSaved }: { onSaved: () => void }) {
                     }}
                     className="mt-2 w-full border border-ink-foreground/20 bg-transparent px-3 py-2 text-sm text-ink-foreground outline-none focus-visible:border-poppy"
                   />
-                  <p className="mt-1 text-xs text-ink-foreground/40">
+                  <p className="mt-1 text-xs text-ink-foreground/60">
                     {savingId === lead.id ? 'Saving…' : 'Saved automatically when you click away.'}
                   </p>
                 </div>
@@ -498,7 +498,7 @@ export function Dashboard() {
 
         {error && <p className="border border-poppy/50 px-4 py-3 text-sm text-poppy">{error}</p>}
 
-        {!error && !data && loading && <p className="text-sm text-ink-foreground/40">Loading analytics…</p>}
+        {!error && !data && loading && <p className="text-sm text-ink-foreground/60">Loading analytics…</p>}
 
         {data && (
           <>
