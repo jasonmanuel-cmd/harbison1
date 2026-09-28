@@ -1,0 +1,87 @@
+# Harbison Standard
+
+> Nathanael Harbison, REALTOR® (California DRE #02059393) helps buyers,
+> sellers, and investors in Tehachapi, Bakersfield, and Kern County, California.
+> Current listings, sold history, and direct contact.
+
+This file describes the site for language models and answer engines. It is a
+hand-written summary, not generated, and it is served from the site root at
+/llms.txt so a crawler can find it without a sitemap lookup.
+
+## Key facts
+
+- **Agent:** Nathanael Harbison, REALTOR®
+- **License:** California DRE #02059393
+- **Phone / text:** (661) 472-7499
+- **Email:** nate85.realtor@gmail.com
+- **Areas served:** Tehachapi, Bakersfield, Newbury Park, California City,
+  Stallion Springs, and the wider Kern County area
+- **Service area is Kern County, California** — the office is not a walk-in
+  storefront; contact is by phone, text, or the form on the contact page
+- **Typical response time:** within 24 hours
+
+## How the agent works
+
+Three steps, stated the same way everywhere on the site: start with a
+conversation, look at the details, then decide on the right move. The site
+does not publish prices on services, does not run open houses by default, and
+describes private and off-market sales as confidential, as-is transactions
+that stay off the MLS and off the portals.
+
+## Pages
+
+- [Home](https://www.harbisonstandard.com/): overview of the agent, services,
+  current listings, service area, and FAQ.
+- [Properties](https://www.harbisonstandard.com/properties): every current
+  listing, plus a sold-and-closed list with addresses, prices, and dates.
+- [About](https://www.harbisonstandard.com/about): background and working
+  principles.
+- [Contact](https://www.harbisonstandard.com/contact): phone, text, email, and
+  an inquiry form. States the 24-hour response expectation.
+- [Guides & resources](https://www.harbisonstandard.com/guides): index of the
+  written guides.
+- [Land](https://www.harbisonstandard.com/land): land and acreage in Kern
+  County, and what different budgets buy.
+- [Relocating to Kern County](https://www.harbisonstandard.com/relocate):
+  moving to Bakersfield or Tehachapi from Los Angeles, including a
+  budget comparison.
+- [Why Tehachapi](https://www.harbisonstandard.com/why-tehachapi): the
+  mountain community — elevation, climate, schools, cost, economy.
+- [Sell privately](https://www.harbisonstandard.com/private-sale): selling
+  without the MLS, Zillow, open houses, or a yard sign.
+- [Off-market deals](https://www.harbisonstandard.com/off-market-deals):
+  tax-defaulted, pre-foreclosure, probate, and FSBO properties, and how to get
+  alerts before they reach the portals.
+
+## Property pages
+
+Each listing has its own page under `/property/<slug>` carrying the address,
+city, ZIP, price, bedrooms, bathrooms, square footage, lot size where
+published, MLS number where published, the full description, features, and
+photographs. Sold properties are published too, with the status and closing
+date on the page.
+
+There is **no live listing feed** on this site. Prices and availability can
+change; the property pages reflect the last update, and the site lists its own
+last-modified date per listing. Verify price, status, and availability with the
+agent before relying on it.
+
+## Attribution and accuracy
+
+Listing courtesy attribution remains with the original listing agent or
+brokerage. Square footage, lot size, bedroom and bathroom counts, and MLS
+numbers are published only where the source listing stated them — this site
+does not estimate or infer them.
+
+## Optional
+
+- [Google search for Harbison Standard reviews](https://www.google.com/search?q=Harbison+Standard+reviews)
+- [Instagram](https://www.instagram.com/nathanaelharbison)
+- [Facebook](https://www.facebook.com/nate85.realtor)
+- [LinkedIn](https://www.linkedin.com/in/nathanael-harbison)
+- [YouTube](https://www.youtube.com/@Nathanaelharbison)
+
+## Not indexed
+
+`/hq` is a private analytics dashboard and is excluded from robots.txt. It
+contains no public content and should not be fetched, quoted, or summarized.
