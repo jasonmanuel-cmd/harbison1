@@ -37,7 +37,7 @@ export default async function PropertyPage({ params }: Props) {
   if (p.beds) facts.push(`${p.beds} Beds`)
   if (p.baths) facts.push(`${p.baths} Baths`)
   if (p.sqft) facts.push(`${p.sqft.toLocaleString('en-US')} Sq Ft`)
-  facts.push(p.lot)
+  if (p.lot) facts.push(p.lot)
 
   const others = listings.filter((l) => l.slug !== p.slug).slice(0, 3)
 

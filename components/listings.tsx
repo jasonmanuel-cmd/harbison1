@@ -12,7 +12,7 @@ const pad = (n: number) => String(n).padStart(2, '0')
 
 function facts(l: Listing) {
   const parts = [l.beds ? `${l.beds} Beds` : null, l.baths ? `${l.baths} Baths` : null]
-  parts.push(l.sqft ? `${l.sqft.toLocaleString('en-US')} Sq Ft` : l.lot)
+  parts.push(l.sqft ? `${l.sqft.toLocaleString('en-US')} Sq Ft` : (l.lot ?? null))
   return parts.filter(Boolean).join('  ·  ')
 }
 

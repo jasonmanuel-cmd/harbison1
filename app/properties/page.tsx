@@ -44,7 +44,7 @@ function PropertyCard({ p, i }: { p: (typeof listings)[number]; i: number }) {
               {p.beds !== undefined && <span>{p.beds} beds</span>}
               {p.baths !== undefined && <span>{p.baths} baths</span>}
               {p.sqft !== undefined && <span>{p.sqft.toLocaleString('en-US')} sq ft</span>}
-              <span>{p.lot}</span>
+              {p.lot && <span>{p.lot}</span>}
             </div>
           </div>
         </Link>

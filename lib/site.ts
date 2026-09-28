@@ -22,7 +22,8 @@ export type Listing = {
   beds?: number
   baths?: number
   sqft?: number
-  lot: string
+  /** Optional: a few sold listings never had a lot size published. */
+  lot?: string
   neighborhood?: string
   blurb: string
   image: string

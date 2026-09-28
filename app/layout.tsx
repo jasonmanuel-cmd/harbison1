@@ -1,6 +1,9 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Nunito_Sans, Syne } from 'next/font/google'
+
+import { AnalyticsTracker } from '@/components/analytics-tracker'
+
 import './globals.css'
 
 const syne = Syne({
@@ -42,6 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${syne.variable} ${nunito.variable} bg-background`}>
       <body className="overflow-x-clip antialiased [-webkit-text-size-adjust:100%]">
+        <AnalyticsTracker />
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

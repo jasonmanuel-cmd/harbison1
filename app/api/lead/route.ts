@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 
+import { saveLead } from '@/lib/supabase'
+
 // Lead delivery.
 //
 // The previous Supabase backend was deleted (its hostname returns NXDOMAIN
@@ -25,6 +27,7 @@ const FIELD_LIMITS: Record<string, number> = {
   financing_status: 120,
   goal: 100,
   interest: 200,
+  age_range: 40,
   message: 3000,
 }
 
@@ -54,12 +57,14 @@ export async function POST(request: Request) {
 
   // Bedrooms is a numeric column in the buyer's profile; keep it optional.
   if (body.bedrooms !== undefined && body.bedrooms !== null && body.bedrooms !== '') {
-    const v = String(body.bedrooms)
-    if (/^[1-9][0-9]?$/.test(v)) {
-      fields.bedrooms = v
-    } else if (!/^[1-9]\+$/.test(v)) {
+    // The form offers "1+", "2+" … — accept the count with an optional plus and
+    // keep the number, which is what the CRM column is typed as.
+    const v = String(body.bedrooms).trim()
+    const match = /^([1-9][0-9]?)\+?$/.exec(v)
+    if (!match) {
       return NextResponse.json({ error: 'Invalid bedrooms', code: 'BAD_REQUEST' }, { status: 400 })
     }
+    fields.bedrooms = match[1]
   }
   if (body.acreage_requirement !== undefined) {
     const v = body.acreage_requirement
@@ -77,6 +82,31 @@ export async function POST(request: Request) {
   const goal = fields.goal || 'Something else'
   const interest = fields.interest || ''
   const source = 'harbison1-site'
+
+  // Mirror into the CRM if Supabase is configured. This is best-effort: a
+  // storage failure must not block the email, so it is caught and logged rather
+  // than surfaced as a failed inquiry.
+  if (fields.age_range === 'Prefer not to say') delete fields.age_range
+  void saveLead({
+    name: fields.name,
+    email: fields.email,
+    phone: fields.phone,
+    goal,
+    interest: interest || undefined,
+    current_city: fields.current_city,
+    desired_area: fields.desired_area,
+    budget: fields.budget,
+    bedrooms: fields.bedrooms ? parseInt(fields.bedrooms, 10) : undefined,
+    acreage_requirement: fields.acreage_requirement,
+    property_type: fields.property_type,
+    timeline: fields.timeline,
+    financing_status: fields.financing_status,
+    age_range: fields.age_range,
+    source,
+    session_id: typeof body.session_id === 'string' ? body.session_id.slice(0, 64) : undefined,
+  }).catch((err: unknown) => {
+    console.error('[lead] CRM storage failed:', err instanceof Error ? err.message : err)
+  })
 
   // Compose a readable body so the email is useful even if a field is missing.
   const lines = [

@@ -10,6 +10,10 @@ const financingOptions = ['Pre-approved', 'Talking with a lender', 'Cash buyer',
 const propertyTypes = ['Single-family home', 'Land / acreage', 'Condo / townhome', 'Investment property', 'Open to options']
 const acreageOptions = ['No requirement yet', 'Standard lot', 'Large lot', '0.5+ acre', '1+ acre', '2+ acres', '5+ acres', '10+ acres', 'Not sure']
 const bedroomOptions = ['No minimum yet', '1+', '2+', '3+', '4+', '5+']
+// Optional and self-reported. We never infer age from traffic data — the visitor
+// decides whether to share, which is the only version of this that is both
+// honest and lawful.
+const ageOptions = ['Prefer not to say', 'Under 25', '25–34', '35–44', '45–54', '55–64', '65+']
 
 type Props = {
   defaultGoal?: string
@@ -30,6 +34,7 @@ export function InquiryForm({ defaultGoal = '', defaultInterest = '', dark = tru
   const [propertyType, setPropertyType] = useState('')
   const [timeline, setTimeline] = useState('')
   const [financing, setFinancing] = useState('')
+  const [ageRange, setAgeRange] = useState('')
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'fallback'>('idle')
   const [error, setError] = useState('')
@@ -60,6 +65,7 @@ export function InquiryForm({ defaultGoal = '', defaultInterest = '', dark = tru
           property_type: propertyType,
           timeline,
           financing_status: financing,
+          age_range: ageRange,
           goal: defaultGoal,
           interest: defaultInterest,
           message,
@@ -93,6 +99,7 @@ export function InquiryForm({ defaultGoal = '', defaultInterest = '', dark = tru
       propertyType && `Property type: ${propertyType}`,
       timeline && `Timeline: ${timeline}`,
       financing && `Financing: ${financing}`,
+      ageRange && ageRange !== 'Prefer not to say' && `Age range: ${ageRange}`,
       defaultInterest && `Property of interest: ${defaultInterest}`,
       message && `\n${message}`,
     ]
@@ -115,6 +122,7 @@ export function InquiryForm({ defaultGoal = '', defaultInterest = '', dark = tru
     propertyType,
     timeline,
     financing,
+    ageRange,
     message,
   ])
 
@@ -235,14 +243,30 @@ export function InquiryForm({ defaultGoal = '', defaultInterest = '', dark = tru
           </select>
         </div>
       </div>
-      <div>
-        <label htmlFor="inq-financing" className={labelClass}>Financing status</label>
-        <select id="inq-financing" value={financing} onChange={(e) => setFinancing(e.target.value)} className={cn(inputClass, 'appearance-none')}>
-          <option value="">Not sure yet</option>
-          {financingOptions.map((f) => (
-            <option key={f} value={f}>{f}</option>
-          ))}
-        </select>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label htmlFor="inq-financing" className={labelClass}>Financing status</label>
+          <select id="inq-financing" value={financing} onChange={(e) => setFinancing(e.target.value)} className={cn(inputClass, 'appearance-none')}>
+            <option value="">Not sure yet</option>
+            {financingOptions.map((f) => (
+              <option key={f} value={f}>{f}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="inq-age" className={labelClass}>
+            Your age range{' '}
+            <span className={cn('text-xs font-normal', dark ? 'text-ink-foreground/45' : 'text-muted-foreground')}>
+              (optional)
+            </span>
+          </label>
+          <select id="inq-age" value={ageRange} onChange={(e) => setAgeRange(e.target.value)} className={cn(inputClass, 'appearance-none')}>
+            <option value="">Prefer not to say</option>
+            {ageOptions.slice(1).map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
+        </div>
       </div>
       <div>
         <label htmlFor="inq-message" className={labelClass}>Anything you'd like Nathanael to know?</label>
@@ -272,7 +296,8 @@ export function InquiryForm({ defaultGoal = '', defaultInterest = '', dark = tru
           )}
         </button>
         <p className={cn('mt-3 text-xs leading-relaxed', dark ? 'text-ink-foreground/50' : 'text-muted-foreground')}>
-          No mailing-list signup. Your information is used to respond to this real-estate request.
+          No mailing-list signup. Your information is used to respond to this real-estate request. The age range is
+          optional and only used if you choose to share it.
         </p>
       </div>
     </form>
