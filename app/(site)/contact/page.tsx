@@ -3,12 +3,14 @@ import { contact } from '@/lib/site'
 import { PageHero } from '@/components/page-hero'
 import { InquiryForm } from '@/components/inquiry-form'
 import { Reveal } from '@/components/reveal'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Contact | Harbison Standard',
+export const metadata: Metadata = pageMetadata({
+  title: 'Contact',
   description:
     'Call or text (661) 472-7499 or send a message to Nathanael Harbison, REALTOR® DRE #02059393. Most messages get a reply within 24 hours.',
-}
+  path: '/contact',
+})
 
 export default function ContactPage() {
   return (
@@ -17,6 +19,12 @@ export default function ContactPage() {
         eyebrow="Direct line · Call or text"
         title="Let's Connect"
         intro="Share your real estate question, situation, or inquiry. Nathanael responds within 24 hours. The more context you provide, the better he can address your specific situation."
+  trail={[
+  { name: 'Home', path: '/' },
+  { name: 'Contact',
+  path: '/contact',
+  },
+  ]}
       />
 
       <section className="bg-ink py-16 text-ink-foreground md:py-24">

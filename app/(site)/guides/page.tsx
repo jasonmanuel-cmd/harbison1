@@ -3,12 +3,14 @@ import Link from 'next/link'
 import { guides } from '@/lib/site'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Guides & Resources | Harbison Standard',
+export const metadata: Metadata = pageMetadata({
+  title: 'Guides & Resources',
   description:
     'Resources for your Kern County property search — private sales, off-market deals, relocating from LA, why Tehachapi, and land opportunities.',
-}
+  path: '/guides',
+})
 
 export default function GuidesPage() {
   return (
@@ -17,6 +19,12 @@ export default function GuidesPage() {
         eyebrow="Resources"
         title="Guides for your search"
         intro="Straightforward resources for buyers, sellers, and investors across Kern County — before you reach out."
+  trail={[
+  { name: 'Home', path: '/' },
+  { name: 'Guides & Resources',
+  path: '/guides',
+  },
+  ]}
       />
       <section className="bg-background py-16 md:py-24">
         <div className="mx-auto max-w-[90rem] px-5 md:px-8">

@@ -1,37 +1,49 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { formatDate, formatPrice, listings } from '@/lib/site'
+import { formatDate, formatPrice, listings, soldListings } from '@/lib/site'
 import { InquiryForm } from '@/components/inquiry-form'
+import { Breadcrumbs } from '@/components/breadcrumbs'
+import { JsonLd } from '@/components/json-ld'
 import { Reveal } from '@/components/reveal'
 import { ResponsiveImage } from '@/lib/images'
+import { pageMetadata, propertySchema } from '@/lib/seo'
 
 type Props = {
   params: Promise<{ slug: string }>
 }
 
+/**
+ * Both current and sold listings get a static page. The sold ones were left
+ * out here, so they were rendered on demand at whatever speed the CDN happened
+ * to have that second, even though they are the pages most likely to earn
+ * links from a site selling on track record.
+ */
 export function generateStaticParams() {
-  return listings.map((p) => ({ slug: p.slug }))
+  return [...listings, ...soldListings].map((p) => ({ slug: p.slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const p = listings.find((l) => l.slug === slug)
+  const p = [...listings, ...soldListings].find((l) => l.slug === slug)
   if (!p) return {}
-  return {
-    title: `${p.address}, ${p.city} | Harbison Standard`,
-    description: p.blurb,
-    openGraph: {
-      title: `${p.address}, ${p.city} | Harbison Standard`,
-      description: p.blurb,
-      images: [p.image],
-    },
-  }
+
+  return pageMetadata({
+    title: `${p.address}, ${p.city}, CA`,
+    // The blurb is the agent's own copy. Prefixed with the facts so a search
+    // result shows the price and size rather than an open-ended sentence.
+    description: `${formatPrice(p.price)} — ${p.blurb}`,
+    path: `/property/${p.slug}`,
+    image: p.image,
+    imageAlt: `${p.address}, ${p.city}, CA`,
+  })
 }
 
 export default async function PropertyPage({ params }: Props) {
   const { slug } = await params
-  const p = listings.find((l) => l.slug === slug)
+  // Sold listings are served from the same template. They used to 404 here
+  // even though the sitemap advertised them.
+  const p = [...listings, ...soldListings].find((l) => l.slug === slug)
   if (!p) notFound()
 
   const facts: string[] = []
@@ -41,15 +53,22 @@ export default async function PropertyPage({ params }: Props) {
   if (p.lot) facts.push(p.lot)
 
   const others = listings.filter((l) => l.slug !== p.slug).slice(0, 3)
+  const isSold = p.status === 'Sold'
+  const trail = [
+    { name: 'Home', path: '/' },
+    { name: 'Properties', path: '/properties' },
+    { name: p.address, path: `/property/${p.slug}` },
+  ]
 
   return (
     <>
+      {/* The listing's own facts. The breadcrumb trail is rendered visibly by
+          the Breadcrumbs component below, which also emits its markup. */}
+      <JsonLd data={propertySchema(p)} />
       {/* Header */}
       <section className="bg-ink pt-32 text-ink-foreground md:pt-44">
         <div className="mx-auto max-w-[90rem] px-5 pb-10 md:px-8 md:pb-14">
-          <Link href="/properties" className="label inline-flex items-center gap-2 text-ink-foreground/60 transition-colors hover:text-poppy">
-            ← All properties
-          </Link>
+          <Breadcrumbs tone="light" trail={trail} />
           <div className="mt-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="eyebrow text-poppy">{p.neighborhood ?? `${p.city}, CA`}</p>
@@ -61,7 +80,18 @@ export default async function PropertyPage({ params }: Props) {
               </p>
             </div>
             <div className="flex flex-col gap-2 md:items-end">
-              <span className="font-display text-3xl tracking-wide text-poppy md:text-4xl">{formatPrice(p.price)}</span>
+              {/* Sold listings share this template, so the status has to be
+                  stated on the page. A visitor arriving on one of these URLs
+                  from a search result needs to know before they read on. */}
+              {isSold && (
+                <span className="label self-start rounded-sm bg-ink-foreground/15 px-3 py-1 text-ink-foreground md:self-end">
+                  Sold
+                  {p.date ? ` · ${formatDate(p.date)}` : ''}
+                </span>
+              )}
+              <span className="font-display text-3xl tracking-wide text-poppy md:text-4xl">
+                {isSold ? <s>{formatPrice(p.price)}</s> : formatPrice(p.price)}
+              </span>
               <span className="label text-ink-foreground/70">{facts.join('  ·  ')}</span>
             </div>
           </div>
@@ -137,10 +167,14 @@ export default async function PropertyPage({ params }: Props) {
           <div className="lg:col-span-5">
             <Reveal delay={150} className="lg:sticky lg:top-28">
               <div className="rounded-sm border border-border bg-secondary p-6 md:p-10">
-                <p className="eyebrow text-muted-foreground">Interested in this one?</p>
+                <p className="eyebrow text-muted-foreground">
+                  {isSold ? 'Want something like this?' : 'Interested in this one?'}
+                </p>
                 <h3 className="mt-3 font-display text-2xl tracking-wide">See the full picture.</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  Share your buyer profile so Nathanael can respond with this property in context — not in isolation.
+                  {isSold
+                    ? `This one is sold, but comparable homes come up regularly. Tell Nathanael what you are looking for and he will let you know when one fits — before it reaches the portals.`
+                    : 'Share your buyer profile so Nathanael can respond with this property in context — not in isolation.'}
                 </p>
                 <div className="mt-8">
                   <InquiryForm

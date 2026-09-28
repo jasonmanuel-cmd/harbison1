@@ -4,12 +4,15 @@ import { formatPrice, listings, soldListings } from '@/lib/site'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
 import { ResponsiveImage } from '@/lib/images'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Properties | Harbison Standard',
+export const metadata: Metadata = pageMetadata({
+  title: 'Properties',
   description:
     'Explore current listings across Tehachapi, Bakersfield, and Kern County with Nathanael Harbison, REALTOR® DRE #02059393.',
-}
+  path: '/properties',
+  image: '/images/property/2300-weybridge-dr-1.webp',
+})
 
 function PropertyCard({ p, i }: { p: (typeof listings)[number]; i: number }) {
   return (
@@ -59,6 +62,12 @@ export default function PropertiesPage() {
         title="Current Listings"
         intro="Explore every current listing, with photos, price, and property details. Select a property to see more or ask about a showing."
         image="/images/property/2300-weybridge-dr-1.webp"
+  trail={[
+  { name: 'Home', path: '/' },
+  { name: 'Properties',
+  path: '/properties',
+  },
+  ]}
       />
 
       <section className="bg-background py-16 md:py-24" aria-labelledby="current-listings">

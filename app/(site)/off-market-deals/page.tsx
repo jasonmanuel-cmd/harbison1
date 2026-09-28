@@ -2,12 +2,14 @@ import type { Metadata } from 'next'
 import { offMarketContent } from '@/lib/site'
 import { ContentPage } from '@/components/content-page'
 import { InquiryForm } from '@/components/inquiry-form'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Off-Market Deals | Harbison Standard',
+export const metadata: Metadata = pageMetadata({
+  title: 'Off-Market Deals',
   description:
     'Private listings not on MLS or Zillow — tax-defaulted, pre-foreclosure, probate, FSBO. Get alerts before Zillow.',
-}
+  path: '/off-market-deals',
+})
 
 export default function OffMarketPage() {
   return (
@@ -17,6 +19,10 @@ export default function OffMarketPage() {
       intro={offMarketContent.intro}
       image="/images/property/2206-ribble-valley-dr-1.webp"
       points={offMarketContent.points}
+      trail={[
+                { name: 'Home', path: '/' },
+                { name: 'Off-Market Deals', path: '/off-market-deals' },
+              ]}
     >
       <div className="rounded-sm border border-border bg-background p-6 text-foreground md:p-8">
         <p className="eyebrow text-muted-foreground">Get off-market alerts</p>

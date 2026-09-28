@@ -2,12 +2,14 @@ import type { Metadata } from 'next'
 import { privateSaleContent } from '@/lib/site'
 import { ContentPage } from '@/components/content-page'
 import { InquiryForm } from '@/components/inquiry-form'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Sell Your House Privately | Harbison Standard',
+export const metadata: Metadata = pageMetadata({
+  title: 'Sell Your House Privately',
   description:
     'Sell your house privately in Kern County without MLS, Zillow, open houses, or a sign in the yard. Confidential, as-is, fast close.',
-}
+  path: '/private-sale',
+})
 
 export default function PrivateSalePage() {
   return (
@@ -18,6 +20,10 @@ export default function PrivateSalePage() {
       image="/images/property/958-fairway-dr-1.webp"
       points={privateSaleContent.points}
       outro={privateSaleContent.areas}
+      trail={[
+                { name: 'Home', path: '/' },
+                { name: 'Private Sale', path: '/private-sale' },
+              ]}
     >
       <div className="rounded-sm border border-border bg-background p-6 text-foreground md:p-8">
         <p className="eyebrow text-muted-foreground">Considering a private sale?</p>

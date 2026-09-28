@@ -3,12 +3,15 @@ import { aboutContent, contact } from '@/lib/site'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
 import { ResponsiveImage } from '@/lib/images'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'About | Harbison Standard',
+export const metadata: Metadata = pageMetadata({
+  title: 'About',
   description:
     'Meet Nathanael Harbison, California-licensed REALTOR® DRE #02059393, serving buyers, sellers, and investors across Kern County.',
-}
+  path: '/about',
+  image: '/images/headshot.webp',
+})
 
 const values = [
   { title: 'Property perspective', body: 'A more informed eye for condition, repairs, and potential.' },
@@ -33,6 +36,12 @@ export default function AboutPage() {
         title="Meet Nathanael"
         intro="A practical perspective shaped by real estate, development, and a long-term view of value — and plain talk about what makes sense."
         image="/images/headshot.webp"
+  trail={[
+  { name: 'Home', path: '/' },
+  { name: 'About',
+  path: '/about',
+  },
+  ]}
       />
 
       <section className="bg-background py-16 text-foreground md:py-24">

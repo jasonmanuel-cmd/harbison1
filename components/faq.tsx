@@ -1,29 +1,7 @@
 import { Plus } from 'lucide-react'
-import { contact } from '@/lib/site'
+import { contact, faqs } from '@/lib/site'
 import { Reveal } from '@/components/reveal'
 
-const faqs = [
-  {
-    q: 'Who is Nathanael Harbison?',
-    a: `Nathanael Harbison is a California-licensed REALTOR® (DRE #${contact.dre}) at Harbison Standard. He helps buyers, sellers, and investors across Kern County.`,
-  },
-  {
-    q: 'Where does Harbison Standard serve?',
-    a: 'All of Kern County, including Tehachapi, Bakersfield, California City, and Stallion Springs — for buying, selling, and investing.',
-  },
-  {
-    q: 'Can Nathanael help me sell my home?',
-    a: 'Yes. Nathanael guides sellers through planned moves, inherited properties, homes needing repairs, and time-sensitive situations, including selling as-is when that makes sense.',
-  },
-  {
-    q: 'Do you work with real estate investors?',
-    a: 'Yes. Nathanael works with investors on rentals, flips, land, and value-add homes, and talks plainly about what makes sense for their goals.',
-  },
-  {
-    q: 'How do I get in touch?',
-    a: `Call or text ${contact.phone} or email ${contact.email}. Messages typically get a response within 24 hours.`,
-  },
-]
 
 const steps = [
   { title: 'Start with a conversation', body: 'Share your situation, questions, or property goals.' },

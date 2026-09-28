@@ -2,12 +2,14 @@ import type { Metadata } from 'next'
 import { whyTehachapiContent } from '@/lib/site'
 import { ContentPage } from '@/components/content-page'
 import { InquiryForm } from '@/components/inquiry-form'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Why Tehachapi | Harbison Standard',
+export const metadata: Metadata = pageMetadata({
+  title: 'Why Tehachapi',
   description:
     'Discover what makes this mountain community different — affordable land, four seasons, top-rated schools, and a growing local economy.',
-}
+  path: '/why-tehachapi',
+})
 
 export default function WhyTehachapiPage() {
   return (
@@ -17,6 +19,10 @@ export default function WhyTehachapiPage() {
       intro={whyTehachapiContent.intro}
       image="/images/property/28751-gleneagle-ct-1.webp"
       points={whyTehachapiContent.points}
+      trail={[
+                { name: 'Home', path: '/' },
+                { name: 'Why Tehachapi', path: '/why-tehachapi' },
+              ]}
     >
       <div className="rounded-sm border border-border bg-background p-6 text-foreground md:p-8">
         <p className="eyebrow text-muted-foreground">Exploring Tehachapi?</p>

@@ -12,12 +12,18 @@ type Props = {
   outro?: string
   children?: ReactNode
   light?: boolean
+  /**
+   * The full breadcrumb trail, ending with the current page. Passed through to
+   * PageHero, which renders it visibly and emits the matching BreadcrumbList
+   * markup.
+   */
+  trail?: { name: string; path: string }[]
 }
 
-export function ContentPage({ eyebrow, title, intro, image, points, outro, children, light = false }: Props) {
+export function ContentPage({ eyebrow, title, intro, image, points, outro, children, light = false, trail }: Props) {
   return (
     <>
-      <PageHero eyebrow={eyebrow} title={title} intro={intro} image={image} />
+      <PageHero eyebrow={eyebrow} title={title} intro={intro} image={image} trail={trail} />
       <section className={cn('py-16 md:py-24', light ? 'bg-background text-foreground' : 'bg-secondary text-foreground')}>
         <div className="mx-auto max-w-[90rem] px-5 md:px-8">
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
