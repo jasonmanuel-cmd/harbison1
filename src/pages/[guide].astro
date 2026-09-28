@@ -51,7 +51,7 @@ const ld = {
           {
             g.points.map((point, i) => (
               <li data-reveal style={`--reveal-delay:${i * 60}ms`} class="flex gap-6 border-t border-foreground/15 pt-6">
-                <span aria-hidden="true" class="font-display text-3xl font-medium text-poppy">{pad2(i + 1)}</span>
+                <span aria-hidden="true" class="font-display text-3xl font-medium text-gold">{pad2(i + 1)}</span>
                 <p class="text-lg leading-relaxed text-muted-foreground text-pretty">{point}</p>
               </li>
             ))
@@ -65,7 +65,7 @@ const ld = {
               <ul class="mt-5 grid gap-3 sm:grid-cols-2">
                 {g.situations.map((s) => (
                   <li class="flex items-start gap-3 text-muted-foreground">
-                    <Check class="mt-0.5 size-5 shrink-0 text-poppy-deep" aria-hidden="true" />
+                    <Check class="mt-0.5 size-5 shrink-0 text-gold" aria-hidden="true" />
                     {s}
                   </li>
                 ))}
@@ -100,7 +100,7 @@ const ld = {
             <h2 id="related-heading" class="text-3xl font-medium tracking-wide md:text-4xl">
               {g.related === 'land' ? 'Land on the market now' : 'On the market now'}
             </h2>
-            <a href="/properties" class="label shrink-0 text-muted-foreground hover:text-poppy-deep">View all →</a>
+            <a href="/properties" class="label shrink-0 text-muted-foreground hover:text-gold">View all →</a>
           </div>
           <ul class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((l, i) => <ListingCard listing={l} index={i} />)}

@@ -23,8 +23,8 @@ const bedroomOptions = ['1+', '2+', '3+', '4+', '5+']
 const ageOptions = ['Under 25', '25–34', '35–44', '45–54', '55–64', '65+']
 
 const tone = dark
-  ? { field: 'field border-ink-foreground/25 text-ink-foreground', label: 'label text-ink-foreground/70', muted: 'text-ink-foreground/55', chip: 'border-ink-foreground/25 text-ink-foreground/75 has-[:checked]:border-poppy has-[:checked]:bg-poppy has-[:checked]:text-ink', text: 'text-ink-foreground', option: 'bg-ink' }
-  : { field: 'field border-foreground/25 text-foreground', label: 'label text-muted-foreground', muted: 'text-muted-foreground', chip: 'border-foreground/25 text-muted-foreground has-[:checked]:border-ink has-[:checked]:bg-ink has-[:checked]:text-ink-foreground', text: 'text-foreground', option: '' }
+  ? { field: 'field border-ink-foreground/25 text-ink-foreground', label: 'label text-ink-foreground/70', muted: 'text-ink-foreground/60', chip: 'border-ink-foreground/25 text-ink-foreground/75 has-[:checked]:border-poppy has-[:checked]:bg-poppy has-[:checked]:text-ink', text: 'text-ink-foreground', option: 'bg-ink', link: 'hover:text-poppy' }
+  : { field: 'field border-foreground/25 text-foreground', label: 'label text-muted-foreground', muted: 'text-muted-foreground', chip: 'border-foreground/25 text-muted-foreground has-[:checked]:border-ink has-[:checked]:bg-ink has-[:checked]:text-ink-foreground', text: 'text-foreground', option: '', link: 'hover:text-gold' }
 ---
 
 <inquiry-form data-email={contact.email} data-default-goal={goal} data-interest={interest}>
@@ -165,7 +165,7 @@ const tone = dark
     <span class="flex size-14 items-center justify-center rounded-full bg-poppy text-ink"><Check class="size-6" aria-hidden="true" /></span>
     <p class="font-display text-2xl tracking-wide">Thank you — your message is on its way.</p>
     <p class:list={['max-w-md text-sm leading-relaxed', tone.muted]}>
-      Nathanael typically responds within 24 hours. If it’s urgent, call or text <a href={contact.phoneHref} class="underline underline-offset-4 hover:text-poppy">{contact.phone}</a>.
+      Nathanael typically responds within 24 hours. If it’s urgent, call or text <a href={contact.phoneHref} class:list={['underline underline-offset-4', tone.link]}>{contact.phone}</a>.
     </p>
   </div>
 
@@ -178,7 +178,7 @@ const tone = dark
       <Mail class="size-4" aria-hidden="true" /> Open email and send
     </a>
     <p class:list={['mt-2 text-xs', tone.muted]}>
-      Prefer to talk? Call or text <a href={contact.phoneHref} class="underline underline-offset-4 hover:text-poppy">{contact.phone}</a>
+      Prefer to talk? Call or text <a href={contact.phoneHref} class:list={['underline underline-offset-4', tone.link]}>{contact.phone}</a>
     </p>
   </div>
 </inquiry-form>

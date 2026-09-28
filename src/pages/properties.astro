@@ -42,10 +42,10 @@ const select =
     crumbs={[{ label: 'Properties' }]}
   >
     <dl class="rise mt-10 flex flex-wrap gap-x-12 gap-y-6" style="animation-delay:240ms">
-      <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/55">Active</dt><dd class="mt-1 font-display text-3xl">{stats.count}</dd></div>
-      <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/55">Median ask</dt><dd class="mt-1 font-display text-3xl">{formatPriceShort(stats.median)}</dd></div>
-      <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/55">Median $/sq ft</dt><dd class="mt-1 font-display text-3xl">${stats.medianPpsf}</dd></div>
-      <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/55">Range</dt><dd class="mt-1 font-display text-3xl">{formatPriceShort(stats.min)}–{formatPriceShort(stats.max)}</dd></div>
+      <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/60">Active</dt><dd class="mt-1 font-display text-3xl">{stats.count}</dd></div>
+      <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/60">Median ask</dt><dd class="mt-1 font-display text-3xl">{formatPriceShort(stats.median)}</dd></div>
+      <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/60">Median $/sq ft</dt><dd class="mt-1 font-display text-3xl">${stats.medianPpsf}</dd></div>
+      <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/60">Range</dt><dd class="mt-1 font-display text-3xl">{formatPriceShort(stats.min)}–{formatPriceShort(stats.max)}</dd></div>
     </dl>
   </PageHero>
 
@@ -139,7 +139,7 @@ const select =
                 {p.data.city}, CA {p.data.zip} · {factLine(p.data, ' · ')}
               </p>
               <p class="text-sm leading-relaxed text-muted-foreground">{p.data.blurb}</p>
-              <span class="label mt-auto text-xs text-poppy-deep">Sold{p.data.soldAt && ` · ${formatDate(p.data.soldAt)}`}</span>
+              <span class="label mt-auto text-xs text-gold">Sold{p.data.soldAt && ` · ${formatDate(p.data.soldAt)}`}</span>
             </li>
           ))
         }

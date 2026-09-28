@@ -20,7 +20,10 @@
   --color-ink-foreground: #ffffff;
   --color-poppy: #d4a845;
   --color-poppy-light: #f1d68a;
-  --color-poppy-deep: #b8862f;
+  /* The brand gold is tuned for the dark navy (7.75:1). On white it manages only
+     2.21:1, so gold that sits on a light surface uses this darker shade of the
+     same hue instead (4.53:1). Verified by scripts/contrast.mjs. */
+  --color-gold: #90722f;
 
   --radius-sm: 2px;
   --radius-md: 2px;

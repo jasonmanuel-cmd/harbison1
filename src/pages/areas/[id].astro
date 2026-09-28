@@ -40,10 +40,10 @@ const ld = {
     {
       stats.count > 0 && (
         <dl class="rise mt-10 flex flex-wrap gap-x-12 gap-y-6" style="animation-delay:240ms">
-          <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/55">Active listings</dt><dd class="mt-1 font-display text-3xl">{stats.count}</dd></div>
-          <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/55">Median ask</dt><dd class="mt-1 font-display text-3xl">{formatPriceShort(stats.median)}</dd></div>
-          {stats.medianPpsf > 0 && <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/55">Median $/sq ft</dt><dd class="mt-1 font-display text-3xl">${stats.medianPpsf}</dd></div>}
-          <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/55">Price range</dt><dd class="mt-1 font-display text-3xl">{formatPriceShort(stats.min)}–{formatPriceShort(stats.max)}</dd></div>
+          <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/60">Active listings</dt><dd class="mt-1 font-display text-3xl">{stats.count}</dd></div>
+          <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/60">Median ask</dt><dd class="mt-1 font-display text-3xl">{formatPriceShort(stats.median)}</dd></div>
+          {stats.medianPpsf > 0 && <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/60">Median $/sq ft</dt><dd class="mt-1 font-display text-3xl">${stats.medianPpsf}</dd></div>}
+          <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/60">Price range</dt><dd class="mt-1 font-display text-3xl">{formatPriceShort(stats.min)}–{formatPriceShort(stats.max)}</dd></div>
         </dl>
       )
     }
@@ -55,7 +55,7 @@ const ld = {
         <h2 id="area-listings" class="text-3xl font-medium tracking-wide md:text-4xl">
           {here.length ? `On the market in ${a.name}` : `Looking in ${a.name}?`}
         </h2>
-        <a href={`/properties`} class="label text-muted-foreground hover:text-poppy-deep">All properties →</a>
+        <a href={`/properties`} class="label text-muted-foreground hover:text-gold">All properties →</a>
       </div>
       {
         here.length > 0 ? (

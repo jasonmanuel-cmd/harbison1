@@ -75,16 +75,24 @@ const split = (word: string, start: number) => word.split('').map((char, i) => (
 
 <script>
   /**
-   * The 9 MB hero video is only fetched when it can pay for itself: motion is
-   * allowed, the connection isn't metered/slow, and the page is visible. Everyone
-   * else keeps the optimized poster, which is already painted.
+   * The ~8 MB hero clip is decoration a still frame conveys just as well, and on
+   * phones it pushed LCP past 5s (Lighthouse, emulated iPhone). So it is only
+   * fetched on wide viewports, with motion allowed, no reduced-data preference,
+   * and a non-slow connection — after first paint. Everyone else keeps the
+   * optimized poster, which is already painted.
    */
   class HeroVideo extends HTMLElement {
     connectedCallback() {
       const video = this.querySelector('video')!
       const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection
       const slow = conn?.saveData || /(^|-)2g$|3g/.test(conn?.effectiveType ?? '')
-      if (matchMedia('(prefers-reduced-motion: reduce)').matches || slow) return
+      if (
+        slow ||
+        !matchMedia('(min-width: 1024px)').matches ||
+        matchMedia('(prefers-reduced-motion: reduce)').matches ||
+        matchMedia('(prefers-reduced-data: reduce)').matches
+      )
+        return
 
       video.addEventListener('canplay', () => video.setAttribute('data-ready', ''), { once: true })
       const start = () => {
