@@ -1,4 +1,5 @@
 import { Reveal } from '@/components/reveal'
+import { ResponsiveImage } from '@/lib/images'
 
 type Props = {
   eyebrow: string
@@ -11,11 +12,11 @@ export function PageHero({ eyebrow, title, intro, image }: Props) {
   return (
     <section className="relative overflow-hidden bg-ink pt-32 text-ink-foreground md:pt-44">
       {image && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <ResponsiveImage
           src={image}
+          slot="hero"
           alt=""
-          aria-hidden="true"
+          priority
           className="absolute inset-0 h-full w-full object-cover opacity-25"
         />
       )}

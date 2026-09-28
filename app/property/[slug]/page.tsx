@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { formatDate, formatPrice, listings } from '@/lib/site'
 import { InquiryForm } from '@/components/inquiry-form'
 import { Reveal } from '@/components/reveal'
+import { ResponsiveImage } from '@/lib/images'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -81,11 +82,11 @@ export default async function PropertyPage({ params }: Props) {
                       : 'aspect-square overflow-hidden bg-ink-foreground/10'
                   }
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <ResponsiveImage
                     src={src}
+                    slot="card"
                     alt={`${p.address} photo ${i + 1}`}
-                    loading={i < 2 ? 'eager' : 'lazy'}
+                    priority={i === 0}
                     className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
                   />
                 </div>
@@ -165,11 +166,10 @@ export default async function PropertyPage({ params }: Props) {
                 <li>
                   <Link href={`/property/${o.slug}`} className="group flex flex-col gap-3">
                     <div className="aspect-[4/3] overflow-hidden bg-muted">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <ResponsiveImage
                         src={o.image}
+                        slot="card"
                         alt={`${o.address}, ${o.city}, CA`}
-                        loading="lazy"
                         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     </div>

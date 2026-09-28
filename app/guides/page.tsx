@@ -27,7 +27,7 @@ export default function GuidesPage() {
                   href={`/${g.slug}`}
                   className="group flex h-full flex-col gap-4 p-8 transition-colors hover:bg-secondary"
                 >
-                  <span className="font-display text-4xl font-medium text-gold/70">
+                  <span className="font-display text-4xl font-medium text-gold">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <h2 className="font-display text-2xl tracking-wide">{g.title}</h2>

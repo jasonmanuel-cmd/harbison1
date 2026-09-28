@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { formatPrice, listings, soldListings } from '@/lib/site'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
+import { ResponsiveImage } from '@/lib/images'
 
 export const metadata: Metadata = {
   title: 'Properties | Harbison Standard',
@@ -18,11 +19,10 @@ function PropertyCard({ p, i }: { p: (typeof listings)[number]; i: number }) {
         className="group flex flex-col overflow-hidden bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-lg"
       >
         <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <ResponsiveImage
             src={p.image}
+            slot="card"
             alt={`${p.address}, ${p.city}, CA`}
-            loading="lazy"
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <span className="absolute left-4 top-4 bg-ink/85 px-3 py-1 text-xs font-semibold tracking-widest text-ink-foreground uppercase">

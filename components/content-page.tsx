@@ -30,7 +30,7 @@ export function ContentPage({ eyebrow, title, intro, image, points, outro, child
                     delay={i * 60}
                     className="flex gap-6 border-t border-foreground/15 pt-6"
                   >
-                    <span aria-hidden="true" className="font-display text-3xl font-medium text-gold/70">
+                    <span aria-hidden="true" className="font-display text-3xl font-medium text-gold">
                       {String(i + 1).padStart(2, '0')}
                     </span>
                     <p className="text-lg leading-relaxed text-muted-foreground text-pretty">{point}</p>

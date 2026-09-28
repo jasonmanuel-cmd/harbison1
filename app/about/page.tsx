@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { aboutContent, contact } from '@/lib/site'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
+import { ResponsiveImage } from '@/lib/images'
 
 export const metadata: Metadata = {
   title: 'About | Harbison Standard',
@@ -49,10 +50,11 @@ export default function AboutPage() {
           <Reveal delay={150} className="lg:col-span-5">
             <figure className="lg:sticky lg:top-28">
               <div className="relative aspect-[4/5] overflow-hidden bg-muted">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <ResponsiveImage
                   src="/images/headshot.webp"
+                  slot="gallery"
                   alt="Nathanael Harbison, REALTOR®"
+                  sizes="(min-width: 1024px) 38vw, 92vw"
                   className="h-full w-full object-cover"
                 />
               </div>

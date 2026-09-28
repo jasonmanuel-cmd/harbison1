@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "images:manifest": "node scripts/generate-image-manifest.mjs",
-    "prebuild": "node scripts/generate-image-manifest.mjs",
+    "images:responsive": "node scripts/generate-responsive-images.mjs",
+    "prebuild": "node scripts/generate-image-manifest.mjs && node scripts/generate-responsive-images.mjs",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
