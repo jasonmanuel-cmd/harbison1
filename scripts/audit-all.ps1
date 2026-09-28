@@ -16,7 +16,8 @@ $routes = @(
   '/'
   '/properties'
   '/property/2300-weybridge-dr'
-  '/property/chalet-tehachapi'
+  # A sold listing, to confirm those still render now they are generated.
+  '/property/9664-mendiburu-rd'
   '/about'
   '/contact'
   '/guides'

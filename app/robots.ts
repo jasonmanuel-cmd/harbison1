@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-import { abs, SITE_URL } from '@/lib/seo'
+import { abs } from '@/lib/seo'
 
 /**
  * /robots.txt did not exist before, so crawlers had no sitemap pointer and no
@@ -46,7 +46,11 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/hq', '/api/'],
       },
     ],
+    // No Host directive on purpose. It is optional, only Yandex honours it,
+    // and naming the canonical domain made the file invalid on any other host
+    // -- Lighthouse rejected it outright while the site was served from the
+    // Vercel URL. The Sitemap line is absolute, so crawlers get the canonical
+    // location without the Host line disagreeing with where they are standing.
     sitemap: abs('/sitemap.xml'),
-    host: SITE_URL,
   }
 }
