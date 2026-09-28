@@ -89,11 +89,12 @@ export async function POST(request: Request) {
       body: JSON.stringify(lead),
     })
     if (!response.ok) {
-      return json({ error: 'Failed to save inquiry' }, 502)
+      const text = await response.text().catch(() => '')
+      return json({ error: 'Failed to save inquiry', detail: text.slice(0, 300) }, 502)
     }
     const rows = await response.json()
     return json({ ok: true, id: rows[0]?.id ?? null }, 201)
-  } catch {
-    return json({ error: 'Failed to save inquiry' }, 502)
+  } catch (err) {
+    return json({ error: 'Failed to save inquiry', detail: String(err).slice(0, 300) }, 502)
   }
 }
