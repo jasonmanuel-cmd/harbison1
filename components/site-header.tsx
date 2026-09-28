@@ -54,7 +54,16 @@ export function SiteHeader() {
   }, [pathname])
 
   return (
-    <header
+    <>
+      {/* Skip link. Off-screen until focused, then pinned to the top-left so a
+          keyboard user can jump straight past the nav to the page content. */}
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-poppy focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:uppercase focus:tracking-widest focus:text-ink"
+      >
+        Skip to content
+      </a>
+      <header
       className={cn(
         'fixed inset-x-0 top-0 z-50 text-ink-foreground transition-[background-color,box-shadow] duration-500',
         scrolled || open ? 'bg-ink shadow-lg shadow-ink/20' : 'bg-transparent',
@@ -140,6 +149,7 @@ export function SiteHeader() {
           </div>
         </div>
       </div>
-    </header>
+      </header>
+    </>
   )
 }
