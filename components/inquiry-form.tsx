@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
-import { ArrowRight, Check, Loader2 } from 'lucide-react'
+import { useMemo, useState, type FormEvent } from 'react'
+import { ArrowRight, Check, Loader2, Mail } from 'lucide-react'
+import { contact } from '@/lib/site'
 import { cn } from '@/lib/utils'
 
 const timelines = ['As soon as possible', 'Within 3 months', '3–6 months', '6–12 months', 'Just researching']
@@ -30,7 +31,7 @@ export function InquiryForm({ defaultGoal = '', defaultInterest = '', dark = tru
   const [timeline, setTimeline] = useState('')
   const [financing, setFinancing] = useState('')
   const [message, setMessage] = useState('')
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'fallback'>('idle')
   const [error, setError] = useState('')
 
   const inputClass = dark
@@ -70,9 +71,82 @@ export function InquiryForm({ defaultGoal = '', defaultInterest = '', dark = tru
       }
       setStatus('sent')
     } catch (err) {
-      setStatus('error')
-      setError(err instanceof Error ? err.message : 'Something went wrong. Please call or text instead.')
+      // The lead service is not reachable. Fall back to a real, working
+      // delivery path — the visitor's own email client — instead of
+      // claiming a message was sent.
+      setStatus('fallback')
+      setError(err instanceof Error ? err.message : 'Something went wrong')
     }
+  }
+
+  const mailtoHref = useMemo(() => {
+    const summary = [
+      `Goal: ${defaultGoal || 'General inquiry'}`,
+      `Name: ${name}`,
+      `Phone: ${phone}`,
+      `Email: ${email}`,
+      currentCity && `Current city: ${currentCity}`,
+      desiredArea && `Desired area: ${desiredArea}`,
+      budget && `Budget: ${budget}`,
+      bedroom && `Bedrooms: ${bedroom}`,
+      acreageReq && `Acreage / lot: ${acreageReq}`,
+      propertyType && `Property type: ${propertyType}`,
+      timeline && `Timeline: ${timeline}`,
+      financing && `Financing: ${financing}`,
+      defaultInterest && `Property of interest: ${defaultInterest}`,
+      message && `\n${message}`,
+    ]
+      .filter(Boolean)
+      .join('\n')
+    return `mailto:${contact.email}?subject=${encodeURIComponent(
+      `Website inquiry — ${defaultGoal || 'General'}${name ? ` — ${name}` : ''}`,
+    )}&body=${encodeURIComponent(summary)}`
+  }, [
+    defaultGoal,
+    defaultInterest,
+    name,
+    phone,
+    email,
+    currentCity,
+    desiredArea,
+    budget,
+    bedroom,
+    acreageReq,
+    propertyType,
+    timeline,
+    financing,
+    message,
+  ])
+
+  if (status === 'fallback') {
+    return (
+      <div
+        role="status"
+        className={cn('flex flex-col items-center gap-4 py-10 text-center', dark ? 'text-ink-foreground' : 'text-foreground')}
+      >
+        <p className="font-display text-2xl tracking-wide">Send this straight to Nathanael</p>
+        <p className={cn('max-w-md text-sm leading-relaxed', dark ? 'text-ink-foreground/70' : 'text-muted-foreground')}>
+          Our online form is temporarily unavailable. Your details are ready below — the button opens your email app
+          with everything filled in, addressed to Nathanael directly.
+        </p>
+        <a
+          href={mailtoHref}
+          className={cn(
+            'pill mt-2 justify-center px-8',
+            dark ? 'bg-poppy text-ink hover:bg-ink-foreground' : 'bg-ink text-ink-foreground hover:bg-poppy hover:text-ink',
+          )}
+        >
+          <Mail className="size-4" aria-hidden="true" />
+          Open email and send
+        </a>
+        <p className={cn('mt-2 text-xs', dark ? 'text-ink-foreground/50' : 'text-muted-foreground')}>
+          Prefer to talk? Call or text{' '}
+          <a href={contact.phoneHref} className="underline underline-offset-4 hover:text-poppy">
+            {contact.phone}
+          </a>
+        </p>
+      </div>
+    )
   }
 
   if (status === 'sent') {
@@ -175,8 +249,8 @@ export function InquiryForm({ defaultGoal = '', defaultInterest = '', dark = tru
         <textarea id="inq-message" rows={4} value={message} onChange={(e) => setMessage(e.target.value)} className={inputClass} />
       </div>
 
-      {status === 'error' && (
-        <p role="alert" className="border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+      {status === 'sending' && error && (
+        <p role="status" className={cn('border px-4 py-3 text-sm', dark ? 'border-ink-foreground/25 text-ink-foreground/70' : 'border-border text-muted-foreground')}>
           {error}
         </p>
       )}

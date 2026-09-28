@@ -78,23 +78,33 @@ export async function POST(request: Request) {
   }
 
   try {
-    const response = await fetch(`${SUPABASE_URL.replace(/\/$/, '')}/rest/v1/leads`, {
-      method: 'POST',
-      headers: {
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=representation',
-      },
-      body: JSON.stringify(lead),
-    })
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 8000)
+    let response: Response
+    try {
+      response = await fetch(`${SUPABASE_URL.replace(/\/$/, '')}/rest/v1/leads`, {
+        method: 'POST',
+        headers: {
+          apikey: SUPABASE_SERVICE_ROLE_KEY,
+          Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation',
+        },
+        body: JSON.stringify(lead),
+        signal: controller.signal,
+      })
+    } finally {
+      clearTimeout(timeout)
+    }
     if (!response.ok) {
       const text = await response.text().catch(() => '')
-      return json({ error: 'Failed to save inquiry', detail: text.slice(0, 300) }, 502)
+      console.error(`[lead] Supabase responded ${response.status}: ${text.slice(0, 300)}`)
+      return json({ error: 'Failed to save inquiry', code: 'UPSTREAM_ERROR' }, 502)
     }
     const rows = await response.json()
     return json({ ok: true, id: rows[0]?.id ?? null }, 201)
   } catch (err) {
-    return json({ error: 'Failed to save inquiry', detail: String(err).slice(0, 300) }, 502)
+    console.error('[lead] Supabase unreachable:', err instanceof Error ? err.message : err)
+    return json({ error: 'Lead service unavailable', code: 'SERVICE_UNAVAILABLE' }, 503)
   }
 }
