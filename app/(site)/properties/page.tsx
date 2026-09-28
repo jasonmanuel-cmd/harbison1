@@ -61,9 +61,23 @@ export default function PropertiesPage() {
         image="/images/property/2300-weybridge-dr-1.webp"
       />
 
-      <section className="bg-background py-16 md:py-24" aria-label="All properties">
+      <section className="bg-background py-16 md:py-24" aria-labelledby="current-listings">
         <div className="mx-auto max-w-[90rem] px-5 md:px-8">
-          <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {/* The cards use h3, so this section needs its own h2 between the
+              page's h1 and them — otherwise the heading order skips a level. */}
+          <Reveal className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="eyebrow text-muted-foreground">Available now</p>
+              <h2 id="current-listings" className="mt-4 text-3xl font-medium tracking-wide md:text-5xl">
+                Current listings
+              </h2>
+            </div>
+            <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
+              {listings.length} properties across Tehachapi, Bakersfield, and Newbury Park. Listing courtesy
+              attribution remains with the original listing agent or brokerage.
+            </p>
+          </Reveal>
+          <ul className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {listings.map((p, i) => (
               <PropertyCard key={p.slug} p={p} i={i} />
             ))}
@@ -71,12 +85,14 @@ export default function PropertiesPage() {
         </div>
       </section>
 
-      <section className="bg-secondary py-16 md:py-24" aria-label="Past transactions">
+      <section className="bg-secondary py-16 md:py-24" aria-labelledby="past-transactions">
         <div className="mx-auto max-w-[90rem] px-5 md:px-8">
           <Reveal className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="eyebrow text-muted-foreground">Past transactions</p>
-              <h2 className="mt-4 text-3xl font-medium tracking-wide md:text-5xl">Sold &amp; closed</h2>
+              <h2 id="past-transactions" className="mt-4 text-3xl font-medium tracking-wide md:text-5xl">
+              Sold &amp; closed
+            </h2>
             </div>
             <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
               A selection of recent sales across Kern County. Listing courtesy attribution remains with the original listing agent or brokerage.

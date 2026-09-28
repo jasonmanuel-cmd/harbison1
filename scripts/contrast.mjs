@@ -37,12 +37,21 @@ const NAVY_ALT = hex('#132140')
 const GOLD = hex('#d4a845')
 
 console.log('--- current state ---')
+const LIGHT_GOLD = hex('#896c2d') // the --gold token in globals.css
+const SECONDARY = hex('#f3f5f9') // the --secondary card tint
+
+// #33415c is not a token in the stylesheet; it stands in for the lightest tint
+// a dark card can composite to (bg-ink at ~85% over a light page behind it).
+// Treated as a hard check so text on a faded dark panel still clears AA.
+const LIGHT_CARD = hex('#33415c')
+
 const checks = [
-  ['gold #d4a845', 'on white', GOLD, WHITE, 4.5],
-  ['gold 50% (#ead3a2 approx)', 'on white', hex('#ead3a2'), WHITE, 4.5],
-  ['footer grey #6d7689', 'on navy', hex('#6d7689'), NAVY, 4.5],
-  ['label grey #7d8596', 'on navy alt #132140', hex('#7d8596'), NAVY_ALT, 4.5],
-  ['gold #d4a845', 'on navy', GOLD, NAVY, 4.5],
+  ['--gold #896c2d', 'on white', LIGHT_GOLD, WHITE, 4.5],
+  ['--gold #896c2d', 'on --secondary', LIGHT_GOLD, SECONDARY, 4.5],
+  ['gold #d4a845 (brand)', 'on navy', GOLD, NAVY, 4.5],
+  ['ink-foreground/60', 'on navy', hex('#a1a6b3'), NAVY, 4.5],
+  ['ink-foreground/60', 'on #132140', hex('#a1a6b3'), NAVY_ALT, 4.5],
+  ['ink-foreground/70', 'on faded card', hex('#b8bcc6'), LIGHT_CARD, 4.5],
 ]
 for (const [name, on, fg, bg, need] of checks) {
   const r = contrast(fg, bg)

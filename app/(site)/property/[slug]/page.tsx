@@ -106,7 +106,7 @@ export default async function PropertyPage({ params }: Props) {
             <Reveal>
               <p className="eyebrow text-muted-foreground">About this property</p>
               <h2 className="mt-4 text-3xl font-medium tracking-wide md:text-4xl">
-                See the property <span className="italic text-poppy">in context.</span>
+                See the property <span className="italic text-gold">in context.</span>
               </h2>
               <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground text-pretty">
                 {p.description ?? p.blurb}
@@ -143,7 +143,15 @@ export default async function PropertyPage({ params }: Props) {
                   Share your buyer profile so Nathanael can respond with this property in context — not in isolation.
                 </p>
                 <div className="mt-8">
-                  <InquiryForm defaultGoal="Buying" defaultInterest={p.address} compact />
+                  <InquiryForm
+                    defaultGoal="Buying"
+                    defaultInterest={p.address}
+                    // This form sits in the light --secondary sidebar card, so
+                    // it needs the light palette. dark defaults to true, and
+                    // omitting it rendered white text on a near-white card.
+                    dark={false}
+                    compact
+                  />
                 </div>
               </div>
             </Reveal>
@@ -156,32 +164,30 @@ export default async function PropertyPage({ params }: Props) {
         <div className="mx-auto max-w-[90rem] px-5 md:px-8">
           <Reveal className="flex items-end justify-between gap-6">
             <h2 className="text-3xl font-medium tracking-wide md:text-4xl">More properties</h2>
-            <Link href="/properties" className="label shrink-0 text-muted-foreground transition-colors hover:text-poppy">
+            <Link href="/properties" className="label shrink-0 text-muted-foreground transition-colors hover:text-gold">
               View all →
             </Link>
           </Reveal>
           <ul className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {others.map((o, i) => (
-              <Reveal key={o.slug} delay={i * 100}>
-                <li>
-                  <Link href={`/property/${o.slug}`} className="group flex flex-col gap-3">
-                    <div className="aspect-[4/3] overflow-hidden bg-muted">
-                      <ResponsiveImage
-                        src={o.image}
-                        slot="card"
-                        alt={`${o.address}, ${o.city}, CA`}
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="flex items-baseline justify-between gap-4">
-                      <h3 className="font-display text-lg tracking-wide">{o.address}</h3>
-                      <span className="font-display text-poppy">{formatPrice(o.price)}</span>
-                    </div>
-                    <p className="label text-muted-foreground">
-                      {o.city}, CA {o.zip}
-                    </p>
-                  </Link>
-                </li>
+              <Reveal key={o.slug} as="li" delay={i * 100}>
+                <Link href={`/property/${o.slug}`} className="group flex flex-col gap-3">
+                  <div className="aspect-[4/3] overflow-hidden bg-muted">
+                    <ResponsiveImage
+                      src={o.image}
+                      slot="card"
+                      alt={`${o.address}, ${o.city}, CA`}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="flex items-baseline justify-between gap-4">
+                    <h3 className="font-display text-lg tracking-wide">{o.address}</h3>
+                    <span className="font-display text-gold">{formatPrice(o.price)}</span>
+                  </div>
+                  <p className="label text-muted-foreground">
+                    {o.city}, CA {o.zip}
+                  </p>
+                </Link>
               </Reveal>
             ))}
           </ul>

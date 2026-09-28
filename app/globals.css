@@ -60,11 +60,13 @@
   --ink: #0c1a3a;
   --ink-foreground: #ffffff;
   --poppy: #d4a845;
-  /* The brand gold is tuned for the dark navy, where it scores 7.75:1. On a
-     white surface it only manages 2.21:1 and fails WCAG AA, so light
-     backgrounds use this darker shade of the same hue instead (4.53:1).
+  /* The brand gold is tuned for the dark navy, where it scores 7.75:1. On the
+     site's light surfaces it fails badly, so light backgrounds use this darker
+     shade of the same hue instead. The value is the darkest point that clears
+     4.5:1 on BOTH #ffffff and the --secondary card tint (#f3f5f9); the looser
+     #90722f only reached 4.53:1 on white and fell to 4.15:1 on the card.
      Verified by scripts/contrast.mjs — do not substitute one for the other. */
-  --gold: #90722f;
+  --gold: #896c2d;
   /* Lowest opacity of ink-foreground that still clears 4.5:1 on every dark
      surface used here (#0c1a3a, #132140, #33415c). Anything dimmer failed.
      Verified by scripts/opacity.mjs. */
