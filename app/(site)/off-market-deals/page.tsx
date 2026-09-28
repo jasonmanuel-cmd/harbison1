@@ -20,7 +20,7 @@ export default function OffMarketPage() {
     >
       <div className="rounded-sm border border-border bg-background p-6 text-foreground md:p-8">
         <p className="eyebrow text-muted-foreground">Get off-market alerts</p>
-        <h3 className="mt-3 font-display text-xl tracking-wide">Create a buyer profile.</h3>
+        <h2 className="mt-3 font-display text-xl tracking-wide">Create a buyer profile.</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           Your budget, area, and property type. Get alerts when a matching private lead is found — before it reaches Zillow.
         </p>

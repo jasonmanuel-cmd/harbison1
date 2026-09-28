@@ -20,7 +20,7 @@ export default function WhyTehachapiPage() {
     >
       <div className="rounded-sm border border-border bg-background p-6 text-foreground md:p-8">
         <p className="eyebrow text-muted-foreground">Exploring Tehachapi?</p>
-        <h3 className="mt-3 font-display text-xl tracking-wide">Talk through the move.</h3>
+        <h2 className="mt-3 font-display text-xl tracking-wide">Talk through the move.</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           Schools, neighborhoods, land, and what daily life actually looks like at 3,970 feet.
         </p>

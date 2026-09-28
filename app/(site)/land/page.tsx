@@ -20,7 +20,7 @@ export default function LandPage() {
     >
       <div className="rounded-sm border border-border bg-background p-6 text-foreground md:p-8">
         <p className="eyebrow text-muted-foreground">Looking at land?</p>
-        <h3 className="mt-3 font-display text-xl tracking-wide">Analyze the deal first.</h3>
+        <h2 className="mt-3 font-display text-xl tracking-wide">Analyze the deal first.</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           Zoning, utilities, access, and exit strategy — understand what a parcel is actually worth before you buy.
         </p>

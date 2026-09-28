@@ -21,7 +21,7 @@ export default function PrivateSalePage() {
     >
       <div className="rounded-sm border border-border bg-background p-6 text-foreground md:p-8">
         <p className="eyebrow text-muted-foreground">Considering a private sale?</p>
-        <h3 className="mt-3 font-display text-xl tracking-wide">Talk it through confidentially.</h3>
+        <h2 className="mt-3 font-display text-xl tracking-wide">Talk it through confidentially.</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           No obligation. A private conversation about your situation and whether a quiet sale makes sense.
         </p>

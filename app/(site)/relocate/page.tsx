@@ -21,7 +21,7 @@ export default function RelocatePage() {
     >
       <div className="rounded-sm border border-border bg-background p-6 text-foreground md:p-8">
         <p className="eyebrow text-muted-foreground">Create a buyer profile</p>
-        <h3 className="mt-3 font-display text-xl tracking-wide">See what your budget buys.</h3>
+        <h2 className="mt-3 font-display text-xl tracking-wide">See what your budget buys.</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           Tell Nathanael your budget, timeline, and priorities — get a realistic picture of Kern County options.
         </p>
