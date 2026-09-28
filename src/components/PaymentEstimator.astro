@@ -1,0 +1,102 @@
+---
+interface Props {
+  price: number
+}
+const { price } = Astro.props
+const uid = Math.random().toString(36).slice(2, 7)
+const id = (n: string) => `pe-${uid}-${n}`
+const input = 'field mt-1 border-border py-2 text-sm tabular-nums'
+---
+
+<payment-estimator data-price={price} class="block border border-border p-6 md:p-8">
+  <div class="flex flex-wrap items-baseline justify-between gap-4">
+    <h2 class="label text-muted-foreground">Estimated monthly payment</h2>
+    <p class="font-display text-4xl tracking-wide"><span data-total>—</span><span class="text-base text-muted-foreground">/mo</span></p>
+  </div>
+
+  <div class="mt-5 flex h-2.5 overflow-hidden rounded-full bg-muted" aria-hidden="true">
+    <span data-bar="pi" class="bg-ink transition-[width] duration-500"></span>
+    <span data-bar="tax" class="bg-poppy transition-[width] duration-500"></span>
+    <span data-bar="ins" class="bg-poppy-light transition-[width] duration-500"></span>
+    <span data-bar="hoa" class="bg-muted-foreground/40 transition-[width] duration-500"></span>
+  </div>
+  <dl class="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-4">
+    <div><dt class="flex items-center gap-2 text-muted-foreground"><span class="size-2 rounded-full bg-ink"></span>Principal & interest</dt><dd data-out="pi" class="font-semibold tabular-nums">—</dd></div>
+    <div><dt class="flex items-center gap-2 text-muted-foreground"><span class="size-2 rounded-full bg-poppy"></span>Property tax</dt><dd data-out="tax" class="font-semibold tabular-nums">—</dd></div>
+    <div><dt class="flex items-center gap-2 text-muted-foreground"><span class="size-2 rounded-full bg-poppy-light"></span>Insurance</dt><dd data-out="ins" class="font-semibold tabular-nums">—</dd></div>
+    <div><dt class="flex items-center gap-2 text-muted-foreground"><span class="size-2 rounded-full bg-muted-foreground/40"></span>HOA</dt><dd data-out="hoa" class="font-semibold tabular-nums">—</dd></div>
+  </dl>
+
+  <form class="mt-8 grid gap-5 sm:grid-cols-2" onsubmit="return false">
+    <div class="sm:col-span-2">
+      <div class="flex items-baseline justify-between">
+        <label for={id('down')} class="text-xs uppercase tracking-[0.14em] text-muted-foreground">Down payment</label>
+        <output for={id('down')} data-down-label class="text-sm font-semibold tabular-nums">20%</output>
+      </div>
+      <input id={id('down')} name="down" type="range" min="0" max="60" step="1" value="20" class="mt-3 w-full" />
+    </div>
+    <div>
+      <label for={id('rate')} class="text-xs uppercase tracking-[0.14em] text-muted-foreground">Interest rate (%)</label>
+      <input id={id('rate')} name="rate" type="number" inputmode="decimal" min="0" max="20" step="0.125" value="6.5" class={input} />
+    </div>
+    <div>
+      <label for={id('term')} class="text-xs uppercase tracking-[0.14em] text-muted-foreground">Loan term</label>
+      <select id={id('term')} name="term" class:list={[input, 'appearance-none']}>
+        <option value="30">30-year fixed</option>
+        <option value="15">15-year fixed</option>
+      </select>
+    </div>
+    <div>
+      <label for={id('tax')} class="text-xs uppercase tracking-[0.14em] text-muted-foreground">Property tax (% / yr)</label>
+      <input id={id('tax')} name="tax" type="number" inputmode="decimal" min="0" max="5" step="0.05" value="1.1" class={input} />
+    </div>
+    <div>
+      <label for={id('ins')} class="text-xs uppercase tracking-[0.14em] text-muted-foreground">Insurance ($ / yr)</label>
+      <input id={id('ins')} name="ins" type="number" inputmode="numeric" min="0" step="100" value={Math.round((price * 0.0035) / 100) * 100} class={input} />
+    </div>
+    <div>
+      <label for={id('hoa')} class="text-xs uppercase tracking-[0.14em] text-muted-foreground">HOA ($ / mo)</label>
+      <input id={id('hoa')} name="hoa" type="number" inputmode="numeric" min="0" step="10" value="0" class={input} />
+    </div>
+  </form>
+  <p class="mt-6 text-xs leading-relaxed text-muted-foreground">
+    <span data-loan></span> An estimate only, using the assumptions above — not a loan offer. Your actual rate, taxes, and insurance will differ; a lender can give
+    you real numbers.
+  </p>
+</payment-estimator>
+
+<script>
+  const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+
+  class PaymentEstimator extends HTMLElement {
+    connectedCallback() {
+      const form = this.querySelector('form')!
+      const calc = () => {
+        const price = Number(this.dataset.price)
+        const f = Object.fromEntries(new FormData(form)) as Record<string, string>
+        const down = Number(f.down) / 100
+        const loan = price * (1 - down)
+        const r = Math.max(Number(f.rate) || 0, 0) / 100 / 12
+        const n = Number(f.term) * 12
+        const pi = r === 0 ? loan / n : (loan * r) / (1 - Math.pow(1 + r, -n))
+        const parts = {
+          pi,
+          tax: (price * (Number(f.tax) || 0)) / 100 / 12,
+          ins: (Number(f.ins) || 0) / 12,
+          hoa: Number(f.hoa) || 0,
+        }
+        const total = Object.values(parts).reduce((a, b) => a + b, 0)
+        this.querySelector('[data-total]')!.textContent = usd.format(total)
+        for (const [k, v] of Object.entries(parts)) {
+          this.querySelector(`[data-out=${k}]`)!.textContent = usd.format(v)
+          this.querySelector<HTMLElement>(`[data-bar=${k}]`)!.style.width = `${total ? (v / total) * 100 : 0}%`
+        }
+        this.querySelector('[data-down-label]')!.textContent = `${f.down}% · ${usd.format(price * down)}`
+        this.querySelector('[data-loan]')!.textContent = `Loan amount ${usd.format(loan)}.`
+      }
+      form.addEventListener('input', calc)
+      calc()
+    }
+  }
+  customElements.define('payment-estimator', PaymentEstimator)
+</script>

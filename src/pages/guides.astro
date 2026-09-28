@@ -1,0 +1,20 @@
+---
+import Base from '@/layouts/Base.astro'
+import PageHero from '@/components/PageHero.astro'
+import GuidesGrid from '@/components/GuidesGrid.astro'
+---
+
+<Base
+  title="Guides & Resources"
+  description="Resources for your Kern County property search — private sales, off-market deals, relocating from LA, why Tehachapi, and land opportunities."
+>
+  <PageHero
+    eyebrow="Resources"
+    title="Guides for your search"
+    intro="Straightforward resources for buyers, sellers, and investors across Kern County — before you reach out."
+    crumbs={[{ label: 'Guides' }]}
+  />
+  <section class="bg-background py-16 md:py-24">
+    <div class="shell"><GuidesGrid headingLevel="h2" /></div>
+  </section>
+</Base>

@@ -1,0 +1,93 @@
+---
+import { ChevronLeft, ChevronRight } from '@lucide/astro'
+import { contact, testimonials } from '@/lib/site'
+
+const arrow =
+  'flex size-12 shrink-0 items-center justify-center rounded-full border border-foreground/30 transition-colors hover:border-foreground hover:bg-ink hover:text-ink-foreground'
+---
+
+<section id="reviews" aria-labelledby="reviews-heading" class="relative z-10 scroll-mt-16 py-24 md:py-32">
+  <client-stories class="mx-auto block max-w-5xl px-5 md:px-8">
+    <div data-reveal class="flex items-end justify-center gap-5">
+      <span aria-hidden="true" class="font-display text-[8rem] leading-[0.7] text-gold md:text-[11rem]">“</span>
+      <div class="pb-1">
+        <p class="eyebrow text-muted-foreground">Testimonials</p>
+        <h2 id="reviews-heading" class="mt-3 text-4xl font-medium tracking-wide md:text-6xl">Client Stories</h2>
+      </div>
+    </div>
+
+    <div class="mt-14 flex items-center gap-6 md:gap-10">
+      <button type="button" data-prev class:list={[arrow, 'hidden md:flex']}>
+        <ChevronLeft class="size-5" aria-hidden="true" /><span class="sr-only">Previous review</span>
+      </button>
+      <div aria-live="polite" class="grid min-h-64 flex-1">
+        {
+          testimonials.map((r, i) => (
+            <figure data-story hidden={i !== 0} class="rise col-start-1 row-start-1 text-center">
+              <blockquote class="text-xl leading-relaxed text-pretty md:text-2xl">“{r.quote}”</blockquote>
+              <figcaption class="eyebrow mt-8 text-muted-foreground">{r.who}</figcaption>
+            </figure>
+          ))
+        }
+      </div>
+      <button type="button" data-next class:list={[arrow, 'hidden md:flex']}>
+        <ChevronRight class="size-5" aria-hidden="true" /><span class="sr-only">Next review</span>
+      </button>
+    </div>
+
+    <div class="mt-8 flex items-center justify-center gap-4">
+      <button type="button" data-prev class:list={[arrow, 'md:hidden']}>
+        <ChevronLeft class="size-5" aria-hidden="true" /><span class="sr-only">Previous review</span>
+      </button>
+      <div class="flex gap-1" role="group" aria-label="Choose a review">
+        {
+          testimonials.map((_, i) => (
+            <button type="button" data-dot={i} aria-current={i === 0 ? 'true' : 'false'} aria-label={`Review ${i + 1}`} class="group flex size-6 items-center justify-center">
+              <span class="block size-2 rounded-full bg-foreground/20 transition-all group-aria-[current=true]:w-5 group-aria-[current=true]:bg-poppy" />
+            </button>
+          ))
+        }
+      </div>
+      <button type="button" data-next class:list={[arrow, 'md:hidden']}>
+        <ChevronRight class="size-5" aria-hidden="true" /><span class="sr-only">Next review</span>
+      </button>
+    </div>
+
+    <div class="mt-10 flex justify-center">
+      <a href={contact.reviews} target="_blank" rel="noopener noreferrer" class="pill bg-ink text-ink-foreground hover:bg-poppy hover:text-ink">Read reviews on Google</a>
+    </div>
+  </client-stories>
+</section>
+
+<script>
+  class ClientStories extends HTMLElement {
+    #i = 0
+    #t?: number
+    #paused = false
+
+    connectedCallback() {
+      this.querySelectorAll('[data-prev]').forEach((b) => b.addEventListener('click', () => this.go(this.#i - 1)))
+      this.querySelectorAll('[data-next]').forEach((b) => b.addEventListener('click', () => this.go(this.#i + 1)))
+      this.querySelectorAll<HTMLElement>('[data-dot]').forEach((b) => b.addEventListener('click', () => this.go(Number(b.dataset.dot))))
+      this.addEventListener('mouseenter', () => ((this.#paused = true), clearTimeout(this.#t)))
+      this.addEventListener('mouseleave', () => ((this.#paused = false), this.schedule()))
+      this.schedule()
+    }
+    disconnectedCallback() {
+      clearTimeout(this.#t)
+    }
+    schedule() {
+      clearTimeout(this.#t)
+      if (this.#paused || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+      this.#t = window.setTimeout(() => this.go(this.#i + 1), 8000)
+    }
+    go(n: number) {
+      const stories = this.querySelectorAll<HTMLElement>('[data-story]')
+      this.#i = (n + stories.length) % stories.length
+      stories.forEach((s, i) => (s.hidden = i !== this.#i))
+      this.querySelectorAll('[data-dot]').forEach((d, i) => d.setAttribute('aria-current', String(i === this.#i)))
+      this.schedule()
+    }
+  }
+  customElements.define('client-stories', ClientStories)
+</script>

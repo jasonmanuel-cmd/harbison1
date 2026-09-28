@@ -1,0 +1,153 @@
+---
+import { Image } from 'astro:assets'
+import { Menu, X } from '@lucide/astro'
+import logo from '@/assets/harbison-logo.png'
+import { contact, menuLinks, primaryNav } from '@/lib/site'
+
+interface Props {
+  overlay?: boolean
+}
+const { overlay = true } = Astro.props
+const path = Astro.url.pathname
+const isCurrent = (href: string) => path === href || (href !== '/' && path.startsWith(`${href}/`))
+---
+
+<site-header data-overlay={overlay ? '' : undefined}>
+  <header
+    class="group/header fixed inset-x-0 top-0 z-50 text-ink-foreground transition-[background-color,box-shadow,backdrop-filter] duration-500 data-[solid]:bg-ink/92 data-[solid]:shadow-lg data-[solid]:shadow-ink/20 data-[solid]:backdrop-blur-md"
+    data-solid={overlay ? undefined : ''}
+  >
+    <div class="shell flex items-center justify-between gap-6 py-3 lg:grid lg:grid-cols-[1fr_auto_1fr]">
+      <nav aria-label="Primary" class="hidden lg:block">
+        <ul class="flex items-center gap-6 xl:gap-8">
+          {
+            primaryNav.map((l) => (
+              <li>
+                <a
+                  href={l.href}
+                  aria-current={isCurrent(l.href) ? 'page' : undefined}
+                  class="label relative whitespace-nowrap py-2 transition-colors after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-left after:scale-x-0 after:bg-poppy after:transition-transform after:duration-500 hover:text-poppy hover:after:scale-x-100 aria-[current=page]:text-poppy aria-[current=page]:after:scale-x-100"
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <a href="/" class="shrink-0" aria-label="Harbison Standard home">
+        <Image
+          src={logo}
+          alt="Harbison Standard — Real Estate, Development, Investing"
+          width={320}
+          priority
+         
+          class="h-12 w-auto transition-[height] duration-500 group-data-[solid]/header:h-11 md:h-16 md:group-data-[solid]/header:h-12"
+        />
+      </a>
+
+      <div class="flex items-center justify-end gap-6 xl:gap-8">
+        <a href="/about" class="label hidden transition-colors hover:text-poppy lg:inline">About</a>
+        <a href="/contact" class="label hidden whitespace-nowrap transition-colors hover:text-poppy lg:inline">Let’s connect</a>
+        <a href={contact.phoneHref} class="label hidden tabular-nums transition-colors hover:text-poppy xl:inline"
+          >{contact.phone}</a
+        >
+        <button
+          type="button"
+          data-menu-toggle
+          aria-expanded="false"
+          aria-controls="site-menu"
+          class="group/menu flex size-11 items-center justify-center transition-colors hover:text-poppy"
+        >
+          <Menu class="size-6 group-aria-expanded/menu:hidden" aria-hidden="true" />
+          <X class="hidden size-6 group-aria-expanded/menu:block" aria-hidden="true" />
+          <span class="sr-only">Menu</span>
+        </button>
+      </div>
+    </div>
+
+    <div
+      id="site-menu"
+      hidden
+      class="h-[calc(100svh-4.5rem)] overflow-y-auto overscroll-contain border-t border-ink-foreground/15 bg-ink md:h-[calc(100svh-5.5rem)]"
+    >
+      <div class="shell grid gap-12 py-10 lg:grid-cols-2 lg:py-16">
+        <nav aria-label="Menu">
+          <ul class="flex flex-col">
+            {
+              menuLinks.map((l, i) => (
+                <li class="rise" style={`animation-delay:${i * 45}ms`}>
+                  <a
+                    href={l.href}
+                    aria-current={isCurrent(l.href) ? 'page' : undefined}
+                    class="group flex min-h-14 items-center justify-between border-b border-ink-foreground/10 font-display text-3xl tracking-wide transition-colors hover:text-poppy aria-[current=page]:text-poppy md:text-4xl"
+                  >
+                    {l.label}
+                    <span class="text-base text-ink-foreground/30 transition-transform group-hover:translate-x-1 group-hover:text-poppy" aria-hidden="true">→</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+        <div class="flex flex-col gap-6 lg:items-end lg:justify-end lg:text-right">
+          <p class="eyebrow text-ink-foreground/60">Call or text</p>
+          <a href={contact.phoneHref} class="font-display text-4xl tracking-wide hover:text-poppy">{contact.phone}</a>
+          <a href={`mailto:${contact.email}`} class="break-all text-ink-foreground/80 hover:text-poppy">{contact.email}</a>
+          <p class="eyebrow text-ink-foreground/60">DRE #{contact.dre}</p>
+        </div>
+      </div>
+    </div>
+    <span aria-hidden="true" class="scroll-progress absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-poppy/80"></span>
+  </header>
+</site-header>
+
+<script>
+  class SiteHeaderEl extends HTMLElement {
+    #abort = new AbortController()
+
+    connectedCallback() {
+      const header = this.querySelector('header')!
+      const toggle = this.querySelector<HTMLButtonElement>('[data-menu-toggle]')!
+      const menu = this.querySelector<HTMLElement>('#site-menu')!
+      const overlay = this.hasAttribute('data-overlay')
+      const { signal } = this.#abort
+
+      const setSolid = () => {
+        const solid = !overlay || window.scrollY > 48 || !menu.hidden
+        header.toggleAttribute('data-solid', solid)
+      }
+
+      const setOpen = (open: boolean) => {
+        menu.hidden = !open
+        toggle.setAttribute('aria-expanded', String(open))
+        document.documentElement.style.overflow = open ? 'hidden' : ''
+        setSolid()
+        if (open) menu.querySelector('a')?.focus()
+      }
+
+      setSolid()
+      window.addEventListener('scroll', setSolid, { passive: true, signal })
+      toggle.addEventListener('click', () => setOpen(menu.hidden), { signal })
+      window.addEventListener(
+        'keydown',
+        (e) => {
+          if (e.key === 'Escape' && !menu.hidden) {
+            setOpen(false)
+            toggle.focus()
+          }
+        },
+        { signal },
+      )
+      document.addEventListener('astro:before-preparation', () => setOpen(false), { signal })
+    }
+
+    disconnectedCallback() {
+      this.#abort.abort()
+      this.#abort = new AbortController()
+      document.documentElement.style.overflow = ''
+    }
+  }
+  customElements.define('site-header', SiteHeaderEl)
+</script>

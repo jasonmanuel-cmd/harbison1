@@ -1,0 +1,17 @@
+---
+import Base from '@/layouts/Base.astro'
+import Dashboard from '@/components/hq/Dashboard'
+import { isAuthenticated } from '@/lib/server/hq-auth'
+
+export const prerender = false
+
+// Guarded on the server as well as in the API, so the shell never renders unauthenticated.
+if (!isAuthenticated(Astro.cookies)) return Astro.redirect('/hq')
+Astro.response.headers.set('Cache-Control', 'no-store')
+---
+
+<Base title="HQ Dashboard" description="Internal CRM and site analytics." noindex bare>
+  <div class="min-h-screen bg-ink text-ink-foreground">
+    <Dashboard client:only="react" />
+  </div>
+</Base>

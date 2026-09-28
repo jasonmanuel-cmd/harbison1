@@ -1,0 +1,25 @@
+{
+  "address": "18211 Sulky Ln",
+  "city": "Tehachapi",
+  "zip": "93561",
+  "price": 499000,
+  "beds": 3,
+  "baths": 3,
+  "sqft": 2496,
+  "lot": "0.27 acre lot",
+  "lotAcres": 0.27,
+  "neighborhood": "Stallion Springs",
+  "type": "home",
+  "status": "active",
+  "blurb": "Luxury, convenience, and low-maintenance living in a beautifully crafted 2018 Stallion Springs home.",
+  "description": "Luxury, convenience, and low-maintenance living come together in this beautifully crafted Stallion Springs home. Built in 2018, this beautifully designed residence offers 3 bedrooms, 3 bathrooms, and nearly 2,500 square feet of thoughtfully planned living space. Soaring ceilings, abundant natural light, and an open-concept floor plan create an inviting atmosphere for both everyday living and entertaining. The spacious great room flows seamlessly into the stunning chef's kitchen, complete with beautiful cabinetry, generous prep space, a large center island, and modern finishes.",
+  "features": [
+    "Built 2018",
+    "Open-concept floor plan",
+    "Chef's kitchen with island",
+    "Spa-inspired primary suite"
+  ],
+  "attribution": "Listing courtesy of Heather McKinley, Keller Williams Tehachapi.",
+  "mls": "9994314",
+  "listedAt": "2026-09-14"
+}

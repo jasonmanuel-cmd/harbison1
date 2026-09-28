@@ -1,0 +1,115 @@
+---
+import { Image } from 'astro:assets'
+import { ChevronRight } from '@lucide/astro'
+import { getActiveListings, getAreas, inArea, marketStats } from '@/lib/listings'
+import { photo } from '@/lib/photos'
+import { formatPriceShort } from '@/lib/site'
+
+const [areas, listings] = await Promise.all([getAreas(), getActiveListings()])
+const rows = areas.map((a) => ({ area: a, stats: marketStats(listings.filter((l) => inArea(l, a))) }))
+---
+
+<section id="areas" aria-labelledby="areas-heading" class="scroll-mt-16 bg-secondary py-24 md:py-32">
+  <areas-explorer class="shell grid gap-12 lg:grid-cols-[22rem_minmax(0,1fr)] lg:gap-16">
+    <div data-reveal class="flex flex-col">
+      <p class="eyebrow text-muted-foreground">Where we work</p>
+      <h2 id="areas-heading" class="mt-5 text-4xl font-medium tracking-wide md:text-5xl">Neighborhoods</h2>
+      <ul class="mt-10 flex flex-col" role="list">
+        {
+          rows.map(({ area }, i) => (
+            <li>
+              <button
+                type="button"
+                data-area={i}
+                aria-pressed={i === 0 ? 'true' : 'false'}
+                class="group label flex min-h-14 w-full items-center justify-between gap-4 border-b border-border py-4 text-left tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground aria-pressed:border-foreground aria-pressed:text-foreground"
+              >
+                {area.data.name}
+                <ChevronRight class="size-4 -translate-x-2 opacity-0 transition-all group-aria-pressed:translate-x-0 group-aria-pressed:opacity-100" aria-hidden="true" />
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+      <a href="/areas" class="pill mt-10 self-start bg-ink text-ink-foreground hover:bg-poppy hover:text-ink">All neighborhoods</a>
+    </div>
+
+    <div data-reveal style="--reveal-delay:150ms">
+      <div class="relative aspect-[4/5] overflow-hidden bg-ink text-ink-foreground sm:aspect-[4/3] lg:aspect-auto lg:h-full lg:min-h-[36rem]">
+        {
+          rows.map(({ area }, i) => (
+            <Image
+              data-area-img
+              src={photo(area.data.photo)}
+              alt={i === 0 ? `Home in ${area.data.name}` : ''}
+              widths={[640, 1024, 1600]}
+              sizes="(min-width: 1024px) 60vw, 100vw"
+              loading={i === 0 ? 'eager' : 'lazy'}
+              class:list={[
+                'absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[1200ms] ease-out',
+                i === 0 ? 'scale-100 opacity-100' : 'scale-110 opacity-0',
+              ]}
+            />
+          ))
+        }
+        <div aria-hidden="true" class="absolute inset-0 bg-ink/40"></div>
+        <div aria-live="polite" class="absolute inset-0 grid">
+          {
+            rows.map(({ area, stats }, i) => (
+              <div data-area-panel hidden={i !== 0} class="rise col-start-1 row-start-1 flex flex-col items-center justify-center gap-4 px-6 text-center">
+                <p class="eyebrow text-ink-foreground/85">{area.data.tag}</p>
+                <p class="font-display text-5xl font-medium tracking-wide text-balance md:text-7xl">{area.data.name}</p>
+                <p class="max-w-md leading-relaxed text-ink-foreground/90">{area.data.body}</p>
+                {stats.count > 0 && (
+                  <dl class="mt-2 flex gap-8 text-center">
+                    <div>
+                      <dt class="eyebrow text-[0.62rem] text-ink-foreground/65">Listings</dt>
+                      <dd class="font-display text-2xl">{stats.count}</dd>
+                    </div>
+                    <div>
+                      <dt class="eyebrow text-[0.62rem] text-ink-foreground/65">Median ask</dt>
+                      <dd class="font-display text-2xl">{formatPriceShort(stats.median)}</dd>
+                    </div>
+                  </dl>
+                )}
+                <a href={`/areas/${area.id}`} class="pill mt-4 border border-ink-foreground/70 hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink">
+                  Explore {area.data.name}
+                </a>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+      <p class="mt-4 text-sm text-muted-foreground">Also serving California City and the rest of Kern County.</p>
+    </div>
+  </areas-explorer>
+</section>
+
+<script>
+  class AreasExplorer extends HTMLElement {
+    connectedCallback() {
+      const buttons = this.querySelectorAll<HTMLButtonElement>('[data-area]')
+      const imgs = this.querySelectorAll<HTMLImageElement>('[data-area-img]')
+      const panels = this.querySelectorAll<HTMLElement>('[data-area-panel]')
+      const select = (n: number) => {
+        buttons.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)))
+        imgs.forEach((img, i) => {
+          const on = i === n
+          img.classList.toggle('opacity-100', on)
+          img.classList.toggle('scale-100', on)
+          img.classList.toggle('opacity-0', !on)
+          img.classList.toggle('scale-110', !on)
+          if (on) img.loading = 'eager'
+        })
+        panels.forEach((p, i) => (p.hidden = i !== n))
+      }
+      buttons.forEach((b) => {
+        const n = Number(b.dataset.area)
+        b.addEventListener('click', () => select(n))
+        b.addEventListener('mouseenter', () => select(n))
+        b.addEventListener('focus', () => select(n))
+      })
+    }
+  }
+  customElements.define('areas-explorer', AreasExplorer)
+</script>

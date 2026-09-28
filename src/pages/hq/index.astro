@@ -1,0 +1,70 @@
+---
+import Base from '@/layouts/Base.astro'
+import { hqConfigured, isAuthenticated } from '@/lib/server/hq-auth'
+
+// Rendered per request: it reads HQ_PASSWORD and the auth cookie at request time.
+export const prerender = false
+
+if (isAuthenticated(Astro.cookies)) return Astro.redirect('/hq/dashboard')
+const configured = hqConfigured()
+Astro.response.headers.set('Cache-Control', 'no-store')
+---
+
+<Base title="HQ" description="Internal CRM and site analytics." noindex bare>
+  <div class="flex min-h-screen items-center justify-center bg-ink px-6 py-16 text-ink-foreground">
+    {
+      configured ? (
+        <div class="w-full max-w-sm">
+          <p class="label text-poppy">Harbison Standard</p>
+          <h1 class="mt-2 font-display text-3xl tracking-wide">HQ</h1>
+          <p class="mt-2 text-sm text-ink-foreground/60">Leads and site analytics.</p>
+          <form id="hq-login" class="mt-8 flex flex-col gap-4">
+            <div>
+              <label for="hq-password" class="label text-ink-foreground/70">Password</label>
+              <input id="hq-password" name="password" type="password" required autofocus autocomplete="current-password" class="field border-ink-foreground/25 text-ink-foreground" />
+            </div>
+            <p data-error role="alert" hidden class="border border-poppy/50 px-4 py-3 text-sm text-poppy"></p>
+            <button type="submit" class="pill w-full bg-poppy text-ink hover:bg-ink-foreground disabled:opacity-60">Sign in →</button>
+          </form>
+        </div>
+      ) : (
+        <div class="w-full max-w-md border border-ink-foreground/20 p-8">
+          <h1 class="font-display text-2xl">HQ is not set up</h1>
+          <p class="mt-3 text-sm leading-relaxed text-ink-foreground/70">
+            The admin area is disabled because no password has been configured on the server. Set
+            <code class="bg-ink-foreground/10 px-1.5 py-0.5 text-xs">HQ_PASSWORD</code> and
+            <code class="bg-ink-foreground/10 px-1.5 py-0.5 text-xs">HQ_SECRET</code> in the deployment environment, then redeploy.
+          </p>
+          <p class="mt-4 text-sm text-ink-foreground/60">The public site is unaffected and all lead forms still work.</p>
+        </div>
+      )
+    }
+  </div>
+</Base>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const form = document.querySelector<HTMLFormElement>('#hq-login')
+    if (!form) return
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const error = form.querySelector<HTMLElement>('[data-error]')!
+      const button = form.querySelector('button')!
+      error.hidden = true
+      button.disabled = true
+      try {
+        const res = await fetch('/api/hq/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: new FormData(form).get('password') }),
+        })
+        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || 'Could not sign in')
+        window.location.replace('/hq/dashboard')
+      } catch (err) {
+        error.textContent = err instanceof Error ? err.message : 'Could not sign in'
+        error.hidden = false
+        button.disabled = false
+      }
+    })
+  })
+</script>

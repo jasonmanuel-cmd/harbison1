@@ -1,0 +1,13 @@
+{
+  "address": "21213 Windsong Street",
+  "city": "Tehachapi",
+  "zip": "93505",
+  "price": 305000,
+  "beds": 3,
+  "baths": 2.5,
+  "sqft": 1591,
+  "type": "home",
+  "status": "sold",
+  "blurb": "An affordable 3-bedroom, 2.5-bathroom California City home offering 1,591 sq ft of accessible living space.",
+  "soldAt": "2023-09-08"
+}

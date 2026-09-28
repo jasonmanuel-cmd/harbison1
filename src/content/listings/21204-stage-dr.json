@@ -1,0 +1,25 @@
+{
+  "address": "21204 Stage Dr",
+  "city": "Tehachapi",
+  "zip": "93561",
+  "price": 499900,
+  "beds": 4,
+  "baths": 2,
+  "sqft": 1945,
+  "lot": "0.48 acre lot",
+  "lotAcres": 0.48,
+  "neighborhood": "West Golden Hills",
+  "type": "home",
+  "status": "active",
+  "blurb": "Brand new construction in West Golden Hills with a desirable split-wing floor plan on a spacious lot.",
+  "description": "Brand New Construction in West Golden Hills! This beautiful 4 bedroom, 2 bath home offers approximately 1,945 sq. ft. on a spacious .48 acre lot. The desirable split-wing floor plan features luxury vinyl plank flooring, a stylish kitchen with soft-close cabinetry and a walk-in pantry, plus a spacious interior laundry room. The primary suite includes a beautifully tiled shower and two walk-in closets. Additional highlights include an oversized attached 2 car garage, Presidential style composition roof, and paid off solar.",
+  "features": [
+    "New construction 2026",
+    "Paid-off solar",
+    "Oversized 2-car garage",
+    "Presidential composition roof"
+  ],
+  "attribution": "Listing courtesy of Descygene Simunovich, Miramar Intl Tehachapi.",
+  "mls": "9994415",
+  "listedAt": "2026-08-21"
+}

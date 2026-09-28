@@ -1,0 +1,23 @@
+---
+import { Image } from 'astro:assets'
+import { photo } from '@/lib/photos'
+---
+
+<section aria-label="The Harbison Standard" class="relative isolate flex min-h-[75svh] items-center justify-center overflow-hidden bg-ink text-ink-foreground">
+  <Image
+    src={photo('2300-weybridge-dr-2')}
+    alt=""
+    aria-hidden="true"
+    widths={[960, 1600, 2400]}
+    sizes="100vw"
+    class="parallax absolute inset-0 -z-10 h-full w-full object-cover"
+  />
+  <div aria-hidden="true" class="absolute inset-0 -z-10 bg-ink/60"></div>
+  <div data-reveal class="mx-auto max-w-4xl px-5 py-24 text-center">
+    <p class="eyebrow text-ink-foreground/80">The Harbison Standard</p>
+    <p class="mt-6 font-display text-4xl font-medium leading-tight tracking-wide text-balance md:text-6xl">
+      It’s not what you do. It’s <span class="gold-text">how</span> you do it.
+    </p>
+    <a href="#contact" class="pill mt-10 border border-ink-foreground/70 hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink">Start a conversation</a>
+  </div>
+</section>

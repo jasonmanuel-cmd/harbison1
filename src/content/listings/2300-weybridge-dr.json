@@ -1,0 +1,26 @@
+{
+  "address": "2300 Weybridge Dr",
+  "city": "Bakersfield",
+  "zip": "93311",
+  "price": 2895000,
+  "beds": 5,
+  "baths": 8,
+  "sqft": 7025,
+  "lot": "19,602 sq ft lot",
+  "lotAcres": 0.45,
+  "neighborhood": "Seven Oaks Estate",
+  "type": "home",
+  "status": "active",
+  "blurb": "Stunning 7,000+ sq ft estate with a $1,000,000+ remodel on the 9th hole of the Islands course, a short walk from the Seven Oaks clubhouse.",
+  "description": "Stunning 7,000+ sq ft estate with $1,000,000+ remodel! Situated on the 9th hole of the Islands course, you are only a short walk from the Seven Oaks clubhouse. One of the most striking features is the refinished wood flooring, cabinetry, coffered ceilings and banisters, particularly in the study, foyer and staircase. The gourmet kitchen has high-end Wolf appliances and premier custom cabinets. The owner's suite is located on the ground floor with its 3 walk-in closets plus sitting area and direct access to the back yard spa. 4 ensuite bedrooms upstairs, all with walk-in closets. Finished walk-out basement used as gym/storage. Owned solar system and elevator with access to all three floors.",
+  "features": [
+    "Seven Oaks gated",
+    "Golf course views",
+    "Elevator",
+    "Owned solar",
+    "Wolf appliances"
+  ],
+  "attribution": "Listing courtesy of William Gordon, Watson Realty.",
+  "mls": "V137657",
+  "listedAt": "2026-07-15"
+}
