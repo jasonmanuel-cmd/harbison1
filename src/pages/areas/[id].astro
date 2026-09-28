@@ -1,0 +1,108 @@
+---
+import type { GetStaticPaths } from 'astro'
+import Base from '@/layouts/Base.astro'
+import PageHero from '@/components/PageHero.astro'
+import ListingCard from '@/components/ListingCard.astro'
+import InquiryForm from '@/components/InquiryForm.astro'
+import { getActiveListings, getAreas, getSoldListings, inArea, marketStats, type Area } from '@/lib/listings'
+import { photo } from '@/lib/photos'
+import { SITE_URL, formatPrice, formatPriceShort } from '@/lib/site'
+
+export const getStaticPaths = (async () => {
+  const areas = await getAreas()
+  return areas.map((area) => ({ params: { id: area.id }, props: { area } }))
+}) satisfies GetStaticPaths
+
+const { area } = Astro.props as { area: Area }
+const a = area.data
+const [active, sold, areas] = await Promise.all([getActiveListings(), getSoldListings(), getAreas()])
+const here = active.filter((l) => inArea(l, area))
+const soldHere = sold.filter((l) => inArea(l, area))
+const stats = marketStats(here)
+const siblings = areas.filter((x) => x.id !== area.id)
+
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'Place',
+  name: `${a.name}, CA`,
+  url: new URL(`/areas/${area.id}`, SITE_URL).href,
+  containedInPlace: { '@type': 'AdministrativeArea', name: 'Kern County, CA' },
+}
+---
+
+<Base
+  title={`${a.name} Homes & Land for Sale`}
+  description={`${a.body} ${stats.count ? `${stats.count} current ${stats.count === 1 ? 'listing' : 'listings'}, median ask ${formatPriceShort(stats.median)}.` : ''} Real estate in ${a.name} with Nathanael Harbison.`}
+  image={photo(a.photo)}
+  jsonLd={ld}
+>
+  <PageHero eyebrow={a.tag} title={a.name} intro={a.body} image={photo(a.photo)} crumbs={[{ label: 'Neighborhoods', href: '/areas' }, { label: a.name }]}>
+    {
+      stats.count > 0 && (
+        <dl class="rise mt-10 flex flex-wrap gap-x-12 gap-y-6" style="animation-delay:240ms">
+          <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/55">Active listings</dt><dd class="mt-1 font-display text-3xl">{stats.count}</dd></div>
+          <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/55">Median ask</dt><dd class="mt-1 font-display text-3xl">{formatPriceShort(stats.median)}</dd></div>
+          {stats.medianPpsf > 0 && <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/55">Median $/sq ft</dt><dd class="mt-1 font-display text-3xl">${stats.medianPpsf}</dd></div>}
+          <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/55">Price range</dt><dd class="mt-1 font-display text-3xl">{formatPriceShort(stats.min)}–{formatPriceShort(stats.max)}</dd></div>
+        </dl>
+      )
+    }
+  </PageHero>
+
+  <section class="bg-background py-16 md:py-24" aria-labelledby="area-listings">
+    <div class="shell">
+      <div data-reveal class="flex flex-wrap items-end justify-between gap-4">
+        <h2 id="area-listings" class="text-3xl font-medium tracking-wide md:text-4xl">
+          {here.length ? `On the market in ${a.name}` : `Looking in ${a.name}?`}
+        </h2>
+        <a href={`/properties`} class="label text-muted-foreground hover:text-poppy-deep">All properties →</a>
+      </div>
+      {
+        here.length > 0 ? (
+          <ul class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {here.map((l, i) => <ListingCard listing={l} index={i} />)}
+          </ul>
+        ) : (
+          <p class="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+            Nothing is listed in {a.name} right now. Share what you’re looking for and Nathanael will watch for new and off-market opportunities.
+          </p>
+        )
+      }
+      {
+        soldHere.length > 0 && (
+          <p class="mt-10 text-sm text-muted-foreground">
+            Recently closed here: {soldHere.map((s) => `${s.data.address} (${formatPrice(s.data.price)})`).join(' · ')}
+          </p>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="bg-secondary py-16 md:py-24">
+    <div class="shell grid gap-12 lg:grid-cols-12">
+      <div data-reveal class="lg:col-span-5">
+        <p class="eyebrow text-muted-foreground">Local guidance</p>
+        <h2 class="mt-4 text-3xl font-medium tracking-wide md:text-4xl">Thinking about {a.name}?</h2>
+        <p class="mt-5 leading-relaxed text-muted-foreground">
+          Tell Nathanael what you’re looking for — budget, timing, and the way you want to live — and get an honest read on whether {a.name} fits,
+          and what your budget really buys here.
+        </p>
+        <h3 class="label mt-10 text-muted-foreground">Other neighborhoods</h3>
+        <ul class="mt-4 flex flex-wrap gap-2">
+          {
+            siblings.map((s) => (
+              <li>
+                <a href={`/areas/${s.id}`} class="inline-flex rounded-full border border-border px-4 py-2 text-sm transition-colors hover:border-ink hover:bg-ink hover:text-ink-foreground">
+                  {s.data.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div data-reveal style="--reveal-delay:120ms" class="rounded-sm border border-border bg-background p-6 md:p-10 lg:col-span-7">
+        <InquiryForm dark={false} compact />
+      </div>
+    </div>
+  </section>
+</Base>

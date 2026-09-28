@@ -1,33 +1,73 @@
-# harbison1
+# Harbison Standard
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
+The website for **Harbison Standard** — Nathanael Harbison, REALTOR® (DRE #02059393), serving buyers, sellers, and investors in Tehachapi, Bakersfield, and Kern County.
 
-## Built with v0
+Built with [Astro](https://astro.build) 7, Tailwind CSS 4, and deployed on Vercel.
 
-This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
+## Architecture
 
-[Continue working on v0 →](https://v0.app/chat/projects/prj_v01nZSFduJmR4zpg118DFfhFUOm4)
+| Area | How it works |
+| --- | --- |
+| **Public pages** | Prerendered to static HTML at build time. No framework JavaScript — interactivity (carousels, filters, gallery, payment estimator, lead form) is small native custom elements. |
+| **Listings** | Content collection in `src/content/listings/*.json`, validated by a Zod schema in `src/content.config.ts`. |
+| **Photos** | `src/assets/property/<slug>-<n>.jpg`. Discovered automatically per listing and converted to responsive WebP at build time. |
+| **Guides** | Markdown front-matter in `src/content/guides/*.md` → `/private-sale`, `/land`, etc. |
+| **Neighborhoods** | `src/content/areas.json` → `/areas/<id>`, with stats computed from live listing data. |
+| **Leads** | `POST /api/lead` → emailed via Formspree, mirrored to Supabase when configured. Falls back to a pre-filled `mailto:` if the service is down. |
+| **Analytics** | First-party, cookieless (`/api/track` + `src/scripts/analytics.ts`). Honors Do Not Track, Global Privacy Control, and a footer opt-out. |
+| **HQ** | `/hq` — password-protected CRM + analytics dashboard (the only page that loads React). |
 
-## Getting Started
+Page navigation uses Astro's `<ClientRouter />` view transitions, so listing photos morph from the card into the property page.
 
-First, run the development server:
+## Common tasks
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+**Add a listing:** drop photos into `src/assets/property/` as `my-new-listing-1.jpg`, `-2.jpg`, … and create `src/content/listings/my-new-listing.json`:
+
+```json
+{
+  "address": "123 Example St",
+  "city": "Tehachapi",
+  "zip": "93561",
+  "price": 525000,
+  "beds": 3,
+  "baths": 2,
+  "sqft": 1850,
+  "lot": "0.5 acre lot",
+  "lotAcres": 0.5,
+  "neighborhood": "Stallion Springs",
+  "type": "home",
+  "status": "active",
+  "blurb": "One or two sentences for cards.",
+  "description": "The full description.",
+  "features": ["Mountain views", "3-car garage"],
+  "listedAt": "2026-10-01"
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The build fails with a clear message if a field is missing or mistyped. **Mark as sold:** set `"status": "sold"` and add `"soldAt"`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Development
 
-## Learn More
+```bash
+npm install
+npm run dev      # http://localhost:4321
+npm run check    # type-check
+npm run build    # production build
+```
 
-To learn more, take a look at the following resources:
+Requires Node 22.12+.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
+## Environment variables
+
+All optional — see `.env.example`. Set them in Vercel → Project → Settings → Environment Variables.
+
+| Variable | Purpose |
+| --- | --- |
+| `FORMSPREE_FORM_ID`, `NOTIFY_EMAIL` | Lead email delivery (defaults to the existing form) |
+| `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | CRM + analytics storage |
+| `ANALYTICS_SALT` | Salt for the daily-rotating visitor hash |
+| `HQ_PASSWORD`, `HQ_SECRET` | Enables `/hq` |
+
+## Database
+
+`supabase/schema.sql` (new project) or `supabase/migration-existing-project.sql` (existing data), then **`supabase/migration-002-analytics-rpc.sql`**, which adds the `visits.page_token` column and `bump_session()` function the analytics ingest depends on.

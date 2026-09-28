@@ -1,0 +1,63 @@
+---
+import { Image } from 'astro:assets'
+import { cover, factLine, type Listing } from '@/lib/listings'
+import { formatPrice } from '@/lib/site'
+
+interface Props {
+  listing: Listing
+  index?: number
+  /** Adds data-* attributes consumed by the /properties filter. */
+  filterable?: boolean
+  eager?: boolean
+}
+const { listing, index = 0, filterable = false, eager = false } = Astro.props
+const l = listing.data
+const img = cover(listing)
+const status = l.status === 'pending' ? 'Pending' : 'For sale'
+const attrs = filterable
+  ? {
+      'data-listing': '',
+      'data-city': l.city,
+      'data-type': l.type,
+      'data-price': l.price,
+      'data-beds': l.beds ?? 0,
+      'data-sqft': l.sqft ?? 0,
+      'data-acres': l.lotAcres ?? 0,
+      'data-listed': l.listedAt?.getTime() ?? 0,
+      'data-search': [l.address, l.city, l.zip, l.neighborhood, ...(l.features ?? [])].filter(Boolean).join(' ').toLowerCase(),
+    }
+  : {}
+---
+
+<li {...attrs} data-reveal style={`--reveal-delay:${(index % 3) * 90}ms`}>
+  <a href={`/property/${listing.id}`} class="group flex h-full flex-col overflow-hidden bg-card text-card-foreground shadow-sm ring-1 ring-border transition-[box-shadow,transform] duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-ink/15">
+    <div class="relative aspect-[4/3] overflow-hidden bg-muted">
+      <Image
+        src={img}
+        alt={`${l.address}, ${l.city}, CA`}
+        widths={[480, 720, 960]}
+        sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
+        loading={eager ? 'eager' : 'lazy'}
+        class="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
+        transition:name={`photo-${listing.id}`}
+      />
+      <span class="absolute left-4 top-4 bg-ink/85 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-widest text-ink-foreground backdrop-blur">
+        {l.type === 'land' ? 'Land' : status}
+      </span>
+      <span class="absolute bottom-4 right-4 translate-y-2 bg-poppy px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-widest text-ink opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+        View →
+      </span>
+    </div>
+    <div class="flex flex-1 flex-col gap-3 p-6">
+      <div class="flex items-baseline justify-between gap-4">
+        <h3 class="font-display text-xl tracking-wide">{l.address}</h3>
+        <span class="shrink-0 font-display text-lg text-poppy-deep">{formatPrice(l.price)}</span>
+      </div>
+      <p class="label text-[0.7rem] text-muted-foreground">
+        {l.neighborhood ? `${l.neighborhood} · ` : ''}{l.city}, CA {l.zip}
+      </p>
+      <p class="line-clamp-3 text-sm leading-relaxed text-muted-foreground">{l.blurb}</p>
+      <p class="mt-auto border-t border-border pt-4 text-sm text-muted-foreground">{factLine(l, ' · ')}</p>
+    </div>
+  </a>
+</li>

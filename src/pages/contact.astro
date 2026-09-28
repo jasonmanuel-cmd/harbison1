@@ -1,0 +1,18 @@
+---
+import Base from '@/layouts/Base.astro'
+import PageHero from '@/components/PageHero.astro'
+import ContactSection from '@/components/ContactSection.astro'
+---
+
+<Base
+  title="Contact"
+  description="Call or text (661) 472-7499 or send a message to Nathanael Harbison, REALTOR® DRE #02059393. Most messages get a reply within 24 hours."
+>
+  <PageHero
+    eyebrow="Let’s connect"
+    title="Good things start with a conversation."
+    intro="Share your real estate question, situation, or inquiry. The more context you provide, the better Nathanael can address your specific situation."
+    crumbs={[{ label: 'Contact' }]}
+  />
+  <ContactSection heading="Send a message" />
+</Base>

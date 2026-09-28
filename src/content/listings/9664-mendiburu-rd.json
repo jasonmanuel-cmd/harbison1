@@ -1,0 +1,13 @@
+{
+  "address": "9664 Mendiburu Road",
+  "city": "Tehachapi",
+  "zip": "93505",
+  "price": 359000,
+  "beds": 4,
+  "baths": 2,
+  "sqft": 2246,
+  "type": "home",
+  "status": "sold",
+  "blurb": "A 4-bedroom, 2-bathroom California City property offering 2,246 sq ft with solid bones and renovation potential.",
+  "soldAt": "2024-01-12"
+}

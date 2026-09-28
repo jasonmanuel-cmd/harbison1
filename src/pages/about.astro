@@ -1,0 +1,108 @@
+---
+import { Image } from 'astro:assets'
+import Base from '@/layouts/Base.astro'
+import PageHero from '@/components/PageHero.astro'
+import headshot from '@/assets/headshot.webp'
+import about from '@/data/about.json'
+import { SITE_URL, contact, socials, values } from '@/lib/site'
+import { getSoldListings } from '@/lib/listings'
+
+const sold = await getSoldListings()
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: contact.name,
+  jobTitle: 'REALTOR®',
+  url: new URL('/about', SITE_URL).href,
+  worksFor: { '@id': `${SITE_URL}/#agent` },
+  sameAs: [contact.youtube, contact.instagram, contact.facebook, contact.linkedin],
+}
+---
+
+<Base
+  title="About Nathanael Harbison"
+  description="Meet Nathanael Harbison, California-licensed REALTOR® DRE #02059393, serving buyers, sellers, and investors across Kern County."
+  image={headshot}
+  jsonLd={ld}
+>
+  <PageHero
+    eyebrow={`REALTOR® · DRE #${contact.dre}`}
+    title="Meet Nathanael"
+    intro="A practical perspective shaped by real estate, development, and a long-term view of value — and plain talk about what makes sense."
+    crumbs={[{ label: 'About' }]}
+  />
+
+  <section class="bg-background py-16 text-foreground md:py-24">
+    <div class="shell grid gap-14 lg:grid-cols-12 lg:gap-16">
+      <div data-reveal class="flex flex-col gap-6 lg:col-span-7">
+        {
+          about.paragraphs.map((para: string, i: number) => (
+            <p class:list={['leading-relaxed text-pretty', i === 0 ? 'font-display text-2xl leading-snug tracking-wide text-foreground' : 'text-lg text-muted-foreground']}>{para}</p>
+          ))
+        }
+      </div>
+      <div data-reveal style="--reveal-delay:150ms" class="lg:col-span-5">
+        <figure class="lg:sticky lg:top-28">
+          <div class="relative">
+            <div aria-hidden="true" class="absolute -right-4 -top-4 hidden size-full border border-poppy md:block"></div>
+            <div class="relative aspect-[4/5] overflow-hidden bg-muted">
+              <Image src={headshot} alt="Nathanael Harbison, REALTOR®" widths={[480, 960]} sizes="(min-width: 1024px) 33vw, 100vw" priority class="h-full w-full object-cover" transition:name="headshot" />
+            </div>
+          </div>
+          <figcaption class="eyebrow mt-5 text-muted-foreground">Nathanael Harbison · Harbison Standard</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-secondary py-16 md:py-24">
+    <div class="shell">
+      <div data-reveal>
+        <p class="eyebrow text-muted-foreground">Why Harbison Standard</p>
+        <h2 class="mt-4 max-w-3xl text-3xl font-medium tracking-wide md:text-5xl">
+          Practical guidance. <span class="italic text-poppy-deep">Direct communication. Real experience.</span>
+        </h2>
+      </div>
+      <dl class="mt-12 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          values.map((v, i) => (
+            <div data-reveal style={`--reveal-delay:${i * 100}ms`} class="border-t border-foreground/15 pt-5">
+              <dt class="font-display text-lg tracking-wide">{v.title}</dt>
+              <dd class="mt-2 text-sm leading-relaxed text-muted-foreground">{v.body}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      {
+        sold.length > 0 && (
+          <div data-reveal class="mt-16 border-t border-foreground/15 pt-10">
+            <h3 class="label text-muted-foreground">Recent closings</h3>
+            <ul class="mt-4 flex flex-wrap gap-2">
+              {sold.map((s) => (
+                <li class="rounded-full border border-border bg-background px-4 py-2 text-sm">
+                  {s.data.address} <span class="text-muted-foreground">· {s.data.city}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      <div data-reveal class="mt-14 flex flex-wrap items-center gap-x-8 gap-y-4">
+        <a href="/contact" class="pill bg-ink text-ink-foreground hover:bg-poppy hover:text-ink">Work with Nathanael</a>
+        <ul class="flex flex-wrap gap-x-6">
+          {
+            socials.map((s) => (
+              <li>
+                <a href={s.href} target="_blank" rel="noopener noreferrer" class="label inline-flex min-h-11 items-center text-muted-foreground transition-colors hover:text-poppy-deep">
+                  {s.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>

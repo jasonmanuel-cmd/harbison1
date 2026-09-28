@@ -1,0 +1,46 @@
+---
+import Base from '@/layouts/Base.astro'
+import Hero from '@/components/home/Hero.astro'
+import Standard from '@/components/home/Standard.astro'
+import Services from '@/components/home/Services.astro'
+import About from '@/components/home/About.astro'
+import Showcase from '@/components/home/Showcase.astro'
+import AreasExplorer from '@/components/home/AreasExplorer.astro'
+import Statement from '@/components/home/Statement.astro'
+import Testimonials from '@/components/home/Testimonials.astro'
+import Faq from '@/components/home/Faq.astro'
+import GuidesGrid from '@/components/GuidesGrid.astro'
+import ContactSection from '@/components/ContactSection.astro'
+---
+
+<Base
+  title="Buy, Sell & Invest in Kern County | Harbison Standard"
+  description="Buy, sell, and invest in Tehachapi, Bakersfield, and Kern County with Nathanael Harbison, REALTOR® DRE #02059393. Practical advice, direct communication, and a clear next step."
+>
+  <Hero />
+  <Standard />
+  <Services />
+  <About />
+  <Showcase />
+  <AreasExplorer />
+  <Statement />
+  <Testimonials />
+
+  <section id="guides" aria-labelledby="guides-heading" class="scroll-mt-16 bg-background py-24 md:py-32">
+    <div class="shell">
+      <div data-reveal class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="eyebrow text-muted-foreground">Resources</p>
+          <h2 id="guides-heading" class="mt-4 text-4xl font-medium tracking-wide md:text-6xl">
+            Guides for <span class="italic text-poppy">your search.</span>
+          </h2>
+        </div>
+        <a href="/guides" class="label shrink-0 text-muted-foreground transition-colors hover:text-poppy-deep">View all guides →</a>
+      </div>
+      <div class="mt-14"><GuidesGrid /></div>
+    </div>
+  </section>
+
+  <Faq />
+  <ContactSection />
+</Base>

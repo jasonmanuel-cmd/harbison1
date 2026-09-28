@@ -1,0 +1,31 @@
+---
+import { Mail, MessageSquare, Phone } from '@lucide/astro'
+import { contact } from '@/lib/site'
+---
+
+<div class="fixed bottom-6 left-6 z-40 hidden items-center gap-3 lg:flex" transition:persist="quick-contact">
+  <a
+    href={contact.phoneHref}
+    class="flex size-12 items-center justify-center rounded-full bg-ink text-ink-foreground shadow-lg shadow-ink/25 transition-colors hover:bg-poppy hover:text-ink"
+  >
+    <Phone class="size-5" aria-hidden="true" />
+    <span class="sr-only">Call {contact.phone}</span>
+  </a>
+  <a href="/contact" class="pill bg-poppy text-ink shadow-lg shadow-ink/25 hover:bg-ink hover:text-ink-foreground">Let’s connect</a>
+</div>
+
+<nav
+  aria-label="Quick contact"
+  class="fixed inset-x-0 bottom-0 z-40 grid grid-cols-3 border-t border-ink-foreground/20 bg-ink/95 pb-[env(safe-area-inset-bottom)] text-ink-foreground backdrop-blur-md lg:hidden"
+  transition:persist="quick-contact-mobile"
+>
+  <a href={contact.phoneHref} class="label flex min-h-14 items-center justify-center gap-2 bg-poppy text-ink">
+    <Phone class="size-4" aria-hidden="true" /> Call
+  </a>
+  <a href={contact.smsHref} class="label flex min-h-14 items-center justify-center gap-2">
+    <MessageSquare class="size-4" aria-hidden="true" /> Text
+  </a>
+  <a href={`mailto:${contact.email}`} class="label flex min-h-14 items-center justify-center gap-2">
+    <Mail class="size-4" aria-hidden="true" /> Email
+  </a>
+</nav>

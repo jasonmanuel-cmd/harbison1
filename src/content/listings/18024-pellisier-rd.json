@@ -1,0 +1,15 @@
+{
+  "address": "18024 Pellisier Road",
+  "city": "Tehachapi",
+  "zip": "93561",
+  "price": 980000,
+  "beds": 4,
+  "baths": 3,
+  "sqft": 2805,
+  "lot": "20.08 acres",
+  "lotAcres": 20.08,
+  "type": "home",
+  "status": "sold",
+  "blurb": "A mountain ranch with room to breathe. Set on more than 20 acres in Cummings Valley, this home brings together expansive views, a wraparound deck, and a barn with horse stalls.",
+  "soldAt": "2025-07-01"
+}

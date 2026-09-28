@@ -1,0 +1,13 @@
+{
+  "address": "10618 Sheridan Street",
+  "city": "Tehachapi",
+  "zip": "93505",
+  "price": 345000,
+  "beds": 4,
+  "baths": 2,
+  "sqft": 1705,
+  "type": "home",
+  "status": "sold",
+  "blurb": "A well-maintained single-story residence featuring 4 bedrooms, 2 bathrooms, and 1,705 sq ft of living space.",
+  "soldAt": "2025-06-06"
+}

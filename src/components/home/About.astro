@@ -1,0 +1,54 @@
+---
+import { Image } from 'astro:assets'
+import headshot from '@/assets/headshot.webp'
+import { contact, socials, values } from '@/lib/site'
+---
+
+<section id="about" aria-labelledby="about-heading" class="relative scroll-mt-16 overflow-hidden bg-ink text-ink-foreground">
+  <div aria-hidden="true" class="pointer-events-none absolute -right-40 -top-40 size-[36rem] rounded-full bg-poppy/10 blur-3xl"></div>
+  <div class="shell relative grid gap-14 py-24 md:py-32 lg:grid-cols-12 lg:gap-16">
+    <div data-reveal class="flex flex-col justify-center lg:col-span-6">
+      <p class="eyebrow text-ink-foreground/70">REALTOR® · DRE #{contact.dre}</p>
+      <h2 id="about-heading" class="mt-5 text-5xl font-medium tracking-wide md:text-6xl">Meet Nathanael</h2>
+      <p class="mt-8 max-w-xl leading-relaxed text-ink-foreground/85 text-pretty">
+        Whether you’re buying, selling, or exploring an investment, the right decision starts with understanding the property in front of you.
+        Nathanael Harbison brings a practical perspective shaped by real estate, development, and a long-term view of value — and he tells you
+        plainly what makes sense.
+      </p>
+      <dl class="mt-10 grid gap-x-10 gap-y-6 sm:grid-cols-2">
+        {
+          values.map((v) => (
+            <div class="border-t border-ink-foreground/20 pt-4">
+              <dt class="font-display text-lg tracking-wide text-poppy">{v.title}</dt>
+              <dd class="mt-1 text-sm leading-relaxed text-ink-foreground/75">{v.body}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <div class="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4">
+        <a href="/about" class="pill bg-ink-foreground text-ink hover:bg-poppy">More about Nathanael</a>
+        <ul class="flex flex-wrap gap-x-6">
+          {
+            socials.slice(0, 4).map((s) => (
+              <li>
+                <a href={s.href} target="_blank" rel="noopener noreferrer" class="label inline-flex min-h-11 items-center text-ink-foreground/70 transition-colors hover:text-poppy">
+                  {s.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div data-reveal style="--reveal-delay:150ms" class="flex items-center justify-center lg:col-span-6 lg:justify-end">
+      <figure class="relative w-full max-w-sm">
+        <div aria-hidden="true" class="absolute -right-4 -top-4 hidden size-full border border-poppy md:block"></div>
+        <div class="relative aspect-[4/5] overflow-hidden bg-ink-foreground/10">
+          <Image src={headshot} alt="Nathanael Harbison, REALTOR®" widths={[384, 768]} sizes="384px" class="h-full w-full object-cover" transition:name="headshot" />
+        </div>
+        <figcaption class="eyebrow mt-5 text-ink-foreground/70">Nathanael Harbison · Harbison Standard</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
