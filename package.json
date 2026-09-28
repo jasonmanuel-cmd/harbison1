@@ -12,6 +12,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "audit:contrast": "node scripts/contrast.mjs && node scripts/opacity.mjs",
+    "audit:contrast-scan": "node scripts/contrast-scan.mjs",
     "prune:originals": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prune-originals.ps1"
   },
   "dependencies": {

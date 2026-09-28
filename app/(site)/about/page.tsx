@@ -71,16 +71,21 @@ export default function AboutPage() {
           <Reveal>
             <p className="eyebrow text-muted-foreground">Why Harbison Standard</p>
             <h2 className="mt-4 max-w-2xl text-3xl font-medium tracking-wide md:text-5xl">
-              Practical guidance. <span className="italic text-poppy">Direct communication. Real experience.</span>
+              Practical guidance. <span className="italic text-gold">Direct communication. Real experience.</span>
             </h2>
           </Reveal>
+          {/* The Reveal wrapper is the grouping div the spec allows inside a
+              <dl>; an extra nested div would put the <dt>/<dd> pair two levels
+              down and break the definition list for assistive tech. */}
           <dl className="mt-12 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
             {values.map((v, i) => (
-              <Reveal key={v.title} delay={i * 100}>
-                <div className="border-t border-foreground/15 pt-5">
-                  <dt className="font-display text-lg tracking-wide text-poppy">{v.title}</dt>
-                  <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">{v.body}</dd>
-                </div>
+              <Reveal
+                key={v.title}
+                delay={i * 100}
+                className="border-t border-foreground/15 pt-5"
+              >
+                <dt className="font-display text-lg tracking-wide text-gold">{v.title}</dt>
+                <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">{v.body}</dd>
               </Reveal>
             ))}
           </dl>
@@ -96,7 +101,7 @@ export default function AboutPage() {
                     href={s.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="label inline-flex min-h-11 items-center text-muted-foreground transition-colors hover:text-poppy"
+                    className="label inline-flex min-h-11 items-center text-muted-foreground transition-colors hover:text-gold"
                   >
                     {s.label}
                   </a>
