@@ -89,25 +89,34 @@ export function upsertSession(sessionId: string, patch: Row): Promise<Row[]> {
   return rest<Row[]>(`sessions?on_conflict=session_id`, {
     method: 'POST',
     headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
-    body: JSON.stringify({ ...patch, session_id: sessionId }),
+    // `id` is the legacy primary key and the target of visits_session_id_fkey.
+    // Keeping it equal to session_id satisfies that foreign key and leaves the
+    // older site, which uses `id` as its session key, working unchanged.
+    body: JSON.stringify({ ...patch, session_id: sessionId, id: sessionId }),
   })
 }
 
-/** Appends time spent + page count without clobbering other columns. */
+/**
+ * Adds page count and dwell time to a session.
+ *
+ * This goes through the bump_session Postgres function rather than a PATCH,
+ * because PostgREST cannot express `page_views = page_views + n` and a
+ * read-modify-write here would drop updates when two requests for the same
+ * session land together — which is common on a fast multi-page visit.
+ * The function is SECURITY DEFINER and executable only by service_role.
+ */
 export function bumpSession(
   sessionId: string,
   patch: { pageViews?: number; durationSeconds?: number; exitPath?: string }
-): Promise<Row[]> {
-  // Supabase RPC would be cleaner, but a small SQL expression via PATCH keeps
-  // this dependency-free. The client sends deltas, so additivity is preserved.
-  const body: Row = { last_seen_at: new Date().toISOString() }
-  if (patch.pageViews) body.page_views = `sessions.page_views+${Number(patch.pageViews)}`
-  if (patch.durationSeconds) body.duration_seconds = `sessions.duration_seconds+${Number(patch.durationSeconds)}`
-  if (patch.exitPath) body.exit_path = patch.exitPath
-  return rest<Row[]>(`sessions?session_id=eq.${encodeURIComponent(sessionId)}`, {
-    method: 'PATCH',
-    headers: { Prefer: 'return=representation' },
-    body: JSON.stringify(body),
+): Promise<null> {
+  return rest<null>('rpc/bump_session', {
+    method: 'POST',
+    body: JSON.stringify({
+      p_session_id: sessionId,
+      p_page_views: patch.pageViews ?? 0,
+      p_duration_seconds: patch.durationSeconds ?? 0,
+      p_exit_path: patch.exitPath ?? null,
+    }),
   })
 }
 
@@ -116,6 +125,19 @@ export function recordVisit(visit: Row): Promise<Row[]> {
     method: 'POST',
     headers: { Prefer: 'return=representation' },
     body: JSON.stringify(visit),
+  })
+}
+
+/**
+ * Sets the dwell time on an already-recorded page view, identified by its
+ * per-page token. Updating rather than inserting keeps one row per page view
+ * instead of a separate row per heartbeat.
+ */
+export function recordDwell(pageToken: string, seconds: number): Promise<Row[]> {
+  return rest<Row[]>(`visits?page_token=eq.${encodeURIComponent(pageToken)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({ duration_seconds: seconds }),
   })
 }
 

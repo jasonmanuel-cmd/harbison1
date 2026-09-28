@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto'
 import { NextResponse } from 'next/server'
-import { bumpSession, recordVisit, supabaseConfigured, upsertSession } from '@/lib/supabase'
+import { bumpSession, recordDwell, recordVisit, supabaseConfigured, upsertSession } from '@/lib/supabase'
 
 export const runtime = 'nodejs'
 
@@ -20,7 +20,7 @@ type Body = {
   referrerHost?: string | null
   referrerType?: string
   durationSeconds?: number
-  lastDwellSeconds?: number
+  pageToken?: string
   utm?: Record<string, string | undefined>
 }
 
@@ -108,6 +108,7 @@ export async function POST(request: Request) {
   if (!sid || !type) return NextResponse.json({ ok: false }, { status: 400 })
 
   const path = clean(body.path, 300) || '/'
+  const pageToken = clean(body.pageToken, 64)
   const now = new Date().toISOString()
 
   try {
@@ -131,22 +132,26 @@ export async function POST(request: Request) {
         ...geo(request),
       })
     } else if (type === 'pageview') {
-      await recordVisit({ session_id: sid, path, title: clean(body.title, 200) ?? null })
+      // pageToken is what lets the later heartbeat update this same row.
+      await recordVisit({
+        session_id: sid,
+        path,
+        title: clean(body.title, 200) ?? null,
+        page_token: pageToken ?? null,
+      })
       await bumpSession(sid, { pageViews: 1, exitPath: path })
-    } else if (type === 'heartbeat') {
+    } else if (type === 'heartbeat' || type === 'end') {
+      // Both do the same thing: attribute the time just spent to the page view
+      // that is now finished. Every earlier page sent its own heartbeat as the
+      // visitor navigated away, so the client total is deliberately ignored —
+      // adding it would count the same seconds twice.
       const dwell = Math.min(Math.max(Number(body.durationSeconds) || 0, 0), 1800)
+      if (dwell > 0 && pageToken) {
+        await recordDwell(pageToken, dwell)
+      }
       if (dwell > 0) {
-        await recordVisit({ session_id: sid, path, duration_seconds: dwell })
         await bumpSession(sid, { durationSeconds: dwell, exitPath: path })
       }
-    } else if (type === 'end') {
-      const total = Math.min(Math.max(Number(body.durationSeconds) || 0, 0), 36000)
-      const dwell = Math.min(Math.max(Number(body.lastDwellSeconds) || 0, 0), 1800)
-      if (dwell > 0) {
-        await recordVisit({ session_id: sid, path, duration_seconds: dwell })
-        await bumpSession(sid, { durationSeconds: dwell, exitPath: path })
-      }
-      if (total > 0) await bumpSession(sid, { durationSeconds: Math.max(total - dwell, 0) })
     }
 
     return NextResponse.json({ ok: true, stored: true })

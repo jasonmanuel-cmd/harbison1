@@ -19,7 +19,7 @@
 const SESSION_KEY = 'hs_sid'
 const START_KEY = 'hs_t0'
 const LAST_KEY = 'hs_last'
-const FLUSH_KEY = 'hs_flush'
+const PAGE_TOKEN_KEY = 'hs_ptok'
 const CONSENT_KEY = 'hs_analytics'
 
 export type TrackPayload = {
@@ -28,6 +28,7 @@ export type TrackPayload = {
   referrerHost?: string | null
   referrerType?: string
   durationSeconds?: number
+  pageToken?: string
 }
 
 export function analyticsAllowed(): boolean {
@@ -119,15 +120,27 @@ export function trackPageView(title?: string) {
     })
   }
 
-  // Charge the time spent on the previous page to that page.
+  // Charge the time spent on the previous page to that page. The token lets the
+  // server update the existing row rather than adding another one.
   const last = window.sessionStorage.getItem(LAST_KEY)
-  if (last) {
+  const lastToken = window.sessionStorage.getItem(PAGE_TOKEN_KEY)
+  if (last && lastToken) {
     const dwell = Math.min(Math.round((now - Number(last)) / 1000), 1800)
-    if (dwell > 1) send({ sid, type: 'heartbeat', path: window.location.pathname, durationSeconds: dwell })
+    if (dwell > 1) {
+      send({ sid, type: 'heartbeat', pageToken: lastToken, durationSeconds: dwell })
+    }
   }
 
-  send({ sid, type: 'pageview', path: window.location.pathname, title: title ?? document.title })
+  const pageToken = crypto.randomUUID()
+  send({
+    sid,
+    type: 'pageview',
+    path: window.location.pathname,
+    title: title ?? document.title,
+    pageToken,
+  })
   window.sessionStorage.setItem(LAST_KEY, String(now))
+  window.sessionStorage.setItem(PAGE_TOKEN_KEY, pageToken)
 }
 
 function flush() {
@@ -141,14 +154,16 @@ function flush() {
   })()
   if (!sid) return
 
-  const t0 = Number(window.sessionStorage.getItem(START_KEY) || Date.now())
   const last = Number(window.sessionStorage.getItem(LAST_KEY) || Date.now())
-  const total = Math.min(Math.round((Date.now() - t0) / 1000), 36000)
   const lastDwell = Math.min(Math.round((Date.now() - last) / 1000), 1800)
+  const pageToken = window.sessionStorage.getItem(PAGE_TOKEN_KEY)
 
-  send({ sid, type: 'end', path: window.location.pathname, durationSeconds: total, lastDwellSeconds: lastDwell }, true)
+  if (pageToken) {
+    send({ sid, type: 'end', path: window.location.pathname, pageToken, durationSeconds: lastDwell }, true)
+  }
   try {
     window.sessionStorage.removeItem(LAST_KEY)
+    window.sessionStorage.removeItem(PAGE_TOKEN_KEY)
   } catch {
     /* ignore */
   }
