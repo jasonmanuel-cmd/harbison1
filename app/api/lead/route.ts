@@ -102,6 +102,9 @@ export async function POST(request: Request) {
     timeline: fields.timeline,
     financing_status: fields.financing_status,
     age_range: fields.age_range,
+    // The visitor's own words. /hq renders this, so it has to persist — an
+    // inquiry with no stored message loses the highest-signal part.
+    message: fields.message,
     source,
     session_id: typeof body.session_id === 'string' ? body.session_id.slice(0, 64) : undefined,
   }).catch((err: unknown) => {

@@ -56,6 +56,7 @@ export type LeadInsert = {
   timeline?: string
   financing_status?: string
   age_range?: string
+  message?: string
   source?: string
   session_id?: string
   status?: string

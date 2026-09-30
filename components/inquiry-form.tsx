@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type FormEvent } from 'react'
 import { ArrowRight, Check, Loader2, Mail } from 'lucide-react'
+import { getSessionId } from '@/lib/analytics'
 import { contact } from '@/lib/site'
 import { cn } from '@/lib/utils'
 
@@ -69,6 +70,9 @@ export function InquiryForm({ defaultGoal = '', defaultInterest = '', dark = tru
           goal: defaultGoal,
           interest: defaultInterest,
           message,
+          // Attributes the lead to the visit that produced it in /hq. Null when
+          // sessionStorage is unavailable, which the server treats as optional.
+          session_id: getSessionId() ?? undefined,
         }),
       })
       if (!res.ok) {

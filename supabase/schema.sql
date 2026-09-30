@@ -34,6 +34,10 @@ create table if not exists public.leads (
   financing_status      text,
   age_range             text,          -- optional, self-reported by the visitor
 
+  -- The visitor's own words. This is the highest-signal field on the form and
+  -- the /hq dashboard renders it, so it must persist alongside the rest.
+  message               text,
+
   -- CRM workflow
   status                text not null default 'new'
                           check (status in ('new','contacted','qualified','closed')),
@@ -107,6 +111,48 @@ create table if not exists public.visits (
 create index if not exists visits_session_idx  on public.visits (session_id);
 create index if not exists visits_path_idx     on public.visits (path);
 create index if not exists visits_created_at_idx on public.visits (created_at desc);
+
+-- One token per page view, generated in the browser. recordDwell filters on it
+-- so a heartbeat updates the existing row instead of appending a new one per
+-- heartbeat. Unique so the token is a real identifier, not a guessable value.
+alter table public.visits add column if not exists page_token text;
+create unique index if not exists visits_page_token_idx
+  on public.visits (page_token) where page_token is not null;
+
+-- -----------------------------------------------------------------------------
+-- Atomic session counter.
+--
+-- Page views, dwell time and exit path are accumulated. PostgREST cannot express
+-- `page_views = page_views + n`, and a read-modify-write from the app would drop
+-- concurrent updates — which happens constantly on a fast multi-page visit.
+-- This function does the addition inside the database instead.
+--
+-- SECURITY DEFINER because the sessions table has RLS enabled with no policies:
+-- the function still needs to write, and only service_role may call it. The
+-- execute grant is revoked from everyone else.
+-- -----------------------------------------------------------------------------
+create or replace function public.bump_session(
+  p_session_id       text,
+  p_page_views       integer default 0,
+  p_duration_seconds integer default 0,
+  p_exit_path        text   default null
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.sessions
+     set page_views       = coalesce(page_views, 0) + coalesce(p_page_views, 0),
+         duration_seconds = coalesce(duration_seconds, 0) + coalesce(p_duration_seconds, 0),
+         exit_path        = coalesce(p_exit_path, exit_path),
+         last_seen_at     = now()
+   where session_id = p_session_id;
+end;
+$$;
+
+revoke all on function public.bump_session(text, integer, integer, text) from public;
+grant  execute on function public.bump_session(text, integer, integer, text) to service_role;
 
 -- -----------------------------------------------------------------------------
 -- Lock it down. No policies = anon/authenticated roles get nothing.
