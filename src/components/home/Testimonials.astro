@@ -43,7 +43,7 @@ const arrow =
         {
           testimonials.map((_, i) => (
             <button type="button" data-dot={i} aria-current={i === 0 ? 'true' : 'false'} aria-label={`Review ${i + 1}`} class="group flex size-6 items-center justify-center">
-              <span class="block size-2 rounded-full bg-foreground/20 transition-all group-aria-[current=true]:w-5 group-aria-[current=true]:bg-poppy" />
+              <span class="block size-2 rounded-full bg-foreground/20 transition-[width,background-color] group-aria-[current=true]:w-5 group-aria-[current=true]:bg-poppy" />
             </button>
           ))
         }
@@ -69,8 +69,17 @@ const arrow =
       this.querySelectorAll('[data-prev]').forEach((b) => b.addEventListener('click', () => this.go(this.#i - 1)))
       this.querySelectorAll('[data-next]').forEach((b) => b.addEventListener('click', () => this.go(this.#i + 1)))
       this.querySelectorAll<HTMLElement>('[data-dot]').forEach((b) => b.addEventListener('click', () => this.go(Number(b.dataset.dot))))
-      this.addEventListener('mouseenter', () => ((this.#paused = true), clearTimeout(this.#t)))
-      this.addEventListener('mouseleave', () => ((this.#paused = false), this.schedule()))
+      // Pause for pointer, keyboard focus and touch alike; resume when they leave.
+      const pause = (p: boolean) => {
+        this.#paused = p
+        if (p) clearTimeout(this.#t)
+        else this.schedule()
+      }
+      this.addEventListener('mouseenter', () => pause(true))
+      this.addEventListener('mouseleave', () => pause(false))
+      this.addEventListener('focusin', () => pause(true))
+      this.addEventListener('focusout', () => pause(false))
+      this.addEventListener('touchstart', () => pause(true), { passive: true })
       this.schedule()
     }
     disconnectedCallback() {

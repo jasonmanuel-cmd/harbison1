@@ -21,7 +21,7 @@ import { services } from '@/lib/site'
             <span aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/25 to-transparent transition-colors duration-700 group-hover:bg-ink/40" />
             <span class="relative flex flex-col items-center gap-4 px-8 pb-10 text-center">
               <span class="font-display text-4xl font-medium tracking-[0.08em] md:text-5xl">{s.label}</span>
-              <span class="grid max-w-xs grid-rows-[0fr] opacity-0 transition-all duration-700 group-hover:grid-rows-[1fr] group-hover:opacity-100 group-focus-visible:grid-rows-[1fr] group-focus-visible:opacity-100 max-md:grid-rows-[1fr] max-md:opacity-100">
+              <span class="grid max-w-xs grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity] duration-700 group-hover:grid-rows-[1fr] group-hover:opacity-100 group-focus-visible:grid-rows-[1fr] group-focus-visible:opacity-100 max-md:grid-rows-[1fr] max-md:opacity-100">
                 <span class="overflow-hidden text-sm leading-relaxed text-ink-foreground/85">{s.body}</span>
               </span>
               <span class="label flex items-center gap-2 text-poppy">

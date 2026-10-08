@@ -20,7 +20,7 @@ const listings = (await getActiveListings()).toSorted((a, b) => b.data.price - a
       aria-roledescription="carousel"
       aria-label="Featured properties"
       tabindex="0"
-      class="relative mt-14 h-[78svh] min-h-[32rem] touch-pan-y overflow-hidden bg-ink text-ink-foreground outline-none md:mt-16"
+      class="relative mt-14 h-[78svh] min-h-[32rem] touch-pan-y overflow-hidden bg-ink text-ink-foreground outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-poppy md:mt-16"
     >
       {
         listings.map((item, i) => (
