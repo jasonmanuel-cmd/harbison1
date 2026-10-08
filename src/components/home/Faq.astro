@@ -1,0 +1,54 @@
+---
+import { Plus } from '@lucide/astro'
+import { faqs, steps } from '@/lib/site'
+import { faqSchema } from '@/lib/seo'
+
+// Rendered questions and FAQPage markup read from the same source, so they cannot drift.
+const ld = faqSchema(faqs)
+---
+
+<section id="faq" aria-labelledby="faq-heading" class="scroll-mt-16 bg-secondary py-24 md:py-32">
+  <div class="shell">
+    <div data-reveal class="text-center">
+      <p class="eyebrow text-muted-foreground">How it works</p>
+      <h2 class="mt-5 text-4xl font-medium tracking-wide md:text-6xl">Three steps. No pressure.</h2>
+    </div>
+    <ol class="relative mt-16 grid gap-10 md:grid-cols-3">
+      <span aria-hidden="true" class="absolute left-[16.66%] right-[16.66%] top-7 hidden h-px bg-gradient-to-r from-poppy/0 via-poppy to-poppy/0 md:block"></span>
+      {
+        steps.map((s, i) => (
+          <li data-reveal style={`--reveal-delay:${i * 120}ms`} class="relative flex flex-col items-center gap-4 text-center">
+            <span aria-hidden="true" class="flex size-14 items-center justify-center rounded-full border border-poppy bg-secondary font-display text-xl">
+              {i + 1}
+            </span>
+            <h3 class="text-xl tracking-wide">{s.title}</h3>
+            <p class="max-w-xs leading-relaxed text-muted-foreground">{s.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="mx-auto mt-24 max-w-3xl">
+      <div data-reveal class="text-center">
+        <p class="eyebrow text-muted-foreground">Before you reach out</p>
+        <h2 id="faq-heading" class="mt-5 text-3xl font-medium tracking-wide md:text-5xl">Questions</h2>
+      </div>
+      <div class="mt-10 border-t border-foreground/20">
+        {
+          faqs.map((f) => (
+            <details name="faq" class="group border-b border-foreground/20">
+              <summary class="flex min-h-16 cursor-pointer list-none items-center justify-between gap-6 py-5 font-display text-lg tracking-wide md:text-xl [&::-webkit-details-marker]:hidden">
+                {f.q}
+                <span class="flex size-9 shrink-0 items-center justify-center rounded-full border border-foreground/25 transition-colors group-open:border-poppy group-open:bg-poppy">
+                  <Plus class="size-4 transition-transform duration-300 group-open:rotate-45" aria-hidden="true" />
+                </span>
+              </summary>
+              <p class="max-w-2xl pb-6 leading-relaxed text-muted-foreground">{f.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+<script type="application/ld+json" set:html={JSON.stringify(ld)} />

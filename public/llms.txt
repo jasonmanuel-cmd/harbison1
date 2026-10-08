@@ -34,6 +34,10 @@ that stay off the MLS and off the portals.
   current listings, service area, and FAQ.
 - [Properties](https://www.harbisonstandard.com/properties): every current
   listing, plus a sold-and-closed list with addresses, prices, and dates.
+- [Neighborhoods](https://www.harbisonstandard.com/areas): Tehachapi,
+  Stallion Springs, Golden Hills, Cummings Valley, Bakersfield, Seven Oaks, and
+  Stockdale — each with its current listings and a median asking price
+  computed from those listings, at `/areas/<name>`.
 - [About](https://www.harbisonstandard.com/about): background and working
   principles.
 - [Contact](https://www.harbisonstandard.com/contact): phone, text, email, and
@@ -58,7 +62,8 @@ that stay off the MLS and off the portals.
 Each listing has its own page under `/property/<slug>` carrying the address,
 city, ZIP, price, bedrooms, bathrooms, square footage, lot size where
 published, MLS number where published, the full description, features, and
-photographs. Sold properties are published too, with the status and closing
+photographs. Active listings also show a monthly payment estimate; it is an
+illustration from editable assumptions, not a quote. Sold properties are published too, with the status and closing
 date on the page.
 
 There is **no live listing feed** on this site. Prices and availability can

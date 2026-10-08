@@ -1,0 +1,282 @@
+---
+import { ArrowRight, Check, LoaderCircle, Mail } from '@lucide/astro'
+import { contact } from '@/lib/site'
+
+interface Props {
+  goal?: 'Buying' | 'Selling' | 'Investing' | ''
+  interest?: string
+  dark?: boolean
+  compact?: boolean
+}
+
+const { goal = '', interest = '', dark = true, compact = false } = Astro.props
+const uid = Math.random().toString(36).slice(2, 8)
+const id = (name: string) => `inq-${uid}-${name}`
+
+const goals = ['Buying', 'Selling', 'Investing']
+const timelines = ['As soon as possible', 'Within 3 months', '3–6 months', '6–12 months', 'Just researching']
+const financingOptions = ['Pre-approved', 'Talking with a lender', 'Cash buyer', 'Need a lender introduction', 'Not sure yet']
+const propertyTypes = ['Single-family home', 'Land / acreage', 'Condo / townhome', 'Investment property', 'Open to options']
+const acreageOptions = ['Standard lot', 'Large lot', '0.5+ acre', '1+ acre', '2+ acres', '5+ acres', '10+ acres', 'Not sure']
+const bedroomOptions = ['1+', '2+', '3+', '4+', '5+']
+// Optional and self-reported. Age is never inferred from traffic data.
+const ageOptions = ['Under 25', '25–34', '35–44', '45–54', '55–64', '65+']
+
+const tone = dark
+  ? { field: 'field border-ink-foreground/25 text-ink-foreground', label: 'label text-ink-foreground/70', muted: 'text-ink-foreground/60', chip: 'border-ink-foreground/25 text-ink-foreground/75 has-[:checked]:border-poppy has-[:checked]:bg-poppy has-[:checked]:text-ink', text: 'text-ink-foreground', option: 'bg-ink', link: 'hover:text-poppy' }
+  : { field: 'field border-foreground/25 text-foreground', label: 'label text-muted-foreground', muted: 'text-muted-foreground', chip: 'border-foreground/25 text-muted-foreground has-[:checked]:border-ink has-[:checked]:bg-ink has-[:checked]:text-ink-foreground', text: 'text-foreground', option: '', link: 'hover:text-gold' }
+---
+
+<inquiry-form data-email={contact.email} data-default-goal={goal} data-interest={interest}>
+  <form class:list={['flex flex-col', compact ? 'gap-4' : 'gap-5']} novalidate>
+    {
+      !goal && (
+        <fieldset>
+          <legend class={tone.label}>I’m interested in</legend>
+          <div class="mt-3 flex flex-wrap gap-2">
+            {goals.map((g, i) => (
+              <label class:list={['label cursor-pointer rounded-full border px-5 py-2.5 text-xs transition-colors focus-within:ring-2 focus-within:ring-poppy/50', tone.chip]}>
+                <input type="radio" name="goal" value={g} class="sr-only" checked={i === 0} />
+                {g}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      )
+    }
+
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div>
+        <label for={id('name')} class={tone.label}>Full name *</label>
+        <input id={id('name')} name="name" required maxlength="100" autocomplete="name" class={tone.field} />
+      </div>
+      <div>
+        <label for={id('phone')} class={tone.label}>Phone *</label>
+        <input id={id('phone')} name="phone" type="tel" required maxlength="40" autocomplete="tel" class={tone.field} />
+      </div>
+    </div>
+    <div>
+      <label for={id('email')} class={tone.label}>Email *</label>
+      <input id={id('email')} name="email" type="email" required maxlength="200" autocomplete="email" class={tone.field} />
+    </div>
+
+    <details class="group/details" open={!compact}>
+      <summary class:list={['label flex cursor-pointer list-none items-center gap-3 py-2 [&::-webkit-details-marker]:hidden', tone.muted]}>
+        <span class="flex size-6 items-center justify-center rounded-full border border-current text-sm leading-none transition-transform group-open/details:rotate-45">+</span>
+        Buyer profile <span class="normal-case tracking-normal opacity-70">(optional — helps Nathanael respond in context)</span>
+      </summary>
+      <div class="mt-4 flex flex-col gap-5">
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for={id('city')} class={tone.label}>Current city</label>
+            <input id={id('city')} name="current_city" maxlength="120" autocomplete="address-level2" class={tone.field} />
+          </div>
+          <div>
+            <label for={id('area')} class={tone.label}>Desired area</label>
+            <input id={id('area')} name="desired_area" maxlength="200" placeholder="e.g. Tehachapi, Bakersfield" class={tone.field} />
+          </div>
+        </div>
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for={id('budget')} class={tone.label}>Budget</label>
+            <input id={id('budget')} name="budget" maxlength="100" placeholder="e.g. $400k–$600k" class={tone.field} />
+          </div>
+          <div>
+            <label for={id('type')} class={tone.label}>Property type</label>
+            <select id={id('type')} name="property_type" class:list={[tone.field, 'appearance-none']}>
+              <option value="" class={tone.option}>Open to options</option>
+              {propertyTypes.map((t) => <option class={tone.option}>{t}</option>)}
+            </select>
+          </div>
+        </div>
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for={id('beds')} class={tone.label}>Bedrooms</label>
+            <select id={id('beds')} name="bedrooms" class:list={[tone.field, 'appearance-none']}>
+              <option value="" class={tone.option}>No minimum yet</option>
+              {bedroomOptions.map((b) => <option class={tone.option}>{b}</option>)}
+            </select>
+          </div>
+          <div>
+            <label for={id('acreage')} class={tone.label}>Acreage / lot</label>
+            <select id={id('acreage')} name="acreage_requirement" class:list={[tone.field, 'appearance-none']}>
+              <option value="" class={tone.option}>No requirement yet</option>
+              {acreageOptions.map((a) => <option class={tone.option}>{a}</option>)}
+            </select>
+          </div>
+        </div>
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for={id('timeline')} class={tone.label}>Timeline</label>
+            <select id={id('timeline')} name="timeline" class:list={[tone.field, 'appearance-none']}>
+              <option value="" class={tone.option}>Select a timeline</option>
+              {timelines.map((t) => <option class={tone.option}>{t}</option>)}
+            </select>
+          </div>
+          <div>
+            <label for={id('financing')} class={tone.label}>Financing</label>
+            <select id={id('financing')} name="financing_status" class:list={[tone.field, 'appearance-none']}>
+              <option value="" class={tone.option}>Not sure yet</option>
+              {financingOptions.map((f) => <option class={tone.option}>{f}</option>)}
+            </select>
+          </div>
+        </div>
+        <div class="sm:w-1/2 sm:pr-2.5">
+          <label for={id('age')} class={tone.label}>Age range <span class:list={['text-xs font-normal normal-case tracking-normal', tone.muted]}>(optional)</span></label>
+          <select id={id('age')} name="age_range" class:list={[tone.field, 'appearance-none']}>
+            <option value="" class={tone.option}>Prefer not to say</option>
+            {ageOptions.map((a) => <option class={tone.option}>{a}</option>)}
+          </select>
+        </div>
+      </div>
+    </details>
+
+    <div>
+      <label for={id('message')} class={tone.label}>Anything you’d like Nathanael to know?</label>
+      <textarea id={id('message')} name="message" rows={compact ? 3 : 4} maxlength="3000" class={tone.field}></textarea>
+    </div>
+
+    {/* Honeypot: invisible to people, irresistible to bots. */}
+    <div aria-hidden="true" class="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+      <label for={id('company')}>Company</label>
+      <input id={id('company')} name="company" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <p data-error role="alert" hidden class="border border-destructive/60 bg-destructive/10 px-4 py-3 text-sm"></p>
+
+    <div>
+      <button
+        type="submit"
+        class:list={[
+          'pill w-full justify-center bg-poppy text-ink disabled:cursor-wait disabled:opacity-60 sm:w-auto sm:px-10',
+          dark ? 'hover:bg-ink-foreground' : 'hover:bg-ink hover:text-ink-foreground',
+        ]}
+      >
+        <span data-idle class="inline-flex items-center gap-2">Send message <ArrowRight class="size-4" aria-hidden="true" /></span>
+        <span data-busy hidden class="inline-flex items-center gap-2"><LoaderCircle class="size-4 animate-spin" aria-hidden="true" /> Sending…</span>
+      </button>
+      <p class:list={['mt-3 text-xs leading-relaxed', tone.muted]}>
+        No mailing-list signup. Your information is used only to respond to this real-estate request.
+      </p>
+    </div>
+  </form>
+
+  <div data-sent hidden role="status" class:list={['flex flex-col items-center gap-4 py-12 text-center', tone.text]}>
+    <span class="flex size-14 items-center justify-center rounded-full bg-poppy text-ink"><Check class="size-6" aria-hidden="true" /></span>
+    <p class="font-display text-2xl tracking-wide">Thank you — your message is on its way.</p>
+    <p class:list={['max-w-md text-sm leading-relaxed', tone.muted]}>
+      Nathanael typically responds within 24 hours. If it’s urgent, call or text <a href={contact.phoneHref} class:list={['underline underline-offset-4', tone.link]}>{contact.phone}</a>.
+    </p>
+  </div>
+
+  <div data-fallback hidden role="status" class:list={['flex flex-col items-center gap-4 py-10 text-center', tone.text]}>
+    <p class="font-display text-2xl tracking-wide">Send this straight to Nathanael</p>
+    <p class:list={['max-w-md text-sm leading-relaxed', tone.muted]}>
+      Our online form is temporarily unavailable. Your details are ready — this opens your email app with everything filled in, addressed to Nathanael directly.
+    </p>
+    <a data-mailto href={`mailto:${contact.email}`} class="pill mt-2 bg-poppy px-8 text-ink hover:bg-ink hover:text-ink-foreground">
+      <Mail class="size-4" aria-hidden="true" /> Open email and send
+    </a>
+    <p class:list={['mt-2 text-xs', tone.muted]}>
+      Prefer to talk? Call or text <a href={contact.phoneHref} class:list={['underline underline-offset-4', tone.link]}>{contact.phone}</a>
+    </p>
+  </div>
+</inquiry-form>
+
+<script>
+  import { getSessionId } from '@/scripts/analytics'
+
+  const LABELS: Record<string, string> = {
+    goal: 'Goal',
+    name: 'Name',
+    phone: 'Phone',
+    email: 'Email',
+    current_city: 'Current city',
+    desired_area: 'Desired area',
+    budget: 'Budget',
+    property_type: 'Property type',
+    bedrooms: 'Bedrooms',
+    acreage_requirement: 'Acreage / lot',
+    timeline: 'Timeline',
+    financing_status: 'Financing',
+    age_range: 'Age range',
+    interest: 'Property of interest',
+  }
+
+  class InquiryFormEl extends HTMLElement {
+    connectedCallback() {
+      const form = this.querySelector('form')!
+      form.addEventListener('submit', (e) => {
+        e.preventDefault()
+        void this.submit(form)
+      })
+    }
+
+    show(state: 'form' | 'sent' | 'fallback') {
+      this.querySelector('form')!.hidden = state !== 'form'
+      this.querySelector<HTMLElement>('[data-sent]')!.hidden = state !== 'sent'
+      this.querySelector<HTMLElement>('[data-fallback]')!.hidden = state !== 'fallback'
+    }
+
+    async submit(form: HTMLFormElement) {
+      const error = form.querySelector<HTMLElement>('[data-error]')!
+      error.hidden = true
+
+      // Native constraint validation, surfaced in one readable message.
+      if (!form.checkValidity()) {
+        const bad = form.querySelector<HTMLInputElement>(':invalid')
+        error.textContent = bad?.type === 'email' && bad.value ? 'Please enter a valid email address.' : 'Please add your name, phone, and email.'
+        error.hidden = false
+        bad?.focus()
+        return
+      }
+
+      const data = Object.fromEntries(new FormData(form)) as Record<string, string>
+      const body: Record<string, string | undefined> = {
+        ...data,
+        goal: data.goal || this.dataset.defaultGoal || undefined,
+        interest: this.dataset.interest || undefined,
+        // Attributes the lead to the visit that produced it in /hq.
+        session_id: getSessionId() ?? undefined,
+      }
+
+      const button = form.querySelector<HTMLButtonElement>('button[type=submit]')!
+      button.disabled = true
+      button.querySelector<HTMLElement>('[data-idle]')!.hidden = true
+      button.querySelector<HTMLElement>('[data-busy]')!.hidden = false
+
+      try {
+        const res = await fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        })
+        if (res.status === 400) {
+          const j = await res.json().catch(() => ({}))
+          error.textContent = j.error || 'Please check the form and try again.'
+          error.hidden = false
+          return
+        }
+        if (!res.ok) throw new Error(String(res.status))
+        this.show('sent')
+      } catch {
+        // The lead service is unreachable. Fall back to a delivery path that
+        // really works — the visitor's own email client — rather than claiming
+        // a message was sent.
+        const lines = Object.entries(body)
+          .filter(([k, v]) => v && LABELS[k])
+          .map(([k, v]) => `${LABELS[k]}: ${v}`)
+        if (body.message) lines.push('', body.message)
+        const subject = `Website inquiry — ${body.goal || 'General'}${body.name ? ` — ${body.name}` : ''}`
+        this.querySelector<HTMLAnchorElement>('[data-mailto]')!.href =
+          `mailto:${this.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`
+        this.show('fallback')
+      } finally {
+        button.disabled = false
+        button.querySelector<HTMLElement>('[data-idle]')!.hidden = false
+        button.querySelector<HTMLElement>('[data-busy]')!.hidden = true
+      }
+    }
+  }
+  customElements.define('inquiry-form', InquiryFormEl)
+</script>

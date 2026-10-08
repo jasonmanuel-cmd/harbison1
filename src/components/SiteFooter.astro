@@ -1,0 +1,100 @@
+---
+import { Image } from 'astro:assets'
+import logo from '@/assets/harbison-logo.webp'
+import { contact, menuLinks, socials } from '@/lib/site'
+import { getAreas } from '@/lib/listings'
+
+const areas = await getAreas()
+const year = new Date().getFullYear()
+---
+
+<footer class="border-t border-ink-foreground/10 bg-ink pb-[calc(4.5rem+env(safe-area-inset-bottom))] text-ink-foreground lg:pb-0">
+  <div class="shell">
+    <div class="grid gap-14 py-16 md:py-20 lg:grid-cols-12">
+      <div class="flex flex-col gap-8 lg:col-span-5">
+        <a href="/" aria-label="Harbison Standard home">
+          <Image src={logo} alt="Harbison Standard — Real Estate, Development, Investing" width={384} class="h-auto w-full max-w-xs" />
+        </a>
+        <p class="max-w-sm leading-relaxed text-ink-foreground/65">
+          Practical advice, direct communication, and a clear next step — for buyers, sellers, and investors across Kern County.
+        </p>
+        <div class="flex flex-col gap-2">
+          <a href={contact.phoneHref} class="font-display text-3xl tracking-wide hover:text-poppy">{contact.phone}</a>
+          <a href={`mailto:${contact.email}`} class="break-all text-sm text-ink-foreground/70 hover:text-poppy">{contact.email}</a>
+        </div>
+      </div>
+
+      <nav aria-label="Footer" class="grid gap-10 sm:grid-cols-3 lg:col-span-7">
+        <div>
+          <p class="eyebrow text-poppy">Explore</p>
+          <ul class="mt-5 flex flex-col">
+            {
+              menuLinks.slice(0, 5).map((l) => (
+                <li>
+                  <a href={l.href} class="inline-flex min-h-10 items-center text-sm text-ink-foreground/70 transition-colors hover:text-poppy">
+                    {l.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow text-poppy">Neighborhoods</p>
+          <ul class="mt-5 flex flex-col">
+            {
+              areas.map((a) => (
+                <li>
+                  <a href={`/areas/${a.id}`} class="inline-flex min-h-10 items-center text-sm text-ink-foreground/70 transition-colors hover:text-poppy">
+                    {a.data.name}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow text-poppy">Connect</p>
+          <ul class="mt-5 flex flex-col">
+            {
+              [...menuLinks.slice(5), ...socials].map((l) => (
+                <li>
+                  <a
+                    href={l.href}
+                    {...(l.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    class="inline-flex min-h-10 items-center text-sm text-ink-foreground/70 transition-colors hover:text-poppy"
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="eyebrow flex flex-col gap-3 border-t border-ink-foreground/15 py-8 text-center text-[0.6875rem] text-ink-foreground/60 md:flex-row md:justify-between md:text-left">
+      <span>© {year} Harbison Standard · Nathanael Harbison, REALTOR® · DRE #{contact.dre}</span>
+      <span>Tehachapi · Bakersfield · Kern County, CA</span>
+    </div>
+    <div class="flex flex-col items-center justify-between gap-2 border-t border-ink-foreground/15 py-6 text-xs text-ink-foreground/60 md:flex-row">
+      <span>Equal Housing Opportunity</span>
+      <button type="button" data-analytics-optout class="underline-offset-4 hover:text-poppy hover:underline">
+        Opt out of site analytics
+      </button>
+    </div>
+  </div>
+</footer>
+
+<script>
+  import { optOutOfAnalytics } from '@/scripts/analytics'
+
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-analytics-optout]')
+    if (!btn) return
+    optOutOfAnalytics()
+    btn.textContent = 'Analytics disabled on this device'
+    btn.disabled = true
+  })
+</script>

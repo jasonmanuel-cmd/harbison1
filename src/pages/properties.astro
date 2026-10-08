@@ -1,0 +1,242 @@
+---
+import { Search, SlidersHorizontal } from '@lucide/astro'
+import Base from '@/layouts/Base.astro'
+import PageHero from '@/components/PageHero.astro'
+import ListingCard from '@/components/ListingCard.astro'
+import { factLine, getActiveListings, getSoldListings, marketStats } from '@/lib/listings'
+import { photo } from '@/lib/photos'
+import { SITE_URL, formatDate, formatPrice, formatPriceShort } from '@/lib/site'
+
+const [active, sold] = await Promise.all([getActiveListings(), getSoldListings()])
+const stats = marketStats(active)
+const cities = [...new Set(active.map((l) => l.data.city))].sort()
+const priceSteps = [100_000, 250_000, 400_000, 500_000, 750_000, 1_000_000, 2_000_000]
+
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Current listings — Harbison Standard',
+  itemListElement: active.map((l, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: new URL(`/property/${l.id}`, SITE_URL).href,
+    name: `${l.data.address}, ${l.data.city}, CA`,
+  })),
+}
+
+const select =
+  'min-h-11 cursor-pointer appearance-none border border-border bg-background py-2 pl-3 pr-8 text-sm outline-none transition-colors hover:border-foreground/40 focus-visible:border-poppy focus-visible:ring-2 focus-visible:ring-poppy/30 max-md:flex-1'
+---
+
+<Base
+  title="Properties for Sale in Tehachapi, Bakersfield & Kern County"
+  description="Explore current listings across Tehachapi, Bakersfield, and Kern County with Nathanael Harbison, REALTOR® DRE #02059393. Filter by city, price, bedrooms, and land."
+  image={photo('2300-weybridge-dr-1')}
+  jsonLd={ld}
+>
+  <PageHero
+    eyebrow="Tehachapi · Bakersfield · Kern County"
+    title="Current Listings"
+    intro="Every current listing, with photos, price, and property details. Filter to what fits, then open a property to see more or ask about a showing."
+    image={photo('2300-weybridge-dr-1')}
+    crumbs={[{ label: 'Properties' }]}
+  >
+    <dl class="rise mt-10 flex flex-wrap gap-x-12 gap-y-6" style="animation-delay:240ms">
+      <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/60">Active</dt><dd class="mt-1 font-display text-3xl">{stats.count}</dd></div>
+      <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/60">Median ask</dt><dd class="mt-1 font-display text-3xl">{formatPriceShort(stats.median)}</dd></div>
+      <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/60">Median $/sq ft</dt><dd class="mt-1 font-display text-3xl">${stats.medianPpsf}</dd></div>
+      <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/60">Range</dt><dd class="mt-1 font-display text-3xl">{formatPriceShort(stats.min)}–{formatPriceShort(stats.max)}</dd></div>
+    </dl>
+  </PageHero>
+
+  <listing-filter class="block bg-background">
+    <form data-filters role="search" aria-label="Filter properties" class="sticky top-[4.5rem] z-30 border-b border-border bg-background/90 backdrop-blur-md md:top-[5.5rem]">
+      <div class="shell flex flex-wrap items-center gap-3 py-4">
+        <div class="relative min-w-[12rem] flex-1">
+          <Search class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+          <label for="f-q" class="sr-only">Search address, neighborhood, or feature</label>
+          <input id="f-q" name="q" type="search" placeholder="Address, neighborhood, feature…" class="field mt-0 border-border py-2.5 pl-9 text-sm" />
+        </div>
+        <button type="button" data-toggle-filters aria-expanded="false" aria-controls="f-more" class="label flex items-center gap-2 border border-border px-4 py-2.5 text-xs md:hidden">
+          <SlidersHorizontal class="size-4" aria-hidden="true" /> Filters
+        </button>
+        <div id="f-more" class="hidden w-full flex-wrap items-center gap-3 data-[open]:flex md:flex md:w-auto">
+          <label class="sr-only" for="f-city">City</label>
+          <select id="f-city" name="city" class={select}>
+            <option value="">All cities</option>
+            {cities.map((c) => <option>{c}</option>)}
+          </select>
+          <label class="sr-only" for="f-type">Type</label>
+          <select id="f-type" name="type" class={select}>
+            <option value="">Homes & land</option>
+            <option value="home">Homes</option>
+            <option value="land">Land</option>
+          </select>
+          <label class="sr-only" for="f-max">Max price</label>
+          <select id="f-max" name="max" class={select}>
+            <option value="">Any price</option>
+            {priceSteps.map((p) => <option value={p}>Up to {formatPriceShort(p)}</option>)}
+          </select>
+          <label class="sr-only" for="f-beds">Bedrooms</label>
+          <select id="f-beds" name="beds" class={select}>
+            <option value="">Any beds</option>
+            {[2, 3, 4, 5].map((b) => <option value={b}>{b}+ beds</option>)}
+          </select>
+          <label class="sr-only" for="f-sort">Sort</label>
+          <select id="f-sort" name="sort" class={select}>
+            <option value="new">Newest</option>
+            <option value="price-desc">Price: high to low</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="sqft">Largest</option>
+            <option value="acres">Most land</option>
+          </select>
+        </div>
+      </div>
+    </form>
+
+    <section class="py-12 md:py-16" aria-labelledby="results-heading">
+      <div class="shell">
+        <div class="flex flex-wrap items-baseline justify-between gap-4">
+          <h2 id="results-heading" class="text-2xl font-medium tracking-wide md:text-3xl">
+            <span data-results aria-live="polite">{active.length}</span> <span data-noun>properties</span>
+          </h2>
+          <button type="button" data-reset hidden class="label text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground">Clear filters</button>
+        </div>
+        <ul data-grid class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {active.map((l, i) => <ListingCard listing={l} index={i} filterable eager={i < 3} />)}
+        </ul>
+        <div data-empty hidden class="mt-8 border border-dashed border-border px-6 py-16 text-center">
+          <p class="font-display text-2xl tracking-wide">Nothing matches — yet.</p>
+          <p class="mx-auto mt-3 max-w-md text-muted-foreground">
+            Many of the best Kern County deals never hit the MLS. Tell Nathanael what you’re after and he’ll watch for it, including off-market.
+          </p>
+          <a href="/off-market-deals" class="pill mt-6 bg-ink text-ink-foreground hover:bg-poppy hover:text-ink">Get off-market alerts</a>
+        </div>
+      </div>
+    </section>
+  </listing-filter>
+
+  <section class="bg-secondary py-16 md:py-24" aria-labelledby="sold-heading">
+    <div class="shell">
+      <div data-reveal class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="eyebrow text-muted-foreground">Track record</p>
+          <h2 id="sold-heading" class="mt-4 text-3xl font-medium tracking-wide md:text-5xl">Sold &amp; closed</h2>
+        </div>
+        <p class="max-w-md text-sm leading-relaxed text-muted-foreground">
+          A selection of recent sales across Kern County. Listing attribution remains with the original listing agent or brokerage.
+        </p>
+      </div>
+      <ul class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          sold.map((p, i) => (
+            <li data-reveal style={`--reveal-delay:${(i % 3) * 90}ms`} class="flex flex-col gap-3 border-t border-foreground/15 pt-6">
+              <div class="flex items-baseline justify-between gap-4">
+                <h3 class="font-display text-lg tracking-wide"><a href={`/property/${p.id}`} class="underline decoration-foreground/20 underline-offset-4 transition-colors hover:text-gold hover:decoration-gold">{p.data.address}</a></h3>
+                <span class="font-display text-muted-foreground">{formatPrice(p.data.price)}</span>
+              </div>
+              <p class="label text-[0.7rem] text-muted-foreground">
+                {p.data.city}, CA {p.data.zip} · {factLine(p.data, ' · ')}
+              </p>
+              <p class="text-sm leading-relaxed text-muted-foreground">{p.data.blurb}</p>
+              <span class="label mt-auto text-xs text-gold">Sold{p.data.soldAt && ` · ${formatDate(p.data.soldAt)}`}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<script>
+  type Card = HTMLElement & { dataset: DOMStringMap }
+
+  class ListingFilter extends HTMLElement {
+    connectedCallback() {
+      const form = this.querySelector<HTMLFormElement>('[data-filters]')!
+      const grid = this.querySelector<HTMLElement>('[data-grid]')!
+      const cards = [...grid.querySelectorAll<Card>('[data-listing]')]
+      const original = [...cards]
+
+      // Restore state from the URL so filtered views are shareable.
+      const params = new URLSearchParams(location.search)
+      for (const el of form.elements as unknown as HTMLInputElement[]) {
+        if (el.name && params.has(el.name)) el.value = params.get(el.name)!
+      }
+
+      const toggle = this.querySelector<HTMLButtonElement>('[data-toggle-filters]')!
+      const more = this.querySelector<HTMLElement>('#f-more')!
+      toggle.addEventListener('click', () => {
+        const open = !more.hasAttribute('data-open')
+        more.toggleAttribute('data-open', open)
+        toggle.setAttribute('aria-expanded', String(open))
+      })
+
+      const apply = (animate: boolean) => {
+        const f = Object.fromEntries(new FormData(form)) as Record<string, string>
+        const q = (f.q ?? '').trim().toLowerCase()
+        const terms = q.split(/\s+/).filter(Boolean)
+
+        const match = (c: Card) =>
+          (!f.city || c.dataset.city === f.city) &&
+          (!f.type || c.dataset.type === f.type) &&
+          (!f.max || Number(c.dataset.price) <= Number(f.max)) &&
+          (!f.beds || Number(c.dataset.beds) >= Number(f.beds)) &&
+          terms.every((t) => c.dataset.search!.includes(t))
+
+        const key: Record<string, (c: Card) => number> = {
+          'price-desc': (c) => -Number(c.dataset.price),
+          'price-asc': (c) => Number(c.dataset.price),
+          sqft: (c) => -Number(c.dataset.sqft),
+          acres: (c) => -Number(c.dataset.acres),
+        }
+        const sorted = key[f.sort] ? [...original].sort((a, b) => key[f.sort](a) - key[f.sort](b)) : original
+
+        const update = () => {
+          let shown = 0
+          for (const c of sorted) {
+            const ok = match(c)
+            c.hidden = !ok
+            if (ok) {
+              shown++
+              c.setAttribute('data-shown', '')
+            }
+            grid.append(c)
+          }
+          this.querySelector('[data-results]')!.textContent = String(shown)
+          this.querySelector('[data-noun]')!.textContent = shown === 1 ? 'property' : 'properties'
+          this.querySelector<HTMLElement>('[data-empty]')!.hidden = shown > 0
+        }
+
+        // Smoothly morph cards into their new positions where supported.
+        const doc = document as Document & { startViewTransition?: (cb: () => void) => unknown }
+        if (animate && doc.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          cards.forEach((c, i) => (c.style.viewTransitionName = `card-${i}`))
+          const vt = doc.startViewTransition(update) as { finished: Promise<void> }
+          vt.finished.finally(() => cards.forEach((c) => (c.style.viewTransitionName = '')))
+        } else update()
+
+        const next = new URLSearchParams()
+        for (const [k, v] of Object.entries(f)) if (v && !(k === 'sort' && v === 'new')) next.set(k, v)
+        const qs = next.toString()
+        history.replaceState(history.state, '', qs ? `?${qs}` : location.pathname)
+        this.querySelector<HTMLElement>('[data-reset]')!.hidden = !qs
+      }
+
+      let debounce: number | undefined
+      form.addEventListener('input', (e) => {
+        clearTimeout(debounce)
+        const isText = (e.target as HTMLElement).matches('input[type=search]')
+        debounce = window.setTimeout(() => apply(!isText), isText ? 150 : 0)
+      })
+      form.addEventListener('submit', (e) => e.preventDefault())
+      this.querySelector('[data-reset]')!.addEventListener('click', () => {
+        form.reset()
+        apply(true)
+      })
+
+      if (params.size) apply(false)
+    }
+  }
+  customElements.define('listing-filter', ListingFilter)
+</script>

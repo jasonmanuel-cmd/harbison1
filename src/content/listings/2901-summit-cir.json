@@ -1,0 +1,25 @@
+{
+  "address": "2901 Summit Cir",
+  "city": "Bakersfield",
+  "zip": "93306",
+  "price": 359000,
+  "beds": 2,
+  "baths": 1.75,
+  "sqft": 2209,
+  "lot": "6,570 sq ft lot",
+  "lotAcres": 0.15,
+  "neighborhood": "Summit Villas · 55+",
+  "type": "home",
+  "status": "active",
+  "blurb": "Owned solar, no lease, no loan. Resort-like living in a gated 55+ community of only 12 custom homes.",
+  "description": "Owned Solar. No Lease, No Loan! Discover easy, resort-like living in the unmatched Summit Villas, a gated 55+ community of only 12 custom homes. Residents enjoy a private clubhouse, sparkling pool, and a reservable guest house while the HOA maintains the community's shared amenities. This beautiful home offers approximately 2,209 square feet with abundant flexible-use spaces designed for comfortable living.",
+  "features": [
+    "55+ gated community",
+    "Owned solar",
+    "Private clubhouse",
+    "Community pool"
+  ],
+  "attribution": "Listing courtesy of Bradley Barnett, Century 21 Select Real Estate.",
+  "mls": "202607788",
+  "listedAt": "2026-07-18"
+}

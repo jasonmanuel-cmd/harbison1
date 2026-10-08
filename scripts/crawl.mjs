@@ -9,7 +9,7 @@
  * navigation, because a crawler following links from the homepage would find
  * nothing to follow.
  */
-const BASE = process.argv[2] || 'https://harbison1.vercel.app'
+const BASE = process.argv[2] || 'https://www.harbisonstandard.com'
 const MAX_PAGES = 60
 
 // Vercel rejects requests with Node's default user-agent, which shows up as a

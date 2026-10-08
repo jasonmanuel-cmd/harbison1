@@ -1,0 +1,338 @@
+---
+import type { GetStaticPaths } from 'astro'
+import { getCollection } from 'astro:content'
+import { Image, getImage } from 'astro:assets'
+import { ArrowLeft, ChevronLeft, ChevronRight, Expand, MapPin, Share2, X } from '@lucide/astro'
+import Base from '@/layouts/Base.astro'
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import InquiryForm from '@/components/InquiryForm.astro'
+import ListingCard from '@/components/ListingCard.astro'
+import PaymentEstimator from '@/components/PaymentEstimator.astro'
+import { factLine, getActiveListings, similar, type Listing } from '@/lib/listings'
+import { listingPhotos } from '@/lib/photos'
+import { contact, formatDate, formatPrice } from '@/lib/site'
+import { abs, propertySchema } from '@/lib/seo'
+
+export const getStaticPaths = (async () => {
+  // Sold listings get a page too: they are proof of track record, and people
+  // search for them by address after seeing the sign out front.
+  const listings = await getCollection('listings')
+  return listings.map((listing) => ({ params: { slug: listing.id }, props: { listing } }))
+}) satisfies GetStaticPaths
+
+const { listing } = Astro.props as { listing: Listing }
+const l = listing.data
+const sold = l.status === 'sold'
+const photos = listingPhotos(listing.id)
+const [hero, ...rest] = photos
+const mosaic = rest.slice(0, 4)
+const others = similar(listing, await getActiveListings())
+const fullAddress = `${l.address}, ${l.city}, CA ${l.zip}`
+const url = abs(`/property/${listing.id}`)
+const heroUrl = hero ? abs((await getImage({ src: hero, width: 1200, format: 'jpeg' })).src) : undefined
+
+const facts = [
+  { label: sold ? 'Sold price' : 'Price', value: formatPrice(l.price) },
+  l.beds && { label: 'Bedrooms', value: String(l.beds) },
+  l.baths && { label: 'Bathrooms', value: String(l.baths) },
+  l.sqft && { label: 'Living area', value: `${l.sqft.toLocaleString('en-US')} sq ft` },
+  l.lot && { label: 'Lot', value: l.lot.replace(/ lot$/, '') },
+  l.sqft && { label: 'Price / sq ft', value: `$${Math.round(l.price / l.sqft).toLocaleString('en-US')}` },
+  l.neighborhood && { label: 'Neighborhood', value: l.neighborhood },
+  l.mls && { label: 'MLS #', value: l.mls },
+  l.listedAt && { label: 'Listed', value: formatDate(l.listedAt) },
+  l.soldAt && { label: 'Sold', value: formatDate(l.soldAt) },
+].filter(Boolean) as { label: string; value: string }[]
+
+const ld = propertySchema(listing, heroUrl)
+---
+
+<Base
+  title={sold ? `${l.address}, ${l.city}, CA — Sold` : `${l.address}, ${l.city}, CA — ${formatPrice(l.price)}`}
+  description={`${sold ? 'Sold' : formatPrice(l.price)} — ${factLine(l, ' · ')}. ${l.blurb}`}
+  image={hero}
+  imageAlt={fullAddress}
+  jsonLd={ld}
+>
+  <!-- Header -->
+  <section class="bg-ink pt-28 text-ink-foreground md:pt-36">
+    <div class="shell pb-8 md:pb-10">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <Breadcrumbs crumbs={[{ label: 'Properties', href: '/properties' }, { label: l.address }]} />
+        <a href="/properties" class="label hidden items-center gap-2 text-xs text-ink-foreground/60 transition-colors hover:text-poppy sm:inline-flex">
+          <ArrowLeft class="size-4" aria-hidden="true" /> All properties
+        </a>
+      </div>
+      <div class="mt-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="eyebrow rise text-poppy">{l.neighborhood ?? `${l.city}, CA`}{l.type === 'land' && ' · Land'}</p>
+          <h1 class="rise mt-4 text-4xl font-medium leading-tight tracking-wide text-balance md:text-6xl" style="animation-delay:60ms">{l.address}</h1>
+          <p class="rise mt-3 flex items-center gap-2 text-ink-foreground/70" style="animation-delay:120ms">
+            <MapPin class="size-4" aria-hidden="true" />
+            {l.city}, CA {l.zip}
+          </p>
+        </div>
+        <div class="rise flex flex-col gap-2 md:items-end" style="animation-delay:160ms">
+          {
+            // Sold listings share this template, so the status is stated up front.
+            sold && (
+              <span class="label self-start rounded-sm bg-ink-foreground/15 px-3 py-1 md:self-end">
+                Sold{l.soldAt && ` · ${formatDate(l.soldAt)}`}
+              </span>
+            )
+          }
+          <span class="font-display text-4xl tracking-wide text-poppy md:text-5xl">{sold ? <s>{formatPrice(l.price)}</s> : formatPrice(l.price)}</span>
+          <span class="label text-ink-foreground/70">{factLine(l)}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery (sold listings have no published photos) -->
+  {
+    hero && (
+  <photo-gallery class="block bg-ink pb-14 text-ink-foreground md:pb-20">
+    <div class="shell">
+      <div class="grid gap-2 md:grid-cols-4 md:grid-rows-2 md:gap-3">
+        <button type="button" data-open="0" class="group relative aspect-[4/3] overflow-hidden bg-ink-foreground/10 md:col-span-2 md:row-span-2 md:aspect-auto md:min-h-[34rem]">
+          <Image
+            src={hero}
+            alt={`${l.address} — photo 1`}
+            widths={[828, 1280, 1920]}
+            sizes="(min-width: 768px) 50vw, 100vw"
+            priority
+            class="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-[1.03]"
+            transition:name={`photo-${listing.id}`}
+          />
+        </button>
+        {
+          mosaic.map((src, i) => (
+            <button type="button" data-open={i + 1} class="group relative hidden aspect-[4/3] overflow-hidden bg-ink-foreground/10 md:block">
+              <Image src={src} alt={`${l.address} — photo ${i + 2}`} widths={[480, 800]} sizes="25vw" class="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105" />
+              {i === mosaic.length - 1 && photos.length > 5 && (
+                <span class="label absolute inset-0 flex items-center justify-center bg-ink/55 text-sm transition-colors group-hover:bg-ink/40">+{photos.length - 5} photos</span>
+              )}
+            </button>
+          ))
+        }
+      </div>
+      <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+        {
+          photos.length > 1 && (
+            <button type="button" data-open="0" class="label inline-flex items-center gap-2 border border-ink-foreground/30 px-4 py-2.5 text-xs transition-colors hover:border-poppy hover:text-poppy">
+              <Expand class="size-4" aria-hidden="true" /> View all {photos.length} photos
+            </button>
+          )
+        }
+        {l.attribution && <p class="text-xs text-ink-foreground/60">{l.attribution}</p>}
+      </div>
+    </div>
+
+    <dialog data-lightbox aria-label={`${l.address} photos`} class="m-0 h-dvh max-h-none w-screen max-w-none bg-ink/97 p-0 text-ink-foreground backdrop:bg-ink/80">
+      <div class="flex h-full flex-col">
+        <div class="flex items-center justify-between px-5 py-4">
+          <p class="label text-xs tabular-nums text-ink-foreground/70"><span data-counter>1</span> / {photos.length}</p>
+          <p class="hidden truncate px-4 font-display tracking-wide md:block">{l.address}</p>
+          <button type="button" data-close class="flex size-11 items-center justify-center rounded-full border border-ink-foreground/30 hover:border-poppy hover:text-poppy">
+            <X class="size-5" aria-hidden="true" /><span class="sr-only">Close photos</span>
+          </button>
+        </div>
+        <div class="relative min-h-0 flex-1">
+          <ul data-track class="no-scrollbar flex h-full snap-x snap-mandatory overflow-x-auto overscroll-contain">
+            {
+              photos.map((src, i) => (
+                <li class="h-full w-full shrink-0 snap-center px-2 py-2 md:px-20">
+                  <Image src={src} alt={`${l.address} — photo ${i + 1}`} widths={[960, 1600]} sizes="(min-width: 768px) 85vw, 100vw" loading="lazy" class="h-full w-full object-contain" />
+                </li>
+              ))
+            }
+          </ul>
+          <button type="button" data-step="-1" class="absolute left-4 top-1/2 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full border border-ink-foreground/30 bg-ink/60 hover:border-poppy hover:text-poppy md:flex">
+            <ChevronLeft class="size-5" aria-hidden="true" /><span class="sr-only">Previous photo</span>
+          </button>
+          <button type="button" data-step="1" class="absolute right-4 top-1/2 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full border border-ink-foreground/30 bg-ink/60 hover:border-poppy hover:text-poppy md:flex">
+            <ChevronRight class="size-5" aria-hidden="true" /><span class="sr-only">Next photo</span>
+          </button>
+        </div>
+      </div>
+    </dialog>
+  </photo-gallery>
+    )
+  }
+
+  <!-- Details -->
+  <section class="bg-background py-16 text-foreground md:py-24">
+    <div class="shell grid gap-14 lg:grid-cols-12">
+      <div class="flex flex-col gap-14 lg:col-span-7">
+        <div data-reveal>
+          <p class="eyebrow text-muted-foreground">About this property</p>
+          <h2 class="mt-4 text-3xl font-medium tracking-wide md:text-4xl">See the property <span class="italic text-gold">in context.</span></h2>
+          <p class="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground text-pretty">{l.description ?? l.blurb}</p>
+          {
+            l.features && l.features.length > 0 && (
+              <ul class="mt-8 flex flex-wrap gap-2">
+                {l.features.map((f) => (
+                  <li class="rounded-full border border-border px-4 py-2 text-sm text-muted-foreground">{f}</li>
+                ))}
+              </ul>
+            )
+          }
+        </div>
+
+        <div data-reveal>
+          <h2 class="label text-muted-foreground">Key facts</h2>
+          <dl class="mt-4 grid grid-cols-2 border-t border-border sm:grid-cols-3">
+            {
+              facts.map((f) => (
+                <div class="border-b border-border py-4 pr-4">
+                  <dt class="text-xs uppercase tracking-[0.14em] text-muted-foreground">{f.label}</dt>
+                  <dd class="mt-1 font-display text-lg tracking-wide">{f.value}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+
+        {
+          !sold && (
+            <div data-reveal>
+              <PaymentEstimator price={l.price} />
+            </div>
+          )
+        }
+
+        <div data-reveal>
+          <h2 class="label text-muted-foreground">Location</h2>
+          <map-facade data-q={fullAddress} class="relative mt-4 block aspect-[16/9] overflow-hidden border border-border bg-secondary">
+            <div data-placeholder class="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center">
+              <MapPin class="size-8 text-gold" aria-hidden="true" />
+              <p class="font-display text-xl tracking-wide">{fullAddress}</p>
+              <div class="flex flex-wrap justify-center gap-3">
+                <button type="button" data-load class="pill min-h-11 bg-ink px-6 text-ink-foreground hover:bg-poppy hover:text-ink">Show map</button>
+                <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`} target="_blank" rel="noopener noreferrer" class="pill min-h-11 border border-ink/25 px-6 hover:border-ink">
+                  Open in Google Maps
+                </a>
+              </div>
+              <p class="max-w-xs text-xs text-muted-foreground">The map loads from Google only when you ask for it.</p>
+            </div>
+          </map-facade>
+        </div>
+      </div>
+
+      <aside class="lg:col-span-5">
+        <div class="lg:sticky lg:top-28">
+          <div class="rounded-sm border border-border bg-secondary p-6 md:p-10">
+            <p class="eyebrow text-muted-foreground">{sold ? 'This one has closed' : 'Interested in this one?'}</p>
+            <h2 class="mt-3 font-display text-2xl tracking-wide">{sold ? 'Looking for something like it?' : 'See the full picture.'}</h2>
+            <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {
+                sold
+                  ? 'Tell Nathanael what caught your eye and he’ll point you to what is available now — including homes that never reach the MLS.'
+                  : 'Ask about a showing, or share your buyer profile so Nathanael can respond with this property in context — not in isolation.'
+              }
+            </p>
+            <div class="mt-6 grid grid-cols-2 gap-2">
+              <a href={contact.phoneHref} class="pill min-h-11 bg-ink px-4 text-ink-foreground hover:bg-poppy hover:text-ink">Call</a>
+              <button type="button" data-share data-title={fullAddress} data-url={url} class="pill min-h-11 border border-ink/25 px-4 hover:border-ink">
+                <Share2 class="size-4" aria-hidden="true" /> <span data-share-label>Share</span>
+              </button>
+            </div>
+            <div class="mt-8">
+              <InquiryForm goal="Buying" interest={sold ? `Similar to ${fullAddress} (sold)` : fullAddress} dark={false} compact />
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Similar -->
+  <section class="bg-secondary py-16 md:py-24" aria-labelledby="similar-heading">
+    <div class="shell">
+      <div data-reveal class="flex items-end justify-between gap-6">
+        <h2 id="similar-heading" class="text-3xl font-medium tracking-wide md:text-4xl">{sold ? 'Available now' : 'You may also like'}</h2>
+        <a href="/properties" class="label shrink-0 text-muted-foreground transition-colors hover:text-gold">View all →</a>
+      </div>
+      <ul class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {others.map((o, i) => <ListingCard listing={o} index={i} />)}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<script>
+  class PhotoGallery extends HTMLElement {
+    connectedCallback() {
+      const dialog = this.querySelector<HTMLDialogElement>('[data-lightbox]')!
+      const track = this.querySelector<HTMLElement>('[data-track]')!
+      const counter = this.querySelector<HTMLElement>('[data-counter]')!
+      const slides = [...track.children] as HTMLElement[]
+
+      const index = () => Math.round(track.scrollLeft / track.clientWidth)
+      const goTo = (i: number, smooth = true) => {
+        const n = Math.max(0, Math.min(slides.length - 1, i))
+        slides[n].querySelector('img')?.setAttribute('loading', 'eager')
+        slides[n + 1]?.querySelector('img')?.setAttribute('loading', 'eager')
+        track.scrollTo({ left: n * track.clientWidth, behavior: smooth ? 'smooth' : 'instant' })
+      }
+
+      this.querySelectorAll<HTMLElement>('[data-open]').forEach((btn) =>
+        btn.addEventListener('click', () => {
+          dialog.showModal()
+          document.documentElement.style.overflow = 'hidden'
+          goTo(Number(btn.dataset.open), false)
+        }),
+      )
+      dialog.addEventListener('close', () => (document.documentElement.style.overflow = ''))
+      this.querySelector('[data-close]')!.addEventListener('click', () => dialog.close())
+      this.querySelectorAll<HTMLElement>('[data-step]').forEach((b) => b.addEventListener('click', () => goTo(index() + Number(b.dataset.step))))
+      dialog.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') goTo(index() + 1)
+        if (e.key === 'ArrowLeft') goTo(index() - 1)
+      })
+      // Click on the backdrop area (not the photo) closes.
+      track.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).tagName === 'LI') dialog.close()
+      })
+      track.addEventListener(
+        'scroll',
+        () => {
+          const i = index()
+          counter.textContent = String(i + 1)
+          slides[i + 1]?.querySelector('img')?.setAttribute('loading', 'eager')
+        },
+        { passive: true },
+      )
+    }
+  }
+  customElements.define('photo-gallery', PhotoGallery)
+
+  class MapFacade extends HTMLElement {
+    connectedCallback() {
+      this.querySelector('[data-load]')?.addEventListener('click', () => {
+        const iframe = document.createElement('iframe')
+        iframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(this.dataset.q!)}&z=14&output=embed`
+        iframe.title = `Map of ${this.dataset.q}`
+        iframe.loading = 'lazy'
+        iframe.referrerPolicy = 'no-referrer-when-downgrade'
+        iframe.className = 'absolute inset-0 h-full w-full border-0'
+        this.querySelector('[data-placeholder]')!.replaceWith(iframe)
+      })
+    }
+  }
+  customElements.define('map-facade', MapFacade)
+
+  document.addEventListener('click', async (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-share]')
+    if (!btn) return
+    const { title, url } = btn.dataset as { title: string; url: string }
+    if (navigator.share) {
+      await navigator.share({ title, url }).catch(() => {})
+      return
+    }
+    await navigator.clipboard?.writeText(url)
+    const label = btn.querySelector('[data-share-label]')!
+    label.textContent = 'Link copied'
+    setTimeout(() => (label.textContent = 'Share'), 2000)
+  })
+</script>

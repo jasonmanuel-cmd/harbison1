@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content'
+import { ArrowRight } from '@lucide/astro'
+import { pad2 } from '@/lib/site'
+
+interface Props {
+  exclude?: string
+  headingLevel?: 'h2' | 'h3'
+}
+const { exclude, headingLevel: H = 'h3' } = Astro.props
+const guides = (await getCollection('guides')).filter((g) => g.id !== exclude).sort((a, b) => a.data.order - b.data.order)
+---
+
+<ul class="grid gap-px bg-foreground/10 ring-1 ring-foreground/10 sm:grid-cols-2 lg:grid-cols-3">
+  {
+    guides.map((g, i) => (
+      <li data-reveal style={`--reveal-delay:${(i % 3) * 80}ms`} class="h-full bg-background">
+        <a href={`/${g.id}`} class="group relative flex h-full flex-col gap-4 overflow-hidden p-8 transition-colors hover:bg-secondary">
+          <span aria-hidden="true" class="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-poppy transition-transform duration-500 group-hover:scale-x-100" />
+          <span class="font-display text-4xl font-medium text-gold">{pad2(i + 1)}</span>
+          <H class="font-display text-2xl tracking-wide">{g.data.cardTitle}</H>
+          <p class="text-sm leading-relaxed text-muted-foreground">{g.data.summary}</p>
+          <span class="label mt-auto flex items-center gap-2 text-gold">
+            Read the guide <ArrowRight class="size-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>

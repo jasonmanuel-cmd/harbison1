@@ -1,0 +1,25 @@
+{
+  "address": "28211 Seabiscuit Way",
+  "city": "Tehachapi",
+  "zip": "93561",
+  "price": 699000,
+  "beds": 4,
+  "baths": 3,
+  "sqft": 2836,
+  "lot": "0.75 acre lot",
+  "lotAcres": 0.75,
+  "neighborhood": "Stallion Springs",
+  "type": "home",
+  "status": "active",
+  "blurb": "An exceptional Stallion Springs home offering space, privacy, thoughtful design, and freedom on three-quarters of an acre.",
+  "description": "Welcome to this exceptional Stallion Springs home offering space, privacy, thoughtful design, and freedom. With approximately 2,836 square feet, 4 bedrooms, 3 bathrooms, and a spacious 3 car garage, this beautifully appointed residence offers the perfect blend of mountain living and modern comfort. The expansive primary suite is a true retreat, featuring vaulted ceilings, walk-in closet and separate 2nd closet, a luxurious soaking tub, and large walk-in shower. The home also has a tankless water heater, central vacuum, and fully paid-off solar system with panels and battery storage.",
+  "features": [
+    "Paid-off solar + battery",
+    "3-car garage",
+    "Outdoor fire pit & waterfall",
+    "EV charger"
+  ],
+  "attribution": "Listing courtesy of Adonae Faris, Tehachapi Summit Real Estate.",
+  "mls": "9994413",
+  "listedAt": "2026-08-29"
+}

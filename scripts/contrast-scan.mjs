@@ -17,7 +17,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 
 const ROOT = process.cwd()
-const DIRS = ['app', 'components']
+const DIRS = ['src']
 
 /** Colours that only clear contrast on the dark navy surfaces. */
 const DARK_ONLY = [
@@ -36,7 +36,7 @@ function walk(dir) {
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry)
     if (statSync(full).isDirectory()) out.push(...walk(full))
-    else if (/\.tsx$/.test(entry)) out.push(full)
+    else if (/\.(astro|tsx)$/.test(entry)) out.push(full)
   }
   return out
 }

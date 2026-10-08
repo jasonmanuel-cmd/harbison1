@@ -1,0 +1,25 @@
+{
+  "address": "28751 Gleneagle Ct",
+  "city": "Tehachapi",
+  "zip": "93561",
+  "price": 499999,
+  "beds": 3,
+  "baths": 2.5,
+  "sqft": 2364,
+  "lot": "0.47 acre lot",
+  "lotAcres": 0.47,
+  "neighborhood": "Stallion Springs",
+  "type": "home",
+  "status": "active",
+  "blurb": "Sweeping mountain views and refined living in a serene Stallion Springs setting.",
+  "description": "Welcome to 28751 Gleneagle Ct, an exceptional Stallion Springs residence offering sweeping mountain views and refined living in a serene setting. This thoughtfully designed home features 3 bedrooms, 2.5 bathrooms, and a versatile bonus room ideal for an office, gym, or guest retreat. The primary suite offers private deck access, a walk-in closet, and picturesque views. The great room is highlighted by dramatic floor-to-ceiling windows that fill the home with natural light.",
+  "features": [
+    "Floor-to-ceiling windows",
+    "Mountain views",
+    "Oversized 3-car garage",
+    "Greenhouse"
+  ],
+  "attribution": "Listing courtesy of Chrystle Deal & Monique Weese, LRS Realty & Management, Inc.",
+  "mls": "202603588",
+  "listedAt": "2026-09-12"
+}

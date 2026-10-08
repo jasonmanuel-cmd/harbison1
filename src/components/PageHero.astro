@@ -1,0 +1,41 @@
+---
+import type { ImageMetadata } from 'astro'
+import { Image } from 'astro:assets'
+import Breadcrumbs, { type Crumb } from './Breadcrumbs.astro'
+
+interface Props {
+  eyebrow: string
+  title: string
+  intro?: string
+  image?: ImageMetadata
+  crumbs?: Crumb[]
+}
+const { eyebrow, title, intro, image, crumbs } = Astro.props
+---
+
+<section class="relative isolate overflow-hidden bg-ink pt-32 text-ink-foreground md:pt-44">
+  {
+    image && (
+      <Image
+        src={image}
+        alt=""
+        aria-hidden="true"
+        widths={[800, 1400, 2000]}
+        sizes="100vw"
+       
+        priority
+        class="parallax absolute inset-0 -z-10 h-full w-full object-cover opacity-30"
+      />
+    )
+  }
+  <div aria-hidden="true" class="absolute inset-0 -z-10 bg-gradient-to-b from-ink/70 via-ink/40 to-ink"></div>
+  <div class="shell relative pb-16 md:pb-24">
+    {crumbs && <Breadcrumbs crumbs={crumbs} class="rise mb-8" />}
+    <p class="eyebrow rise text-ink-foreground/60">{eyebrow}</p>
+    <h1 class="rise mt-5 max-w-4xl text-4xl font-medium leading-[1.08] tracking-wide text-balance md:text-6xl" style="animation-delay:80ms">
+      {title}
+    </h1>
+    {intro && <p class="rise mt-6 max-w-2xl text-lg leading-relaxed text-ink-foreground/75 text-pretty" style="animation-delay:160ms">{intro}</p>}
+    <slot />
+  </div>
+</section>
