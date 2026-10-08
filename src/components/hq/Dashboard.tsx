@@ -163,7 +163,7 @@ function TrafficChart({ daily }: { daily: Day[] }) {
 
 // ---------------------------------------------------------------- leads
 
-function LeadsPanel({ onSaved }: { onSaved: () => void }) {
+function LeadsPanel({ reloadKey, onSaved }: { reloadKey: number; onSaved: () => void }) {
   const [leads, setLeads] = useState<Lead[] | null>(null)
   const [error, setError] = useState('')
   const [filter, setFilter] = useState<string>('all')
@@ -182,9 +182,10 @@ function LeadsPanel({ onSaved }: { onSaved: () => void }) {
     }
   }, [])
 
+  // Reloads on mount and whenever the dashboard's refresh button is pressed.
   useEffect(() => {
     void load()
-  }, [load])
+  }, [load, reloadKey])
 
   async function setStatus(lead: Lead, status: string) {
     setSavingId(lead.id)
@@ -391,6 +392,8 @@ export default function Dashboard() {
   const [data, setData] = useState<Analytics | null>(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
+  // Bumped by the refresh button so the leads panel reloads along with the analytics.
+  const [reloadKey, setReloadKey] = useState(0)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -446,7 +449,10 @@ export default function Dashboard() {
             </div>
             <button
               type="button"
-              onClick={() => void load()}
+              onClick={() => {
+                setReloadKey((k) => k + 1)
+                void load()
+              }}
               className="border border-ink-foreground/20 p-2 text-ink-foreground/60 hover:border-ink-foreground/40"
               aria-label="Refresh"
             >
@@ -475,7 +481,7 @@ export default function Dashboard() {
         <section className="mb-8">
           <h2 className="font-display text-lg uppercase tracking-[0.18em] text-ink-foreground/70">Leads</h2>
           <div className="mt-4">
-            <LeadsPanel onSaved={() => void load()} />
+            <LeadsPanel reloadKey={reloadKey} onSaved={() => void load()} />
           </div>
         </section>
 
