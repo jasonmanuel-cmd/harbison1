@@ -1,16 +1,18 @@
-[
-  { "id": "tehachapi", "name": "Tehachapi", "region": "Mountain", "tag": "Mountain · Elev. 3,970 ft", "photo": "28751-gleneagle-ct-1", "match": { "city": "Tehachapi" }, "order": 1,
-    "body": "Four real seasons, room to breathe, and land to build on — an hour from the valley." },
-  { "id": "stallion-springs", "name": "Stallion Springs", "region": "Tehachapi", "tag": "Tehachapi", "photo": "28211-seabiscuit-way-1", "match": { "neighborhood": "Stallion Springs" }, "order": 2,
-    "body": "Quiet, spacious lots with sweeping mountain views and room for horses." },
-  { "id": "golden-hills", "name": "Golden Hills", "region": "Tehachapi", "tag": "Tehachapi", "photo": "21204-stage-dr-1", "match": { "neighborhood": "Golden Hills" }, "order": 3,
-    "body": "New construction and generous lots on the west side of Tehachapi." },
-  { "id": "cummings-valley", "name": "Cummings Valley", "region": "Tehachapi", "tag": "Tehachapi · Land", "photo": "chalet-property-1", "match": { "neighborhood": "Cummings Valley" }, "order": 4,
-    "body": "Acreage with valley and mountain views, ready for a custom build." },
-  { "id": "bakersfield", "name": "Bakersfield", "region": "Valley", "tag": "Valley · Elev. 404 ft", "photo": "2206-ribble-valley-dr-1", "match": { "city": "Bakersfield" }, "order": 5,
-    "body": "Established neighborhoods, gated communities, and steady rental demand." },
-  { "id": "seven-oaks", "name": "Seven Oaks", "region": "Bakersfield", "tag": "Bakersfield", "photo": "2300-weybridge-dr-1", "match": { "neighborhood": "Seven Oaks" }, "order": 6,
-    "body": "Golf-course estates and gated enclaves, including Grand Island." },
-  { "id": "stockdale", "name": "Stockdale", "region": "Bakersfield", "tag": "Bakersfield", "photo": "958-fairway-dr-1", "match": { "neighborhood": "Stockdale" }, "order": 7,
-    "body": "Mature trees and country-club living in one of Bakersfield’s classic addresses." }
+[
+  { "id": "tehachapi", "name": "Tehachapi", "region": "Mountain", "tag": "Mountain · Elev. 3,970 ft", "photo": "28751-gleneagle-ct-1", "match": { "city": "Tehachapi" }, "order": 1,
+    "body": "Four real seasons, room to breathe, and land to build on — an hour from the valley." },
+  { "id": "stallion-springs", "name": "Stallion Springs", "region": "Tehachapi", "tag": "Tehachapi", "photo": "28211-seabiscuit-way-1", "match": { "neighborhood": "Stallion Springs" }, "order": 2,
+    "body": "Quiet, spacious lots with sweeping mountain views and room for horses." },
+  { "id": "golden-hills", "name": "Golden Hills", "region": "Tehachapi", "tag": "Tehachapi", "photo": "21204-stage-dr-1", "match": { "neighborhood": "Golden Hills" }, "order": 3,
+    "body": "New construction and generous lots on the west side of Tehachapi." },
+  { "id": "cummings-valley", "name": "Cummings Valley", "region": "Tehachapi", "tag": "Tehachapi · Land", "photo": "chalet-property-1", "match": { "neighborhood": "Cummings Valley" }, "order": 4,
+    "body": "Acreage with valley and mountain views, ready for a custom build." },
+  { "id": "bakersfield", "name": "Bakersfield", "region": "Valley", "tag": "Valley · Elev. 404 ft", "photo": "2206-ribble-valley-dr-1", "match": { "city": "Bakersfield" }, "order": 5,
+    "body": "Established neighborhoods, gated communities, and steady rental demand." },
+  { "id": "seven-oaks", "name": "Seven Oaks", "region": "Bakersfield", "tag": "Bakersfield", "photo": "2300-weybridge-dr-1", "match": { "neighborhood": "Seven Oaks" }, "order": 6,
+    "body": "Golf-course estates and gated enclaves, including Grand Island." },
+  { "id": "stockdale", "name": "Stockdale", "region": "Bakersfield", "tag": "Bakersfield", "photo": "958-fairway-dr-1", "match": { "neighborhood": "Stockdale" }, "order": 7,
+    "body": "Mature trees and country-club living in one of Bakersfield’s classic addresses." },
+  { "id": "bear-valley-springs", "name": "Bear Valley Springs", "region": "Tehachapi", "tag": "Tehachapi · Golf community", "photo": "28751-gleneagle-ct-1", "match": { "neighborhood": "Bear Valley Springs" }, "order": 8,
+    "body": "A golf-course community in the hills above Tehachapi, with quiet streets and room to spread out." }
 ]

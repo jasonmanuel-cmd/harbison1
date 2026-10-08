@@ -2,7 +2,7 @@
 title: "Why Tehachapi Stands Out"
 metaTitle: "Why Tehachapi"
 cardTitle: "Why Tehachapi?"
-summary: "Discover what makes this mountain community different — affordable land, four seasons, and a growing local economy."
+summary: "Discover what sets Tehachapi apart: four seasons at nearly 4,000 feet, affordable land, a growing local economy and a true small-town character to enjoy."
 eyebrow: "Tehachapi · Elev. 3,970 ft"
 order: 4
 hero: "28751-gleneagle-ct-1"

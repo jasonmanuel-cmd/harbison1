@@ -2,7 +2,7 @@
 title: "Sell Your House Privately in Kern County"
 metaTitle: "Sell Your House Privately"
 cardTitle: "Sell your house privately"
-summary: "No MLS, no Zillow, no open houses. Confidential, as-is, fast close for Kern County homeowners who want a quiet sale."
+summary: "Sell your Kern County home privately, with no MLS, no Zillow and no open houses. A confidential, as-is sale with a fast-close option, handled by Nathanael."
 eyebrow: "Private Sale Program"
 order: 1
 hero: "958-fairway-dr-1"

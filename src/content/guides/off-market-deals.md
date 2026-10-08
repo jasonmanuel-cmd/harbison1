@@ -2,7 +2,7 @@
 title: "Off-Market Deals in Kern County"
 metaTitle: "Off-Market Deals"
 cardTitle: "Off-market deals"
-summary: "Private listings not on MLS or Zillow — tax-defaulted, pre-foreclosure, probate, FSBO. Get alerts before Zillow."
+summary: "Kern County homes for sale that never reach MLS or Zillow, including tax-defaulted, pre-foreclosure, probate and FSBO properties. Ask about private alerts."
 eyebrow: "Off-Market"
 order: 2
 hero: "2206-ribble-valley-dr-1"

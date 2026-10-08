@@ -2,7 +2,7 @@
 title: "Land Opportunities in Kern County"
 metaTitle: "Cheap Land in Kern County"
 cardTitle: "Cheap land in Kern County"
-summary: "View current land listings and learn what your budget buys in Bakersfield, Tehachapi, and the surrounding areas."
+summary: "Current Kern County land listings and what your budget buys in Bakersfield, Tehachapi and nearby areas, plus zoning and access checks before you buy it."
 eyebrow: "Land"
 order: 5
 hero: "chalet-property-1"

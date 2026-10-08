@@ -45,9 +45,9 @@ const split = (word: string, start: number) => word.split('').map((char, i) => (
       </p>
       <h1
         id="hero-heading"
-        aria-label="Harbison Standard"
         class="mt-3 flex flex-col items-center font-display text-[clamp(2rem,10vw,4.5rem)] font-extrabold uppercase leading-[0.9] tracking-[-0.04em] md:mt-4 md:flex-row md:gap-[0.3em] md:text-[clamp(2rem,4.9vw,5.5rem)]"
       >
+        <span class="sr-only">Harbison Standard: Real Estate in Tehachapi &amp; Kern County</span>
         <span aria-hidden="true" class="block overflow-hidden whitespace-nowrap px-[0.04em] pb-[0.06em]">
           {split('Harbison', 250).map(({ char, delay }) => <span class="letter" style={`animation-delay:${delay}ms`}>{char}</span>)}
         </span>

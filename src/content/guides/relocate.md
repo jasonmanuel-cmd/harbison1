@@ -2,7 +2,7 @@
 title: "Moving from Los Angeles to Bakersfield"
 metaTitle: "Moving from Los Angeles to Bakersfield"
 cardTitle: "Moving from LA?"
-summary: "Compare what your budget buys in Bakersfield vs Los Angeles. Create a buyer profile for Kern County."
+summary: "Compare what your budget buys in Bakersfield with Los Angeles, then build a buyer profile for Kern County with a local REALTOR® who can guide the move."
 eyebrow: "Relocate"
 order: 3
 hero: "28211-seabiscuit-way-1"
