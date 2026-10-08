@@ -6,7 +6,6 @@ import { formatPrice, pad2 } from '@/lib/site'
 
 // Lead with the flagship properties.
 const listings = (await getActiveListings()).toSorted((a, b) => b.data.price - a.data.price)
-const INTERVAL = 7000
 ---
 
 <section id="listings" aria-labelledby="listings-heading" class="scroll-mt-16 bg-background pt-24 md:pt-32">
@@ -15,7 +14,7 @@ const INTERVAL = 7000
     <h2 id="listings-heading" class="mt-5 text-4xl font-medium tracking-wide text-balance md:text-6xl">Property Collection</h2>
   </div>
 
-  <listing-showcase data-interval={INTERVAL}>
+  <listing-showcase>
     <div
       role="region"
       aria-roledescription="carousel"
@@ -69,17 +68,13 @@ const INTERVAL = 7000
           </button>
         </div>
       </div>
-
-      <span aria-hidden="true" class="absolute inset-x-0 bottom-0 h-0.5 bg-ink-foreground/15">
-        <span data-progress class="progress block h-full w-full bg-poppy" style={`--pd:${INTERVAL}ms`}></span>
-      </span>
     </div>
 
     <div class="mx-auto max-w-[90rem] py-10 md:py-12">
-      <ul data-strip class="no-scrollbar flex snap-x gap-4 overflow-x-auto scroll-smooth px-5 pb-4 md:px-8" aria-label="All properties">
+      <ul data-strip class="no-scrollbar relative flex snap-x snap-mandatory gap-4 overflow-x-auto px-[calc(50%-7rem)] pb-4 md:px-[calc(50%-8rem)]" aria-label="All properties">
         {
           listings.map((item, i) => (
-            <li class="w-56 shrink-0 snap-start md:w-64">
+            <li class="w-56 shrink-0 snap-center md:w-64">
               <button type="button" data-thumb={i} aria-current={i === 0 ? 'true' : undefined} class="group flex w-full flex-col text-left">
                 <span class="relative block aspect-[4/3] overflow-hidden bg-muted ring-2 ring-transparent ring-offset-2 transition-shadow group-aria-[current=true]:ring-poppy">
                   <Image src={cover(item)} alt="" widths={[256, 512]} sizes="256px" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -102,8 +97,6 @@ const INTERVAL = 7000
 <script>
   class ListingShowcase extends HTMLElement {
     #current = 0
-    #timer?: number
-    #paused = false
     #abort = new AbortController()
 
     connectedCallback() {
@@ -115,15 +108,6 @@ const INTERVAL = 7000
         b.addEventListener('click', () => this.go(Number(b.dataset.thumb)), { signal }),
       )
 
-      const pause = (p: boolean) => {
-        this.#paused = p
-        this.querySelector<HTMLElement>('[data-progress]')!.style.visibility = p ? 'hidden' : ''
-        this.schedule()
-      }
-      region.addEventListener('mouseenter', () => pause(true), { signal })
-      region.addEventListener('mouseleave', () => pause(false), { signal })
-      region.addEventListener('focusin', () => pause(true), { signal })
-      region.addEventListener('focusout', () => pause(false), { signal })
       region.addEventListener(
         'keydown',
         (e) => {
@@ -147,21 +131,33 @@ const INTERVAL = 7000
         { signal },
       )
 
-      // Only auto-advance while on screen.
-      const io = new IntersectionObserver(([e]) => pause(!e.isIntersecting))
-      io.observe(region)
-      signal.addEventListener('abort', () => io.disconnect())
+      // When a swipe/drag of the strip settles, the card snapped to centre becomes active.
+      const strip = this.querySelector<HTMLElement>('[data-strip]')!
+      let settle: number | undefined
+      strip.addEventListener(
+        'scroll',
+        () => {
+          clearTimeout(settle)
+          settle = window.setTimeout(() => {
+            const mid = strip.scrollLeft + strip.clientWidth / 2
+            let best = 0
+            let dist = Infinity
+            Array.from(strip.children).forEach((el, i) => {
+              const d = Math.abs((el as HTMLElement).offsetLeft + (el as HTMLElement).offsetWidth / 2 - mid)
+              if (d < dist) {
+                dist = d
+                best = i
+              }
+            })
+            if (best !== this.#current) this.go(best)
+          }, 120)
+        },
+        { signal },
+      )
     }
 
     disconnectedCallback() {
       this.#abort.abort()
-      clearTimeout(this.#timer)
-    }
-
-    schedule() {
-      clearTimeout(this.#timer)
-      if (this.#paused || matchMedia('(prefers-reduced-motion: reduce)').matches) return
-      this.#timer = window.setTimeout(() => this.go(this.#current + 1), Number(this.dataset.interval))
     }
 
     go(next: number) {
@@ -180,16 +176,9 @@ const INTERVAL = 7000
       thumbs.forEach((t, i) => t.setAttribute('aria-current', String(i === this.#current)))
       this.querySelector('[data-index]')!.textContent = String(this.#current + 1).padStart(2, '0')
 
-      // Restart the progress bar animation.
-      const bar = this.querySelector<HTMLElement>('[data-progress]')!
-      bar.classList.remove('progress')
-      void bar.offsetWidth
-      bar.classList.add('progress')
-
       const strip = this.querySelector<HTMLElement>('[data-strip]')!
       const item = strip.children[this.#current] as HTMLElement | undefined
-      if (item) strip.scrollTo({ left: item.offsetLeft - strip.offsetLeft - 20 })
-      this.schedule()
+      if (item) strip.scrollTo({ left: item.offsetLeft + item.offsetWidth / 2 - strip.clientWidth / 2, behavior: 'smooth' })
     }
   }
   customElements.define('listing-showcase', ListingShowcase)
