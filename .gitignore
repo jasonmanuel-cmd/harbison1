@@ -21,3 +21,6 @@ npm-debug.log*
 
 # Local agent skills installed into this folder (not part of the site)
 .claude/
+
+# Lighthouse/audit output from scripts/audit*.ps1 (regenerated locally, not source)
+audits/
