@@ -206,6 +206,26 @@ function LeadsPanel({ reloadKey, onSaved }: { reloadKey: number; onSaved: () => 
     }
   }
 
+  async function deleteLeadRecord(lead: Lead) {
+    const who = lead.name || lead.email || 'this lead'
+    if (!window.confirm(`Permanently delete ${who}? This cannot be undone.`)) return
+    setSavingId(lead.id)
+    try {
+      const res = await fetch('/api/hq/leads', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: lead.id }),
+      })
+      if (!res.ok) throw new Error('Delete failed')
+      setExpanded(null)
+      onSaved()
+    } catch {
+      setError('Could not delete that lead. Try again.')
+    } finally {
+      setSavingId(null)
+    }
+  }
+
   async function saveNotes(lead: Lead, notes: string) {
     setSavingId(lead.id)
     try {
@@ -375,6 +395,14 @@ function LeadsPanel({ reloadKey, onSaved }: { reloadKey: number; onSaved: () => 
                   <p className="mt-1 text-xs text-ink-foreground/60">
                     {savingId === lead.id ? 'Saving…' : 'Saved automatically when you click away.'}
                   </p>
+                  <button
+                    type="button"
+                    onClick={() => void deleteLeadRecord(lead)}
+                    disabled={savingId === lead.id}
+                    className="mt-4 border border-destructive/60 px-4 py-2 text-xs uppercase tracking-[0.14em] text-destructive hover:bg-destructive/10 disabled:opacity-50"
+                  >
+                    Delete lead
+                  </button>
                 </div>
               )}
             </li>

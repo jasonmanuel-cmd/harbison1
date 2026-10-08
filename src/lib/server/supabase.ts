@@ -80,6 +80,13 @@ export function updateLead(id: string, patch: Row): Promise<Row[]> {
   })
 }
 
+export function deleteLead(id: string): Promise<Row[]> {
+  return rest<Row[]>(`leads?id=eq.${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+    headers: { Prefer: 'return=representation' },
+  })
+}
+
 export function listLeads(limit = 100): Promise<Row[]> {
   return rest<Row[]>(`leads?select=*&order=created_at.desc&limit=${Math.min(Math.max(limit, 1), 500)}`)
 }

@@ -1,6 +1,6 @@
 import type { APIRoute, AstroCookies } from 'astro'
 import { isAuthenticated } from '@/lib/server/hq-auth'
-import { listLeads, supabaseConfigured, updateLead } from '@/lib/server/supabase'
+import { deleteLead, listLeads, supabaseConfigured, updateLead } from '@/lib/server/supabase'
 
 export const prerender = false
 
@@ -76,4 +76,32 @@ export const PATCH: APIRoute = async ({ request, cookies }) => {
     return json({ error: 'Lead not found' }, 404)
   }
   return json({ lead: rows[0] })
+}
+
+/** Permanently removes one lead. Admin-only; the dashboard asks for confirmation first. */
+export const DELETE: APIRoute = async ({ request, cookies }) => {
+  const denied = guard(cookies)
+  if (denied) return denied
+
+  let body: { id?: unknown }
+  try {
+    body = await request.json()
+  } catch {
+    return json({ error: 'Invalid request' }, 400)
+  }
+  if (typeof body.id !== 'string' || !body.id) {
+    return json({ error: 'A lead id is required' }, 400)
+  }
+
+  const rows = await deleteLead(body.id).catch((err: unknown) => {
+    console.error('[hq] delete lead failed:', err instanceof Error ? err.message : err)
+    return null
+  })
+  if (!rows) {
+    return json({ error: 'Failed to delete lead' }, 502)
+  }
+  if (rows.length === 0) {
+    return json({ error: 'Lead not found' }, 404)
+  }
+  return json({ ok: true })
 }
