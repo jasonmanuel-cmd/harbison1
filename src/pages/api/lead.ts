@@ -80,29 +80,37 @@ export const POST: APIRoute = async ({ request }) => {
   const source = 'harbison-astro-site'
   const sessionId = typeof body.session_id === 'string' ? body.session_id.slice(0, 64) : undefined
 
-  // Mirror into the CRM. Best-effort: a storage failure must not block the email.
-  void saveLead({
-    name: fields.name,
-    email: fields.email,
-    phone: fields.phone,
-    goal,
-    interest: interest || undefined,
-    current_city: fields.current_city,
-    desired_area: fields.desired_area,
-    budget: fields.budget,
-    bedrooms: fields.bedrooms ? parseInt(fields.bedrooms, 10) : undefined,
-    acreage_requirement: fields.acreage_requirement,
-    property_type: fields.property_type,
-    timeline: fields.timeline,
-    financing_status: fields.financing_status,
-    age_range: fields.age_range,
-    // The visitor's own words. /hq renders this, so it has to persist.
-    message: fields.message,
-    source,
-    session_id: sessionId,
-  }).catch((err: unknown) => {
+  // Store in the CRM before answering. Awaited, not fire-and-forget: on serverless
+  // hosting the function can be frozen once the response is sent, so an unawaited
+  // write may never finish and the visitor would be told "sent" with nothing stored.
+  // A CRM failure does not block the email, so the inquiry is never lost.
+  let stored = false
+  try {
+    const row = await saveLead({
+      name: fields.name,
+      email: fields.email,
+      phone: fields.phone,
+      goal,
+      interest: interest || undefined,
+      current_city: fields.current_city,
+      desired_area: fields.desired_area,
+      budget: fields.budget,
+      bedrooms: fields.bedrooms ? parseInt(fields.bedrooms, 10) : undefined,
+      acreage_requirement: fields.acreage_requirement,
+      property_type: fields.property_type,
+      timeline: fields.timeline,
+      financing_status: fields.financing_status,
+      age_range: fields.age_range,
+      // The visitor's own words. /hq renders this, so it has to persist.
+      message: fields.message,
+      source,
+      session_id: sessionId,
+    })
+    stored = row !== null
+  } catch (err: unknown) {
     console.error('[lead] CRM storage failed:', err instanceof Error ? err.message : err)
-  })
+  }
+  if (!stored) console.error('[lead] inquiry from', fields.email, 'was not stored in the CRM; delivering by email only')
 
   // `null` drops a line; empty strings are intentional blank lines.
   const opt = (value: string | undefined, text: string) => (value ? text : null)
