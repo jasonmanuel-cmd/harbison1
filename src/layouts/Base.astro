@@ -172,7 +172,20 @@ const ld = [identity, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [
       })
     </script>
     <!-- Simple Analytics: privacy-first, honours Do Not Track -->
-    <script is:inline data-collect-dnt="true" async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+    <script is:inline data-collect-dnt="true">
+      // Load after the page has finished and the browser is idle, so the analytics
+      // script never competes with the first paint on slow phones.
+      window.addEventListener('load', () => {
+        const start = () => {
+          const s = document.createElement('script')
+          s.async = true
+          s.src = 'https://scripts.simpleanalyticscdn.com/latest.js'
+          s.setAttribute('data-collect-dnt', 'true')
+          document.body.appendChild(s)
+        }
+        'requestIdleCallback' in window ? requestIdleCallback(start, { timeout: 4000 }) : setTimeout(start, 2000)
+      })
+    </script>
     <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif?collect-dnt=true" alt="" width="1" height="1" referrerpolicy="no-referrer-when-downgrade" /></noscript>
   </body>
 </html>
