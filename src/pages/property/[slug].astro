@@ -1,7 +1,7 @@
 ---
 import type { GetStaticPaths } from 'astro'
 import { getCollection } from 'astro:content'
-import { Image } from 'astro:assets'
+import { Image, getImage } from 'astro:assets'
 import { ArrowLeft, ChevronLeft, ChevronRight, Expand, MapPin, Share2, X } from '@lucide/astro'
 import Base from '@/layouts/Base.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
@@ -10,24 +10,29 @@ import ListingCard from '@/components/ListingCard.astro'
 import PaymentEstimator from '@/components/PaymentEstimator.astro'
 import { factLine, getActiveListings, similar, type Listing } from '@/lib/listings'
 import { listingPhotos } from '@/lib/photos'
-import { SITE_URL, contact, formatDate, formatPrice } from '@/lib/site'
+import { contact, formatDate, formatPrice } from '@/lib/site'
+import { abs, propertySchema } from '@/lib/seo'
 
 export const getStaticPaths = (async () => {
-  const listings = await getCollection('listings', (l) => l.data.status !== 'sold')
+  // Sold listings get a page too: they are proof of track record, and people
+  // search for them by address after seeing the sign out front.
+  const listings = await getCollection('listings')
   return listings.map((listing) => ({ params: { slug: listing.id }, props: { listing } }))
 }) satisfies GetStaticPaths
 
 const { listing } = Astro.props as { listing: Listing }
 const l = listing.data
+const sold = l.status === 'sold'
 const photos = listingPhotos(listing.id)
 const [hero, ...rest] = photos
 const mosaic = rest.slice(0, 4)
 const others = similar(listing, await getActiveListings())
 const fullAddress = `${l.address}, ${l.city}, CA ${l.zip}`
-const url = new URL(`/property/${listing.id}`, SITE_URL).href
+const url = abs(`/property/${listing.id}`)
+const heroUrl = hero ? abs((await getImage({ src: hero, width: 1200, format: 'jpeg' })).src) : undefined
 
 const facts = [
-  { label: 'Price', value: formatPrice(l.price) },
+  { label: sold ? 'Sold price' : 'Price', value: formatPrice(l.price) },
   l.beds && { label: 'Bedrooms', value: String(l.beds) },
   l.baths && { label: 'Bathrooms', value: String(l.baths) },
   l.sqft && { label: 'Living area', value: `${l.sqft.toLocaleString('en-US')} sq ft` },
@@ -36,30 +41,15 @@ const facts = [
   l.neighborhood && { label: 'Neighborhood', value: l.neighborhood },
   l.mls && { label: 'MLS #', value: l.mls },
   l.listedAt && { label: 'Listed', value: formatDate(l.listedAt) },
+  l.soldAt && { label: 'Sold', value: formatDate(l.soldAt) },
 ].filter(Boolean) as { label: string; value: string }[]
 
-const ld = {
-  '@context': 'https://schema.org',
-  '@type': 'RealEstateListing',
-  name: fullAddress,
-  url,
-  description: l.description ?? l.blurb,
-  ...(l.listedAt && { datePosted: l.listedAt.toISOString().slice(0, 10) }),
-  offers: { '@type': 'Offer', price: l.price, priceCurrency: 'USD', availability: 'https://schema.org/InStock' },
-  about: {
-    '@type': l.type === 'land' ? 'Landform' : 'SingleFamilyResidence',
-    address: { '@type': 'PostalAddress', streetAddress: l.address, addressLocality: l.city, addressRegion: 'CA', postalCode: l.zip, addressCountry: 'US' },
-    ...(l.beds && { numberOfRooms: l.beds, numberOfBedrooms: l.beds }),
-    ...(l.baths && { numberOfBathroomsTotal: l.baths }),
-    ...(l.sqft && { floorSize: { '@type': 'QuantitativeValue', value: l.sqft, unitCode: 'FTK' } }),
-  },
-  broker: { '@id': `${SITE_URL}/#agent` },
-}
+const ld = propertySchema(listing, heroUrl)
 ---
 
 <Base
-  title={`${l.address}, ${l.city}, CA — ${formatPrice(l.price)}`}
-  description={`${factLine(l, ' · ')}. ${l.blurb}`}
+  title={sold ? `${l.address}, ${l.city}, CA — Sold` : `${l.address}, ${l.city}, CA — ${formatPrice(l.price)}`}
+  description={`${sold ? 'Sold' : formatPrice(l.price)} — ${factLine(l, ' · ')}. ${l.blurb}`}
   image={hero}
   imageAlt={fullAddress}
   jsonLd={ld}
@@ -83,14 +73,24 @@ const ld = {
           </p>
         </div>
         <div class="rise flex flex-col gap-2 md:items-end" style="animation-delay:160ms">
-          <span class="font-display text-4xl tracking-wide text-poppy md:text-5xl">{formatPrice(l.price)}</span>
+          {
+            // Sold listings share this template, so the status is stated up front.
+            sold && (
+              <span class="label self-start rounded-sm bg-ink-foreground/15 px-3 py-1 md:self-end">
+                Sold{l.soldAt && ` · ${formatDate(l.soldAt)}`}
+              </span>
+            )
+          }
+          <span class="font-display text-4xl tracking-wide text-poppy md:text-5xl">{sold ? <s>{formatPrice(l.price)}</s> : formatPrice(l.price)}</span>
           <span class="label text-ink-foreground/70">{factLine(l)}</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Gallery -->
+  <!-- Gallery (sold listings have no published photos) -->
+  {
+    hero && (
   <photo-gallery class="block bg-ink pb-14 text-ink-foreground md:pb-20">
     <div class="shell">
       <div class="grid gap-2 md:grid-cols-4 md:grid-rows-2 md:gap-3">
@@ -157,6 +157,8 @@ const ld = {
       </div>
     </dialog>
   </photo-gallery>
+    )
+  }
 
   <!-- Details -->
   <section class="bg-background py-16 text-foreground md:py-24">
@@ -191,9 +193,13 @@ const ld = {
           </dl>
         </div>
 
-        <div data-reveal>
-          <PaymentEstimator price={l.price} />
-        </div>
+        {
+          !sold && (
+            <div data-reveal>
+              <PaymentEstimator price={l.price} />
+            </div>
+          )
+        }
 
         <div data-reveal>
           <h2 class="label text-muted-foreground">Location</h2>
@@ -216,10 +222,14 @@ const ld = {
       <aside class="lg:col-span-5">
         <div class="lg:sticky lg:top-28">
           <div class="rounded-sm border border-border bg-secondary p-6 md:p-10">
-            <p class="eyebrow text-muted-foreground">Interested in this one?</p>
-            <h2 class="mt-3 font-display text-2xl tracking-wide">See the full picture.</h2>
+            <p class="eyebrow text-muted-foreground">{sold ? 'This one has closed' : 'Interested in this one?'}</p>
+            <h2 class="mt-3 font-display text-2xl tracking-wide">{sold ? 'Looking for something like it?' : 'See the full picture.'}</h2>
             <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Ask about a showing, or share your buyer profile so Nathanael can respond with this property in context — not in isolation.
+              {
+                sold
+                  ? 'Tell Nathanael what caught your eye and he’ll point you to what is available now — including homes that never reach the MLS.'
+                  : 'Ask about a showing, or share your buyer profile so Nathanael can respond with this property in context — not in isolation.'
+              }
             </p>
             <div class="mt-6 grid grid-cols-2 gap-2">
               <a href={contact.phoneHref} class="pill min-h-11 bg-ink px-4 text-ink-foreground hover:bg-poppy hover:text-ink">Call</a>
@@ -228,7 +238,7 @@ const ld = {
               </button>
             </div>
             <div class="mt-8">
-              <InquiryForm goal="Buying" interest={fullAddress} dark={false} compact />
+              <InquiryForm goal="Buying" interest={sold ? `Similar to ${fullAddress} (sold)` : fullAddress} dark={false} compact />
             </div>
           </div>
         </div>
@@ -240,7 +250,7 @@ const ld = {
   <section class="bg-secondary py-16 md:py-24" aria-labelledby="similar-heading">
     <div class="shell">
       <div data-reveal class="flex items-end justify-between gap-6">
-        <h2 id="similar-heading" class="text-3xl font-medium tracking-wide md:text-4xl">You may also like</h2>
+        <h2 id="similar-heading" class="text-3xl font-medium tracking-wide md:text-4xl">{sold ? 'Available now' : 'You may also like'}</h2>
         <a href="/properties" class="label shrink-0 text-muted-foreground transition-colors hover:text-gold">View all →</a>
       </div>
       <ul class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

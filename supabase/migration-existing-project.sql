@@ -22,6 +22,9 @@
 
 -- ---------------------------------------------------------------- leads
 alter table public.leads add column if not exists age_range text;
+-- The visitor's free-text message. The form always collected it and the email
+-- always carried it, but it was never persisted, so /hq rendered an empty field.
+alter table public.leads add column if not exists message text;
 
 -- ---------------------------------------------------------------- sessions
 -- The new columns. `duration_seconds`, geo, device, referrer type and the
@@ -73,6 +76,9 @@ alter table public.sessions add  constraint sessions_device_type_check
 -- The two columns the new tracker writes that the old table lacks.
 alter table public.visits add column if not exists title            text;
 alter table public.visits add column if not exists duration_seconds integer;
+-- Per-page-view token. recordDwell filters on it so a heartbeat updates the
+-- existing row rather than appending one row per heartbeat.
+alter table public.visits add column if not exists page_token      text;
 -- The app no longer records a full referrer URL, but the old rows do; the
 -- dashboard reads referrer_host, which is derived from it in the app layer.
 
@@ -89,6 +95,38 @@ create index if not exists sessions_country_idx    on public.sessions (country);
 create index if not exists visits_session_idx   on public.visits (session_id);
 create index if not exists visits_path_idx      on public.visits (path);
 create index if not exists visits_created_at_idx on public.visits (created_at desc);
+create unique index if not exists visits_page_token_idx
+  on public.visits (page_token) where page_token is not null;
+
+-- ---------------------------------------------------------------- bump_session
+-- The app accumulates page views and dwell time through this function instead of
+-- a read-modify-write, which would drop concurrent updates on fast multi-page
+-- visits. It has to exist or /api/track silently loses all of that data.
+--
+-- SECURITY DEFINER because sessions has RLS on with no policies; the execute
+-- grant is limited to service_role, which is the only caller.
+create or replace function public.bump_session(
+  p_session_id       text,
+  p_page_views       integer default 0,
+  p_duration_seconds integer default 0,
+  p_exit_path        text   default null
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.sessions
+     set page_views       = coalesce(page_views, 0) + coalesce(p_page_views, 0),
+         duration_seconds = coalesce(duration_seconds, 0) + coalesce(p_duration_seconds, 0),
+         exit_path        = coalesce(p_exit_path, exit_path),
+         last_seen_at     = now()
+   where session_id = p_session_id;
+end;
+$$;
+
+revoke all on function public.bump_session(text, integer, integer, text) from public;
+grant  execute on function public.bump_session(text, integer, integer, text) to service_role;
 
 -- ---------------------------------------------------------------- lockdown
 -- RLS on, and deliberately NO public policies: the anon key can read nothing.

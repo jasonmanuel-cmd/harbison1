@@ -57,6 +57,29 @@ export function optOutOfAnalytics() {
   }
 }
 
+/**
+ * The current session id, or null when storage is blocked.
+ *
+ * Exported so a lead submission can be attributed back to the visit that
+ * produced it. Analytics being opted out must NOT suppress this — the id is
+ * just a random UUID in sessionStorage, and the server only uses it to join
+ * the lead to its own sessions row.
+ */
+export function getSessionId(): string | null {
+  if (typeof window === 'undefined') return null
+  try {
+    let id = window.sessionStorage.getItem(SESSION_KEY)
+    if (!id) {
+      id = crypto.randomUUID()
+      window.sessionStorage.setItem(SESSION_KEY, id)
+      window.sessionStorage.setItem(START_KEY, String(Date.now()))
+    }
+    return id
+  } catch {
+    return null
+  }
+}
+
 function sessionId(): string {
   try {
     let id = window.sessionStorage.getItem(SESSION_KEY)
@@ -169,15 +192,6 @@ function flush() {
     window.sessionStorage.removeItem(PAGE_TOKEN_KEY)
   } catch {
     /* ignore */
-  }
-}
-
-/** The current session id, if one exists — used to attribute form leads to a visit. */
-export function currentSessionId(): string | undefined {
-  try {
-    return window.sessionStorage.getItem(SESSION_KEY) ?? undefined
-  } catch {
-    return undefined
   }
 }
 

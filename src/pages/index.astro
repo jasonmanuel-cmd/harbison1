@@ -11,11 +11,14 @@ import Testimonials from '@/components/home/Testimonials.astro'
 import Faq from '@/components/home/Faq.astro'
 import GuidesGrid from '@/components/GuidesGrid.astro'
 import ContactSection from '@/components/ContactSection.astro'
+import { SITE_DESCRIPTION, websiteSchema } from '@/lib/seo'
 ---
 
 <Base
-  title="Buy, Sell & Invest in Kern County | Harbison Standard"
-  description="Buy, sell, and invest in Tehachapi, Bakersfield, and Kern County with Nathanael Harbison, REALTOR® DRE #02059393. Practical advice, direct communication, and a clear next step."
+  title="Real Estate in Tehachapi & Kern County, CA"
+  description={SITE_DESCRIPTION}
+  imageAlt="Harbison Standard — real estate in Kern County, California"
+  jsonLd={websiteSchema()}
 >
   <Hero />
   <Standard />

@@ -1,12 +1,10 @@
 ---
 import { Plus } from '@lucide/astro'
 import { faqs, steps } from '@/lib/site'
+import { faqSchema } from '@/lib/seo'
 
-const ld = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
-}
+// Rendered questions and FAQPage markup read from the same source, so they cannot drift.
+const ld = faqSchema(faqs)
 ---
 
 <section id="faq" aria-labelledby="faq-heading" class="scroll-mt-16 bg-secondary py-24 md:py-32">

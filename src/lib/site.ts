@@ -93,7 +93,7 @@ export const faqs = [
   },
   {
     q: 'Where does Harbison Standard serve?',
-    a: 'All of Kern County, including Tehachapi, Bakersfield, California City, and Stallion Springs — for buying, selling, and investing.',
+    a: 'All of Kern County, including Tehachapi, Bakersfield, California City, and Stallion Springs - for buying, selling, and investing.',
   },
   {
     q: 'Can Nathanael help me sell my home?',

@@ -184,7 +184,7 @@ const tone = dark
 </inquiry-form>
 
 <script>
-  import { currentSessionId } from '@/scripts/analytics'
+  import { getSessionId } from '@/scripts/analytics'
 
   const LABELS: Record<string, string> = {
     goal: 'Goal',
@@ -236,7 +236,8 @@ const tone = dark
         ...data,
         goal: data.goal || this.dataset.defaultGoal || undefined,
         interest: this.dataset.interest || undefined,
-        session_id: currentSessionId(),
+        // Attributes the lead to the visit that produced it in /hq.
+        session_id: getSessionId() ?? undefined,
       }
 
       const button = form.querySelector<HTMLButtonElement>('button[type=submit]')!

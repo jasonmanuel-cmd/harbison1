@@ -9,7 +9,8 @@ import { ClientRouter } from 'astro:transitions'
 import SiteHeader from '@/components/SiteHeader.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
 import QuickContact from '@/components/QuickContact.astro'
-import { SITE_NAME, SITE_URL, TAGLINE, contact, serviceArea } from '@/lib/site'
+import { SITE_NAME } from '@/lib/site'
+import { abs, agentSchema, graph, personSchema } from '@/lib/seo'
 import headshot from '@/assets/headshot.webp'
 
 interface Props {
@@ -18,7 +19,7 @@ interface Props {
   /** Social share image. Defaults to the site hero. */
   image?: ImageMetadata | string
   imageAlt?: string
-  jsonLd?: Record<string, unknown> | Record<string, unknown>[]
+  jsonLd?: object | object[]
   noindex?: boolean
   /** Hide the global header/footer chrome (used by /hq). */
   bare?: boolean
@@ -28,36 +29,21 @@ interface Props {
 
 const { title, description, image, imageAlt, jsonLd, noindex = false, bare = false, overlayHeader = true } = Astro.props
 
-const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', SITE_URL).href
+const canonical = abs(Astro.url.pathname.replace(/\/$/, '') || '/')
 const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`
 
-let ogImage = new URL('/images/hero-1600.webp', SITE_URL).href
+let ogImage = abs('/images/hero-1600.webp')
 if (image && typeof image !== 'string') {
   const og = await getImage({ src: image, width: 1200, height: 630, fit: 'cover', format: 'jpeg' })
-  ogImage = new URL(og.src, SITE_URL).href
+  ogImage = abs(og.src)
 } else if (typeof image === 'string') {
-  ogImage = new URL(image, SITE_URL).href
+  ogImage = abs(image)
 }
 
-const agent = {
-  '@context': 'https://schema.org',
-  '@type': 'RealEstateAgent',
-  '@id': `${SITE_URL}/#agent`,
-  name: `${SITE_NAME} — ${contact.name}`,
-  url: SITE_URL,
-  telephone: contact.phoneE164,
-  email: contact.email,
-  image: new URL((await getImage({ src: headshot, width: 600, format: 'jpeg' })).src, SITE_URL).href,
-  slogan: TAGLINE,
-  priceRange: '$$',
-  address: { '@type': 'PostalAddress', addressLocality: 'Tehachapi', addressRegion: 'CA', addressCountry: 'US' },
-  geo: { '@type': 'GeoCoordinates', latitude: 35.068, longitude: -118.4468 },
-  areaServed: serviceArea,
-  founder: { '@type': 'Person', name: contact.name, jobTitle: 'REALTOR®' },
-  identifier: { '@type': 'PropertyValue', name: 'California DRE', value: contact.dre },
-  sameAs: [contact.youtube, contact.instagram, contact.facebook, contact.linkedin],
-}
-const ld = [agent, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [])]
+// The organisation and the agent, as one @graph on every page.
+const portrait = abs((await getImage({ src: headshot, width: 600, format: 'jpeg' })).src)
+const identity = graph(agentSchema(abs('/images/hero-1600.webp')), personSchema(portrait))
+const ld = [identity, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [])]
 ---
 
 <!doctype html>
@@ -77,7 +63,7 @@ const ld = [agent, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [])]
     <meta name="geo.region" content="US-CA" />
     <meta name="geo.placename" content="Tehachapi, California" />
     <meta name="geo.position" content="35.0680;-118.4468" />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="sitemap" href="/sitemap.xml" />
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
@@ -88,6 +74,9 @@ const ld = [agent, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [])]
     <meta property="og:image" content={ogImage} />
     {imageAlt && <meta property="og:image:alt" content={imageAlt} />}
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
 
     {!noindex && ld.map((item) => <script type="application/ld+json" set:html={JSON.stringify(item)} />)}
 

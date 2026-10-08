@@ -1,7 +1,6 @@
 // @ts-check
 import { defineConfig, envField } from 'astro/config'
 import react from '@astrojs/react'
-import sitemap from '@astrojs/sitemap'
 import vercel from '@astrojs/vercel'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -19,9 +18,6 @@ export default defineConfig({
   integrations: [
     // React is only used for the /hq dashboard island; the public site ships no framework JS.
     react(),
-    sitemap({
-      filter: (page) => !page.includes('/hq'),
-    }),
   ],
   // Images are sized with Tailwind classes plus explicit `widths`/`sizes`, so
   // Astro's (unlayered) responsive image styles are left off — they would

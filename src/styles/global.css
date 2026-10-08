@@ -20,10 +20,11 @@
   --color-ink-foreground: #ffffff;
   --color-poppy: #d4a845;
   --color-poppy-light: #f1d68a;
-  /* The brand gold is tuned for the dark navy (7.75:1). On white it manages only
-     2.21:1, so gold that sits on a light surface uses this darker shade of the
-     same hue instead (4.53:1). Verified by scripts/contrast.mjs. */
-  --color-gold: #90722f;
+  /* The brand gold is tuned for the dark navy (7.75:1). On light surfaces it
+     fails, so gold on a light background uses this darker shade of the same
+     hue: the darkest point that clears 4.5:1 on BOTH #ffffff and the
+     --color-secondary card tint (#f3f5f9). Verified by scripts/contrast.mjs. */
+  --color-gold: #896c2d;
 
   --radius-sm: 2px;
   --radius-md: 2px;

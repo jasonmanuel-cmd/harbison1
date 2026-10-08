@@ -75,24 +75,14 @@ const split = (word: string, start: number) => word.split('').map((char, i) => (
 
 <script>
   /**
-   * The ~8 MB hero clip is decoration a still frame conveys just as well, and on
-   * phones it pushed LCP past 5s (Lighthouse, emulated iPhone). So it is only
-   * fetched on wide viewports, with motion allowed, no reduced-data preference,
-   * and a non-slow connection — after first paint. Everyone else keeps the
-   * optimized poster, which is already painted.
+   * The hero clip plays on every device. It is fetched after first paint so the
+   * optimized poster — the same opening frame — is what the page renders first.
+   * Only an explicit reduced-motion preference keeps the still image.
    */
   class HeroVideo extends HTMLElement {
     connectedCallback() {
       const video = this.querySelector('video')!
-      const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection
-      const slow = conn?.saveData || /(^|-)2g$|3g/.test(conn?.effectiveType ?? '')
-      if (
-        slow ||
-        !matchMedia('(min-width: 1024px)').matches ||
-        matchMedia('(prefers-reduced-motion: reduce)').matches ||
-        matchMedia('(prefers-reduced-data: reduce)').matches
-      )
-        return
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
       video.addEventListener('canplay', () => video.setAttribute('data-ready', ''), { once: true })
       const start = () => {
