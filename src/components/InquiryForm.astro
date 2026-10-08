@@ -23,8 +23,8 @@ const bedroomOptions = ['1+', '2+', '3+', '4+', '5+']
 const ageOptions = ['Under 25', '25–34', '35–44', '45–54', '55–64', '65+']
 
 const tone = dark
-  ? { field: 'field border-ink-foreground/25 text-ink-foreground', label: 'label text-ink-foreground/70', muted: 'text-ink-foreground/60', chip: 'border-ink-foreground/25 text-ink-foreground/75 has-[:checked]:border-poppy has-[:checked]:bg-poppy has-[:checked]:text-ink', text: 'text-ink-foreground', option: 'bg-ink', link: 'hover:text-poppy' }
-  : { field: 'field border-foreground/25 text-foreground', label: 'label text-muted-foreground', muted: 'text-muted-foreground', chip: 'border-foreground/25 text-muted-foreground has-[:checked]:border-ink has-[:checked]:bg-ink has-[:checked]:text-ink-foreground', text: 'text-foreground', option: '', link: 'hover:text-gold' }
+  ? { field: 'field border-ink-foreground/25 text-ink-foreground', label: 'label text-ink-foreground/70', muted: 'text-ink-foreground/60', chip: 'border-ink-foreground/25 text-ink-foreground/75 has-[:checked]:border-poppy has-[:checked]:bg-poppy has-[:checked]:text-ink', text: 'text-ink-foreground', option: 'bg-ink', link: 'hover:text-poppy', error: 'text-red-300' }
+  : { field: 'field border-foreground/25 text-foreground', label: 'label text-muted-foreground', muted: 'text-muted-foreground', chip: 'border-foreground/25 text-muted-foreground has-[:checked]:border-ink has-[:checked]:bg-ink has-[:checked]:text-ink-foreground', text: 'text-foreground', option: '', link: 'hover:text-gold', error: 'text-destructive' }
 ---
 
 <inquiry-form data-email={contact.email} data-default-goal={goal} data-interest={interest}>
@@ -48,16 +48,19 @@ const tone = dark
     <div class="grid gap-5 sm:grid-cols-2">
       <div>
         <label for={id('name')} class={tone.label}>Full name *</label>
-        <input id={id('name')} name="name" required maxlength="100" autocomplete="name" class={tone.field} />
+        <input id={id('name')} name="name" required maxlength="100" autocomplete="name" aria-describedby={id('name-err')} class={tone.field} />
+        <p id={id('name-err')} data-field-error hidden class:list={['mt-1.5 text-sm', tone.error]}></p>
       </div>
       <div>
         <label for={id('phone')} class={tone.label}>Phone *</label>
-        <input id={id('phone')} name="phone" type="tel" required maxlength="40" autocomplete="tel" class={tone.field} />
+        <input id={id('phone')} name="phone" type="tel" required maxlength="40" autocomplete="tel" aria-describedby={id('phone-err')} class={tone.field} />
+        <p id={id('phone-err')} data-field-error hidden class:list={['mt-1.5 text-sm', tone.error]}></p>
       </div>
     </div>
     <div>
       <label for={id('email')} class={tone.label}>Email *</label>
-      <input id={id('email')} name="email" type="email" required maxlength="200" autocomplete="email" class={tone.field} />
+      <input id={id('email')} name="email" type="email" required maxlength="200" autocomplete="email" spellcheck="false" aria-describedby={id('email-err')} class={tone.field} />
+      <p id={id('email-err')} data-field-error hidden class:list={['mt-1.5 text-sm', tone.error]}></p>
     </div>
 
     <details class="group/details" open={!compact}>
@@ -73,13 +76,13 @@ const tone = dark
           </div>
           <div>
             <label for={id('area')} class={tone.label}>Desired area</label>
-            <input id={id('area')} name="desired_area" maxlength="200" placeholder="e.g. Tehachapi, Bakersfield" class={tone.field} />
+            <input id={id('area')} name="desired_area" maxlength="200" placeholder="e.g. Tehachapi, Bakersfield…" class={tone.field} />
           </div>
         </div>
         <div class="grid gap-5 sm:grid-cols-2">
           <div>
             <label for={id('budget')} class={tone.label}>Budget</label>
-            <input id={id('budget')} name="budget" maxlength="100" placeholder="e.g. $400k–$600k" class={tone.field} />
+            <input id={id('budget')} name="budget" maxlength="100" placeholder="e.g. $400k–$600k…" class={tone.field} />
           </div>
           <div>
             <label for={id('type')} class={tone.label}>Property type</label>
@@ -206,6 +209,13 @@ const tone = dark
   class InquiryFormEl extends HTMLElement {
     connectedCallback() {
       const form = this.querySelector('form')!
+      // Clear a field's error as soon as the visitor edits it.
+      form.addEventListener('input', (e) => {
+        const input = e.target as HTMLInputElement
+        if (input.getAttribute?.('aria-invalid') !== 'true') return
+        input.setAttribute('aria-invalid', 'false')
+        input.parentElement!.querySelector<HTMLElement>('[data-field-error]')!.hidden = true
+      })
       form.addEventListener('submit', (e) => {
         e.preventDefault()
         void this.submit(form)
@@ -222,12 +232,23 @@ const tone = dark
       const error = form.querySelector<HTMLElement>('[data-error]')!
       error.hidden = true
 
-      // Native constraint validation, surfaced in one readable message.
-      if (!form.checkValidity()) {
-        const bad = form.querySelector<HTMLInputElement>(':invalid')
-        error.textContent = bad?.type === 'email' && bad.value ? 'Please enter a valid email address.' : 'Please add your name, phone, and email.'
+      // Native constraint validation, shown inline next to each invalid field.
+      const required = Array.from(form.querySelectorAll<HTMLInputElement>('input[required]'))
+      let first: HTMLInputElement | undefined
+      for (const input of required) {
+        const note = input.parentElement!.querySelector<HTMLElement>('[data-field-error]')!
+        const bad = !input.checkValidity()
+        input.setAttribute('aria-invalid', String(bad))
+        note.hidden = !bad
+        if (bad) {
+          note.textContent = !input.value ? `Please enter your ${input.name === 'name' ? 'full name' : input.name === 'phone' ? 'phone number' : 'email address'}.` : input.type === 'email' ? 'That email address doesn’t look right.' : 'Please check this field.'
+          first ??= input
+        }
+      }
+      if (first) {
+        error.textContent = 'Please fix the highlighted fields.'
         error.hidden = false
-        bad?.focus()
+        first.focus()
         return
       }
 
