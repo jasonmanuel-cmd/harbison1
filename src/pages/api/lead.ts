@@ -110,7 +110,8 @@ export const POST: APIRoute = async ({ request }) => {
   } catch (err: unknown) {
     console.error('[lead] CRM storage failed:', err instanceof Error ? err.message : err)
   }
-  if (!stored) console.error('[lead] inquiry from', fields.email, 'was not stored in the CRM; delivering by email only')
+  // Never log the visitor's details here; the inquiry itself is in the email and the CRM.
+  if (!stored) console.error('[lead] inquiry was not stored in the CRM; delivering by email only')
 
   // `null` drops a line; empty strings are intentional blank lines.
   const opt = (value: string | undefined, text: string) => (value ? text : null)
