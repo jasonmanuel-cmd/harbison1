@@ -413,3 +413,33 @@ select:where(.appearance-none) {
   background-size: 11px;
   padding-right: 2.25rem;
 }
+
+/* ---------------------------------------------------------------- navy & gold polish */
+
+/* Navy sections get depth instead of a flat fill: a faint gold glow in one
+   corner and a fine film grain. Both are static, so there is no motion cost. */
+:is(section, footer).bg-ink {
+  background-image:
+    radial-gradient(70rem 32rem at 85% -8%, rgb(212 168 69 / 0.09), transparent 62%),
+    radial-gradient(60rem 30rem at 0% 110%, rgb(19 37 79 / 0.9), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+}
+
+/* The primary gold button reads as metal: a soft top-lit gradient and a gold
+   glow. Hover swaps to the flat fill the page already specifies. */
+.pill.bg-poppy {
+  background-image: linear-gradient(180deg, var(--color-poppy-light), var(--color-poppy) 62%);
+  box-shadow: 0 10px 28px -12px rgb(212 168 69 / 0.65);
+}
+.pill.bg-poppy:hover,
+.pill.bg-poppy:focus-visible {
+  background-image: none;
+  box-shadow: none;
+}
+
+/* Headings in the display face hold their shape on two lines. */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
