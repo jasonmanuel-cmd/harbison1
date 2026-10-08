@@ -443,3 +443,28 @@ h2,
 h3 {
   text-wrap: balance;
 }
+
+/* Section headings: a gold rule that draws in under the title, and larger
+   display type on the main section titles. Mobile keeps the size it already
+   had (the clamp bottoms out at 2.25rem); only wider screens grow. */
+.eyebrow + h2::after {
+  content: '';
+  display: block;
+  width: 3.5rem;
+  height: 2px;
+  margin-top: 1.4rem;
+  background: linear-gradient(90deg, var(--color-poppy), var(--color-poppy-light));
+  transform-origin: left;
+  transition: transform 1s var(--ease-out-expo) 0.35s;
+}
+.text-center .eyebrow + h2::after {
+  margin-inline: auto;
+  transform-origin: center;
+}
+[data-reveal]:not([data-shown]) .eyebrow + h2::after {
+  transform: scaleX(0);
+}
+.eyebrow + h2[class*='md:text-6xl'] {
+  font-size: clamp(2.25rem, 1.2rem + 4.2vw, 4.5rem);
+  line-height: 1.04;
+}

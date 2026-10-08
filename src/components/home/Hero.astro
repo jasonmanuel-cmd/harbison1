@@ -36,6 +36,8 @@ const split = (word: string, start: number) => word.split('').map((char, i) => (
   <div aria-hidden="true" class="absolute inset-x-0 top-0 z-[2] h-[45%] bg-gradient-to-b from-ink/80 via-ink/35 to-transparent md:h-[55%] md:from-ink/75 md:via-ink/40"></div>
   <div aria-hidden="true" class="absolute inset-x-0 bottom-0 z-[2] h-[45%] bg-gradient-to-t from-ink/90 via-ink/50 to-transparent md:h-40 md:from-ink/70"></div>
 
+  <div aria-hidden="true" class="pointer-events-none absolute inset-x-6 bottom-6 top-28 z-[3] hidden border border-poppy/30 md:block"></div>
+
   <div class="shell relative z-10 flex h-full flex-col justify-between pb-[max(5.25rem,calc(env(safe-area-inset-bottom)+4.5rem))] pt-24 md:justify-start md:gap-5 md:pb-0 md:pt-[17vh]">
     <div class="flex flex-col items-center text-center">
       <p class="eyebrow rise text-[0.65rem] tracking-[0.2em] text-ink-foreground/85 sm:text-xs sm:tracking-[0.32em]" style="animation-delay:200ms">
@@ -44,7 +46,7 @@ const split = (word: string, start: number) => word.split('').map((char, i) => (
       <h1
         id="hero-heading"
         aria-label="Harbison Standard"
-        class="mt-3 flex flex-col items-center font-display text-[clamp(2rem,10vw,4.5rem)] font-extrabold uppercase leading-[0.9] tracking-[-0.04em] md:mt-4 md:flex-row md:gap-[0.3em] md:text-[clamp(2.5rem,4.6vw,4.5rem)]"
+        class="mt-3 flex flex-col items-center font-display text-[clamp(2rem,10vw,4.5rem)] font-extrabold uppercase leading-[0.9] tracking-[-0.04em] md:mt-4 md:flex-row md:gap-[0.3em] md:text-[clamp(2rem,4.9vw,5.5rem)]"
       >
         <span aria-hidden="true" class="block overflow-hidden whitespace-nowrap px-[0.04em] pb-[0.06em]">
           {split('Harbison', 250).map(({ char, delay }) => <span class="letter" style={`animation-delay:${delay}ms`}>{char}</span>)}
@@ -53,6 +55,7 @@ const split = (word: string, start: number) => word.split('').map((char, i) => (
           {split('Standard', 650).map(({ char, delay }) => <span class="letter gold-outline" style={`animation-delay:${delay}ms`}>{char}</span>)}
         </span>
       </h1>
+      <span aria-hidden="true" class="rise mt-6 hidden h-0.5 w-24 bg-gradient-to-r from-poppy to-poppy-light md:block" style="animation-delay:1000ms"></span>
     </div>
 
     <div class="flex flex-col items-center text-center">
@@ -75,7 +78,7 @@ const split = (word: string, start: number) => word.split('').map((char, i) => (
     type="button"
     data-hero-toggle
     aria-pressed="false"
-    class="group/toggle absolute bottom-24 right-5 z-10 flex size-11 items-center justify-center rounded-full border border-ink-foreground/50 bg-ink/40 backdrop-blur-sm transition-colors hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink md:bottom-8 md:left-8 md:right-auto"
+    class="group/toggle absolute bottom-[calc(max(5.25rem,env(safe-area-inset-bottom)+4.5rem)+8.5rem)] right-5 z-10 flex size-11 items-center justify-center rounded-full border border-ink-foreground/50 bg-ink/40 backdrop-blur-sm transition-colors hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink md:bottom-8 md:left-8 md:right-auto"
   >
     <Pause class="size-4 group-aria-pressed/toggle:hidden" aria-hidden="true" />
     <Play class="hidden size-4 group-aria-pressed/toggle:block" aria-hidden="true" />

@@ -13,7 +13,7 @@ const rows = areas.map((a) => ({ area: a, stats: marketStats(listings.filter((l)
   <areas-explorer class="shell grid gap-12 lg:grid-cols-[22rem_minmax(0,1fr)] lg:gap-16">
     <div data-reveal class="flex flex-col">
       <p class="eyebrow text-muted-foreground">Where we work</p>
-      <h2 id="areas-heading" class="mt-5 text-4xl font-medium tracking-wide md:text-5xl">Neighborhoods</h2>
+      <h2 id="areas-heading" class="mt-5 text-4xl font-medium tracking-wide md:text-5xl lg:text-[2.5rem]">Neighborhoods</h2>
       <ul class="mt-10 flex flex-col" role="list">
         {
           rows.map(({ area }, i) => (
