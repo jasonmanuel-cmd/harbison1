@@ -14,6 +14,7 @@
     "audit:contrast": "node scripts/contrast.mjs && node scripts/opacity.mjs",
     "audit:contrast-scan": "node scripts/contrast-scan.mjs",
     "audit:links": "node scripts/crawl.mjs",
+    "audit:seo": "node scripts/seo-check.mjs",
     "astro": "astro"
   },
   "dependencies": {

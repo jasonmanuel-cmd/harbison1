@@ -27,7 +27,7 @@ const ld = {
         <li class="flex items-center gap-3">
           {i > 0 && <span aria-hidden="true" class="text-ink-foreground/30">/</span>}
           {c.href && i < all.length - 1 ? (
-            <a href={c.href} class="transition-colors hover:text-poppy">{c.label}</a>
+            <a href={c.href} class="inline-flex min-h-8 items-center transition-colors hover:text-poppy">{c.label}</a>
           ) : (
             <span aria-current="page" class="text-ink-foreground/85">{c.label}</span>
           )}

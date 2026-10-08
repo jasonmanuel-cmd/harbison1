@@ -27,7 +27,7 @@ export const agentRef = () => ({ '@id': orgId })
 export const personRef = () => ({ '@id': personId })
 
 export const SITE_DESCRIPTION =
-  'Nathanael Harbison, REALTOR® DRE #02059393, helps you buy, sell, and invest in Tehachapi, Bakersfield, and Kern County. Current listings, market context, and a clear next step.'
+  'Nathanael Harbison, REALTOR® DRE #02059393, helps you buy, sell, and invest in Tehachapi, Bakersfield, and Kern County. Current listings and a clear next step.'
 
 export function agentSchema(image: string) {
   return {

@@ -30,6 +30,12 @@ interface Props {
 const { title, description, image, imageAlt, jsonLd, noindex = false, bare = false, overlayHeader = true } = Astro.props
 
 const canonical = abs(Astro.url.pathname.replace(/\/$/, '') || '/')
+// Search results cut descriptions near 160 characters; trim at a word boundary so the cut is ours.
+const clamp = (text: string, max = 158) => {
+  const t = text.replace(/\s+/g, ' ').trim()
+  return t.length <= max ? t : `${t.slice(0, max - 1).replace(/\s+\S*$/, '')}…`
+}
+const metaDescription = clamp(description)
 const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`
 
 let ogImage = abs('/images/hero-1600.webp')
@@ -53,7 +59,7 @@ const ld = [identity, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#0c1a3a" />
     <title>{fullTitle}</title>
-    <meta name="description" content={description} />
+    <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow, noarchive" />}
 
@@ -69,13 +75,13 @@ const ld = [identity, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [
     <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:title" content={fullTitle} />
-    <meta property="og:description" content={description} />
+    <meta property="og:description" content={metaDescription} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     {imageAlt && <meta property="og:image:alt" content={imageAlt} />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:description" content={metaDescription} />
     <meta name="twitter:image" content={ogImage} />
 
     {!noindex && ld.map((item) => <script type="application/ld+json" set:html={JSON.stringify(item)} />)}

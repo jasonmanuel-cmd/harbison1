@@ -29,7 +29,7 @@ const select =
 ---
 
 <Base
-  title="Properties for Sale in Tehachapi, Bakersfield & Kern County"
+  title="Properties for Sale in Tehachapi & Kern County"
   description="Explore current listings across Tehachapi, Bakersfield, and Kern County with Nathanael Harbison, REALTOR® DRE #02059393. Filter by city, price, bedrooms, and land."
   image={photo('2300-weybridge-dr-1')}
   jsonLd={ld}
@@ -132,7 +132,7 @@ const select =
           sold.map((p, i) => (
             <li data-reveal style={`--reveal-delay:${(i % 3) * 90}ms`} class="flex flex-col gap-3 border-t border-foreground/15 pt-6">
               <div class="flex items-baseline justify-between gap-4">
-                <h3 class="font-display text-lg tracking-wide"><a href={`/property/${p.id}`} class="underline decoration-foreground/20 underline-offset-4 transition-colors hover:text-gold hover:decoration-gold">{p.data.address}</a></h3>
+                <h3 class="font-display text-lg tracking-wide"><a href={`/property/${p.id}`} class="inline-block py-1.5 underline decoration-foreground/20 underline-offset-4 transition-colors hover:text-gold hover:decoration-gold">{p.data.address}</a></h3>
                 <span class="font-display text-muted-foreground">{formatPrice(p.data.price)}</span>
               </div>
               <p class="label text-[0.7rem] text-muted-foreground">

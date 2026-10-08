@@ -48,9 +48,9 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
       </a>
 
       <div class="flex items-center justify-end gap-6 xl:gap-8">
-        <a href="/about" class="label hidden transition-colors hover:text-poppy lg:inline">About</a>
-        <a href="/contact" class="label hidden whitespace-nowrap transition-colors hover:text-poppy lg:inline">Let’s connect</a>
-        <a href={contact.phoneHref} class="label hidden tabular-nums transition-colors hover:text-poppy xl:inline"
+        <a href="/about" class="label hidden py-3 transition-colors hover:text-poppy lg:inline">About</a>
+        <a href="/contact" class="label hidden whitespace-nowrap py-3 transition-colors hover:text-poppy lg:inline">Let’s connect</a>
+        <a href={contact.phoneHref} class="label hidden whitespace-nowrap py-3 tabular-nums transition-colors hover:text-poppy xl:inline"
           >{contact.phone}</a
         >
         <button

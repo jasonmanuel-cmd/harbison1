@@ -1,5 +1,6 @@
 ---
 import { getImage } from 'astro:assets'
+import { Pause, Play } from '@lucide/astro'
 import poster from '@/assets/hero-poster.jpg'
 
 const posterImg = await getImage({ src: poster, width: 1920, format: 'webp', quality: 72 })
@@ -14,6 +15,8 @@ const split = (word: string, start: number) => word.split('').map((char, i) => (
       src={posterImg.src}
       srcset={`${posterMobile.src} 900w, ${posterImg.src} 1920w`}
       sizes="100vw"
+      width={posterImg.attributes.width}
+      height={posterImg.attributes.height}
       alt=""
       fetchpriority="high"
       decoding="async"
@@ -21,6 +24,7 @@ const split = (word: string, start: number) => word.split('').map((char, i) => (
     />
     <video
       class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-1000 data-[ready]:opacity-100"
+      autoplay
       muted
       loop
       playsinline
@@ -67,6 +71,17 @@ const split = (word: string, start: number) => word.split('').map((char, i) => (
     </div>
   </div>
 
+  <button
+    type="button"
+    data-hero-toggle
+    aria-pressed="false"
+    class="group/toggle absolute bottom-24 right-5 z-10 flex size-11 items-center justify-center rounded-full border border-ink-foreground/50 bg-ink/40 backdrop-blur-sm transition-colors hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink md:bottom-8 md:left-8 md:right-auto"
+  >
+    <Pause class="size-4 group-aria-pressed/toggle:hidden" aria-hidden="true" />
+    <Play class="hidden size-4 group-aria-pressed/toggle:block" aria-hidden="true" />
+    <span class="sr-only">Pause background video</span>
+  </button>
+
   <a href="#standard" class="absolute bottom-8 right-8 z-10 hidden flex-col items-center gap-3 md:flex" aria-label="Scroll to content">
     <span class="eyebrow text-ink-foreground/80">Scroll</span>
     <span class="block h-14 w-px overflow-hidden bg-ink-foreground/20"><span class="scroll-cue block h-full w-full bg-ink-foreground"></span></span>
@@ -75,14 +90,16 @@ const split = (word: string, start: number) => word.split('').map((char, i) => (
 
 <script>
   /**
-   * The hero clip plays on every device. It is fetched after first paint so the
-   * optimized poster — the same opening frame — is what the page renders first.
-   * Only an explicit reduced-motion preference keeps the still image.
+   * The hero clip plays on every device, including phones. It is fetched after
+   * first paint so the optimized poster (the same opening frame) is what the
+   * page renders first. The clip is silent and decorative; the pause button
+   * gives anyone who wants stillness a way to stop it, which is why it is not
+   * switched off by the reduced-motion preference.
    */
   class HeroVideo extends HTMLElement {
     connectedCallback() {
       const video = this.querySelector('video')!
-      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+      const toggle = this.closest('section')?.querySelector<HTMLButtonElement>('[data-hero-toggle]')
 
       video.addEventListener('canplay', () => video.setAttribute('data-ready', ''), { once: true })
       const start = () => {
@@ -91,6 +108,14 @@ const split = (word: string, start: number) => word.split('').map((char, i) => (
       }
       if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 1500 })
       else setTimeout(start, 600)
+
+      toggle?.addEventListener('click', () => {
+        const pause = toggle.getAttribute('aria-pressed') !== 'true'
+        toggle.setAttribute('aria-pressed', String(pause))
+        toggle.querySelector('.sr-only')!.textContent = pause ? 'Play background video' : 'Pause background video'
+        if (pause) video.pause()
+        else void video.play().catch(() => {})
+      })
     }
   }
   customElements.define('hero-video', HeroVideo)
