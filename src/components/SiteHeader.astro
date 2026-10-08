@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets'
 import { Menu, X } from '@lucide/astro'
 import logo from '@/assets/harbison-logo.webp'
+import { photo } from '@/lib/photos'
 import { contact, menuLinks, primaryNav } from '@/lib/site'
 
 interface Props {
@@ -72,6 +73,9 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
       hidden
       class="h-[calc(100svh-4.5rem)] overflow-y-auto overscroll-contain border-t border-ink-foreground/15 bg-ink md:h-[calc(100svh-5.5rem)]"
     >
+      <div class="relative isolate min-h-full">
+      <Image src={photo('2300-weybridge-dr-1')} alt="" aria-hidden="true" widths={[800, 1400, 2000]} sizes="100vw" loading="lazy" class="absolute inset-0 -z-10 h-full w-full object-cover opacity-25" />
+      <div aria-hidden="true" class="absolute inset-0 -z-10 bg-gradient-to-r from-ink via-ink/85 to-ink/40"></div>
       <div class="shell grid gap-12 py-10 lg:grid-cols-2 lg:py-16">
         <nav aria-label="Menu">
           <ul class="flex flex-col">
@@ -97,6 +101,7 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
           <a href={`mailto:${contact.email}`} class="break-all text-ink-foreground/80 hover:text-poppy">{contact.email}</a>
           <p class="eyebrow text-ink-foreground/60">DRE #{contact.dre}</p>
         </div>
+      </div>
       </div>
     </div>
     <span aria-hidden="true" class="scroll-progress absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-poppy/80"></span>

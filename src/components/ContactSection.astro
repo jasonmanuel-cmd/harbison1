@@ -1,15 +1,27 @@
 ---
+import type { ImageMetadata } from 'astro'
+import { Image } from 'astro:assets'
 import InquiryForm from './InquiryForm.astro'
 import { contact } from '@/lib/site'
 
 interface Props {
   heading?: string
   headingLevel?: 'h1' | 'h2'
+  /** Optional photo behind the section, kept faint so the form stays readable. */
+  image?: ImageMetadata
 }
-const { heading = 'Good things start with a conversation.', headingLevel: H = 'h2' } = Astro.props
+const { heading = 'Good things start with a conversation.', headingLevel: H = 'h2', image } = Astro.props
 ---
 
-<section id="contact" aria-labelledby="contact-heading" class="scroll-mt-16 bg-ink py-24 text-ink-foreground md:py-32">
+<section id="contact" aria-labelledby="contact-heading" class="relative isolate scroll-mt-16 overflow-hidden bg-ink py-24 text-ink-foreground md:py-32">
+  {
+    image && (
+      <>
+        <Image src={image} alt="" aria-hidden="true" widths={[800, 1400, 2000]} sizes="100vw" class="absolute inset-0 -z-10 h-full w-full object-cover opacity-20" />
+        <div aria-hidden="true" class="absolute inset-0 -z-10 bg-gradient-to-b from-ink via-ink/60 to-ink" />
+      </>
+    )
+  }
   <div class="shell">
     <p class="eyebrow text-ink-foreground/60">Direct line · Call or text</p>
     <a href={contact.phoneHref} class="mt-5 block font-display text-[clamp(2.5rem,8vw,7rem)] font-medium leading-none tracking-wide tabular-nums transition-colors hover:text-poppy">
