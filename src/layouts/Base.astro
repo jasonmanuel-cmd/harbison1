@@ -30,7 +30,7 @@ interface Props {
 }
 
 const { title, description, image, imageAlt, jsonLd, noindex = false, bare = false, overlayHeader = true, heroImage } = Astro.props
-const preloaded = heroImage && (await getImage({ src: heroImage, widths: [800, 1400, 2000], sizes: '100vw', format: 'webp' }))
+const preloaded = heroImage && (await getImage({ src: heroImage, widths: [480, 800, 1200, 2000], sizes: '(max-width: 767px) 80vw, 100vw', format: 'webp', quality: 60 }))
 
 const canonical = abs(Astro.url.pathname.replace(/\/$/, '') || '/')
 // Search results cut descriptions near 160 characters; trim at a word boundary so the cut is ours.
@@ -69,7 +69,7 @@ const ld = [identity, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-icon.png" sizes="180x180" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    {preloaded && <link rel="preload" as="image" type="image/webp" imagesrcset={preloaded.srcSet.attribute} imagesizes="100vw" fetchpriority="high" />}
+    {preloaded && <link rel="preload" as="image" type="image/webp" imagesrcset={preloaded.srcSet.attribute} imagesizes="(max-width: 767px) 80vw, 100vw" fetchpriority="high" />}
     <meta name="geo.region" content="US-CA" />
     <meta name="geo.placename" content="Tehachapi, California" />
     <meta name="geo.position" content="35.0680;-118.4468" />
