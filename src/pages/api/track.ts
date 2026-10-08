@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import type { APIRoute } from 'astro'
 import { getSecret } from 'astro:env/server'
+import { clientKey, hit } from '@/lib/server/rate-limit'
 import { bumpSession, recordDwell, recordVisit, supabaseConfigured, upsertSession } from '@/lib/server/supabase'
 
 export const prerender = false
@@ -86,15 +87,16 @@ function visitorHash(ip: string) {
   return createHash('sha256').update(`${salt}:${day}:${ip}`).digest('hex').slice(0, 32)
 }
 
-function clientIp(req: Request) {
-  const forwarded = req.headers.get('x-forwarded-for')
-  if (forwarded) return forwarded.split(',')[0].trim()
-  return req.headers.get('x-real-ip') || '0.0.0.0'
-}
+// Same trusted address the limiter uses, so the visitor hash cannot be forged.
+const clientIp = (req: Request) => clientKey(req)
 
 const clean = (v: unknown, max = 200) => (typeof v === 'string' ? v.trim().slice(0, max) : undefined)
 
 export const POST: APIRoute = async ({ request }) => {
+  // Real visitors send a few beacons per page; this only stops floods.
+  if (!hit('track', clientKey(request), 120, 60_000).allowed) {
+    return json({ ok: false }, 429)
+  }
   if (!supabaseConfigured) {
     // Analytics is best-effort: never block or error the visitor.
     return json({ ok: true, stored: false }, 202)

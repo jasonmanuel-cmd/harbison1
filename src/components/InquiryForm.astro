@@ -272,7 +272,7 @@ const tone = dark
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),
         })
-        if (res.status === 400) {
+        if (res.status === 400 || res.status === 429) {
           const j = await res.json().catch(() => ({}))
           error.textContent = j.error || 'Please check the form and try again.'
           error.hidden = false

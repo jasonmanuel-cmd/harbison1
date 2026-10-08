@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro'
 import { checkPassword, grantAccess, hqConfigured } from '@/lib/server/hq-auth'
+import { clientKey } from '@/lib/server/rate-limit'
 
 export const prerender = false
 
@@ -16,10 +17,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     return json({ error: 'HQ is not configured. Set HQ_PASSWORD on the server.' }, 503)
   }
 
-  const ip =
-    request.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
-    request.headers.get('x-real-ip') ??
-    'unknown'
+  const ip = clientKey(request)
 
   const now = Date.now()
   const record = attempts.get(ip)

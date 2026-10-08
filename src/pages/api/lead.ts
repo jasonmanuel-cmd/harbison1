@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro'
 import { getSecret } from 'astro:env/server'
 import { saveLead } from '@/lib/server/supabase'
+import { clientKey, hit } from '@/lib/server/rate-limit'
 
 export const prerender = false
 
@@ -33,6 +34,16 @@ const json = (body: unknown, status: number) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
 
 export const POST: APIRoute = async ({ request }) => {
+  // Five inquiries per device per ten minutes. Enough for a real visitor, and stops
+  // anyone flooding the inbox or the Formspree quota.
+  const limited = hit('lead', clientKey(request), 5, 10 * 60_000)
+  if (!limited.allowed) {
+    return new Response(JSON.stringify({ error: 'Too many messages from this device. Please try again later, or call or text directly.', code: 'RATE_LIMITED' }), {
+      status: 429,
+      headers: { 'Content-Type': 'application/json', 'Retry-After': String(limited.retryAfter) },
+    })
+  }
+
   const FORM_ID = getSecret('FORMSPREE_FORM_ID') || 'xqpkdwrp'
   const NOTIFY_EMAIL = getSecret('NOTIFY_EMAIL') || 'nate85.realtor@gmail.com'
 
