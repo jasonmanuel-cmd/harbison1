@@ -86,8 +86,8 @@ export function SiteHeader() {
           <Image
             src="/images/harbison-logo-crop.webp"
             alt="Harbison Standard — Real Estate, Development, Investing"
-            width={804}
-            height={272}
+            width={1000}
+            height={250}
             priority
             className={cn('w-auto transition-[height] duration-500', scrolled ? 'h-11 md:h-12' : 'h-12 md:h-16')}
           />

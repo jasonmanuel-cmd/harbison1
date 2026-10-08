@@ -25,32 +25,7 @@ export function Hero() {
     setReducedMotion(reduceMotion)
     if (reduceMotion) return
 
-    // The clip is ~8 MB. On a phone over cellular that is the single largest
-    // cost on the page and it pushes LCP out past 5s, for a decoration that a
-    // still frame conveys just as well. So it only loads on wide viewports
-    // that have not asked for reduced data, and only after the page has
-    // painted, which keeps the video off the critical path entirely.
-    const wide = window.matchMedia('(min-width: 1024px)')
-    const saveData = window.matchMedia('(prefers-reduced-data: reduce)')
-    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection
-    const onData = connection?.saveData === true || saveData.matches
-
-    const decide = () => setAllowVideo(wide.matches && !onData && !reduceMotion)
-    decide()
-    wide.addEventListener('change', decide)
-    saveData.addEventListener('change', decide)
-
-    // One idle callback, so first paint and the hero text are never waiting.
-    const idle = window.requestIdleCallback
-      ? window.requestIdleCallback(() => decide(), { timeout: 3000 })
-      : window.setTimeout(decide, 2500)
-
-    return () => {
-      wide.removeEventListener('change', decide)
-      saveData.removeEventListener('change', decide)
-      if (window.cancelIdleCallback && typeof idle === 'number') window.cancelIdleCallback(idle)
-      else window.clearTimeout(idle as number)
-    }
+    setAllowVideo(true)
   }, [])
 
   return (

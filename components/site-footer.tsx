@@ -30,8 +30,8 @@ export function SiteFooter() {
             <Image
               src="/images/harbison-logo-crop.webp"
               alt="Harbison Standard — Real Estate, Development, Investing"
-              width={804}
-              height={272}
+              width={1000}
+              height={250}
               className="h-auto w-full max-w-sm"
             />
           </Link>
