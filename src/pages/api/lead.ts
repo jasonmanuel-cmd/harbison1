@@ -172,11 +172,12 @@ export const POST: APIRoute = async ({ request }) => {
     if (!response.ok) {
       const text = await response.text().catch(() => '')
       console.error(`[lead] Formspree responded ${response.status}: ${text.slice(0, 300)}`)
-      return json({ error: 'Failed to send inquiry', code: 'UPSTREAM_ERROR' }, 502)
+      // `stored` tells the form whether the lead already exists, so it never asks the visitor to resend.
+      return json({ ok: false, stored, error: 'Failed to send inquiry', code: 'UPSTREAM_ERROR' }, 502)
     }
-    return json({ ok: true }, 201)
+    return json({ ok: true, stored }, 201)
   } catch (err) {
     console.error('[lead] Form delivery failed:', err instanceof Error ? err.message : err)
-    return json({ error: 'Lead service unavailable', code: 'SERVICE_UNAVAILABLE' }, 503)
+    return json({ ok: false, stored, error: 'Lead service unavailable', code: 'SERVICE_UNAVAILABLE' }, 503)
   }
 }
