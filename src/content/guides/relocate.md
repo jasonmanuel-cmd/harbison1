@@ -12,7 +12,7 @@ points:
   - "The lifestyle differs markedly — smaller communities, significantly less traffic, clearer skies, cleaner air, and proximity to mountains, hiking, and outdoor recreation without the urban density."
   - "Schools, employment centers, neighborhood character, and community vibe vary across different Kern County communities, making community selection as important as property selection."
   - "Bakersfield offers urban amenities, diverse neighborhoods, employment diversity, and established infrastructure similar to larger metro areas."
-  - "Tehachapi provides mountain living, cooler climate, strong community character, top-rated schools, and proven appreciation history."
+  - "Tehachapi provides mountain living, cooler climate, and a small-town community character."
   - "California City and Stallion Springs offer value pricing and emerging market potential for long-term appreciation."
 outro: "Nathanael helps Los Angeles relocators think through budget expectations, lifestyle fit, school quality, employment access, and long-term real estate strategy."
 cta:

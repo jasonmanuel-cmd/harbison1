@@ -6,7 +6,7 @@ summary: "Discover what sets Tehachapi apart: four seasons at nearly 4,000 feet,
 eyebrow: "Tehachapi · Elev. 3,970 ft"
 order: 4
 hero: "28751-gleneagle-ct-1"
-intro: "Tehachapi offers mountain living, strong appreciation history, excellent schools, community character, and outdoor recreation opportunities that attract diverse buyer profiles."
+intro: "Tehachapi offers mountain living, community character, schools served by Tehachapi Unified School District, and outdoor recreation opportunities that attract diverse buyer profiles."
 points:
   - "The area attracts primary-residence buyers seeking lifestyle, investors analyzing appreciation potential, and families wanting small-town feel with urban amenities nearby."
   - "Elevation provides cooler summers, crisp air, distinct seasons, and relief from valley heat."

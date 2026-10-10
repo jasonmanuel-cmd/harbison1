@@ -17,6 +17,9 @@ const STATIC: Entry[] = [
   { path: '/contact', priority: 0.8, freq: 'monthly' },
   { path: '/guides', priority: 0.7, freq: 'weekly' },
   { path: '/about', priority: 0.6, freq: 'monthly' },
+  { path: '/privacy', priority: 0.2, freq: 'yearly' },
+  { path: '/terms', priority: 0.2, freq: 'yearly' },
+  { path: '/accessibility', priority: 0.2, freq: 'yearly' },
 ]
 
 export const GET: APIRoute = async () => {

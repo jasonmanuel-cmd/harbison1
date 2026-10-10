@@ -168,7 +168,15 @@ const tone = dark
     <span class="flex size-14 items-center justify-center rounded-full bg-poppy text-ink"><Check class="size-6" aria-hidden="true" /></span>
     <p class="font-display text-2xl tracking-wide">Thank you — your message is on its way.</p>
     <p class:list={['max-w-md text-sm leading-relaxed', tone.muted]}>
-      Nathanael typically responds within 24 hours. If it’s urgent, call or text <a href={contact.phoneHref} class:list={['underline underline-offset-4', tone.link]}>{contact.phone}</a>.
+      Nathanael reads every message personally. If it’s urgent, call or text <a href={contact.phoneHref} class:list={['underline underline-offset-4', tone.link]}>{contact.phone}</a>.
+    </p>
+  </div>
+
+  <div data-partial hidden role="status" class:list={['flex flex-col items-center gap-4 py-10 text-center', tone.text]}>
+    <p class="font-display text-2xl tracking-wide" data-partial-title></p>
+    <p class:list={['max-w-md text-sm leading-relaxed', tone.muted]} data-partial-body></p>
+    <p class:list={['mt-2 text-sm', tone.muted]}>
+      Please call or text <a href={contact.phoneHref} class:list={['underline underline-offset-4', tone.link]}>{contact.phone}</a>. Do not resend this form.
     </p>
   </div>
 
@@ -222,10 +230,18 @@ const tone = dark
       })
     }
 
-    show(state: 'form' | 'sent' | 'fallback') {
+    show(state: 'form' | 'sent' | 'fallback' | 'partial') {
       this.querySelector('form')!.hidden = state !== 'form'
       this.querySelector<HTMLElement>('[data-sent]')!.hidden = state !== 'sent'
       this.querySelector<HTMLElement>('[data-fallback]')!.hidden = state !== 'fallback'
+      this.querySelector<HTMLElement>('[data-partial]')!.hidden = state !== 'partial'
+    }
+
+    /** Shows a notice when only part of the job worked, so the visitor never resends and creates a duplicate. */
+    showPartial(title: string, body: string) {
+      this.querySelector<HTMLElement>('[data-partial-title]')!.textContent = title
+      this.querySelector<HTMLElement>('[data-partial-body]')!.textContent = body
+      this.show('partial')
     }
 
     async submit(form: HTMLFormElement) {
@@ -278,8 +294,22 @@ const tone = dark
           error.hidden = false
           return
         }
-        if (!res.ok) throw new Error(String(res.status))
-        this.show('sent')
+        const reply = await res.json().catch(() => ({}))
+        if (res.ok) {
+          // Saved and emailed. If the copy in the CRM failed, say so, but the email got through.
+          if (reply.stored === false) {
+            this.showPartial('Thank you, your message reached Nathanael.', 'Our system did not keep a copy, so if you have not heard back, please get in touch directly.')
+          } else {
+            this.show('sent')
+          }
+          return
+        }
+        if (reply.stored === true) {
+          // Saved, but the email did not go through. Resending would create a duplicate.
+          this.showPartial('Your details were saved.', 'The email did not go through, but Nathanael has your information and will be in touch.')
+          return
+        }
+        throw new Error(String(res.status))
       } catch {
         // The lead service is unreachable. Fall back to a delivery path that
         // really works — the visitor's own email client — rather than claiming

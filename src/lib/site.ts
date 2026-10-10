@@ -53,6 +53,13 @@ export const values = [
   { title: 'Local understanding', body: 'Grounded knowledge of Kern County and Tehachapi.' },
 ]
 
+/**
+ * Client quotes stay hidden until each one is confirmed to come from a real client
+ * who agreed to its use. Publishing unverified reviews is prohibited under the FTC's
+ * rule on fake reviews. Set to true only after that check.
+ */
+export const SHOW_TESTIMONIALS = false
+
 export const testimonials = [
   {
     quote:
@@ -105,7 +112,7 @@ export const faqs = [
   },
   {
     q: 'How do I get in touch?',
-    a: `Call or text ${contact.phone} or email ${contact.email}. Messages typically get a response within 24 hours.`,
+    a: `Call or text ${contact.phone} or email ${contact.email}. Nathanael reads every message personally and replies as soon as he can.`,
   },
 ]
 

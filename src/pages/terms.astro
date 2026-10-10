@@ -1,0 +1,37 @@
+---
+import Base from '@/layouts/Base.astro'
+import PageHero from '@/components/PageHero.astro'
+import { contact } from '@/lib/site'
+---
+
+<Base title="Terms of Use" description="Terms for using the Harbison Standard website, including how the site's information may be used, the limits of what it guarantees, and the laws that govern it in California.">
+  <PageHero eyebrow="Legal" title="Terms of Use" crumbs={[{ label: 'Terms' }]} />
+  <section class="bg-background py-16 md:py-24">
+    <div class="shell max-w-3xl space-y-10 leading-relaxed text-muted-foreground">
+      <div>
+        <h2 class="text-2xl font-medium text-foreground">General information</h2>
+        <p class="mt-3">The information on this site, including market figures, neighborhood descriptions, and guides, is provided for general information only. It is not an appraisal, a legal or tax opinion, or an offer to buy or sell property. Figures are drawn from the sources named on each page and may change.</p>
+      </div>
+      <div>
+        <h2 class="text-2xl font-medium text-foreground">No guarantees</h2>
+        <p class="mt-3">We make reasonable efforts to keep the information accurate, but we do not warrant it. Verify any detail that matters to you, such as price, zoning, schools, utilities, or access, with the appropriate agency or the listing agent before you rely on it.</p>
+      </div>
+      <div>
+        <h2 class="text-2xl font-medium text-foreground">Your use of the site</h2>
+        <p class="mt-3">Use the site lawfully, and do not interfere with its operation or try to access areas you are not authorized to use. Content on the site belongs to Harbison Standard or is used with permission, and may not be copied for commercial use without written consent.</p>
+      </div>
+      <div>
+        <h2 class="text-2xl font-medium text-foreground">Other websites</h2>
+        <p class="mt-3">Links to other websites are provided for convenience. We do not control or endorse them.</p>
+      </div>
+      <div>
+        <h2 class="text-2xl font-medium text-foreground">Limitation of liability</h2>
+        <p class="mt-3">To the extent the law allows, Harbison Standard is not liable for losses arising from use of this site or reliance on its information.</p>
+      </div>
+      <div>
+        <h2 class="text-2xl font-medium text-foreground">Governing law</h2>
+        <p class="mt-3">These terms are governed by the laws of the State of California. Questions about these terms: {contact.email}.</p>
+      </div>
+    </div>
+  </section>
+</Base>

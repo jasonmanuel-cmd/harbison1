@@ -1,0 +1,25 @@
+---
+import Base from '@/layouts/Base.astro'
+import PageHero from '@/components/PageHero.astro'
+import { contact } from '@/lib/site'
+---
+
+<Base title="Accessibility Statement" description="Harbison Standard's commitment to an accessible website, and how to tell us about a problem.">
+  <PageHero eyebrow="Legal" title="Accessibility Statement" intro="We want everyone to be able to read, search and contact us through this website." crumbs={[{ label: 'Accessibility' }]} />
+  <section class="bg-background py-16 md:py-24">
+    <div class="shell max-w-3xl space-y-10 leading-relaxed text-muted-foreground">
+      <div>
+        <h2 class="text-2xl font-medium text-foreground">Our commitment</h2>
+        <p class="mt-3">We aim to meet the Web Content Accessibility Guidelines (WCAG) 2.1 at level AA. The site is built to work with keyboards, screen readers, and phone and tablet screens, and it respects the reduce-motion setting on your device.</p>
+      </div>
+      <div>
+        <h2 class="text-2xl font-medium text-foreground">Known limitations</h2>
+        <p class="mt-3">The homepage uses a looping background video with a pause button. Decorative images are hidden from screen readers. Property photos may not show every detail a person needs; if you need specifics, ask us.</p>
+      </div>
+      <div>
+        <h2 class="text-2xl font-medium text-foreground">Tell us about a problem</h2>
+        <p class="mt-3">If you cannot use part of this site, tell us what you were trying to do and what happened. Email {contact.email} or call or text {contact.phone}, and we will help you get the information another way.</p>
+      </div>
+    </div>
+  </section>
+</Base>
