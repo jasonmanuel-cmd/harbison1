@@ -2,7 +2,6 @@
 import Base from '@/layouts/Base.astro'
 import PageHero from '@/components/PageHero.astro'
 import ContactSection from '@/components/ContactSection.astro'
-import { photo } from '@/lib/photos'
 ---
 
 <Base
@@ -13,8 +12,7 @@ import { photo } from '@/lib/photos'
     eyebrow="Let’s connect"
     title="Good things start with a conversation."
     intro="Share your real estate question, situation, or inquiry. The more context you provide, the better Nathanael can address your specific situation."
-    image={photo('chalet-property-1')}
     crumbs={[{ label: 'Contact' }]}
   />
-  <ContactSection heading="Send a message" image={photo('21204-stage-dr-1')} />
+  <ContactSection heading="Send a message" />
 </Base>

@@ -1,0 +1,20 @@
+---
+/**
+ * Brand artwork that stands in for a property photo. Navy with a gold glow and a
+ * simple ridge line, so tiles and banners keep their shape without showing a house.
+ * It is decorative, so it is hidden from assistive technology.
+ */
+interface Props {
+  class?: string
+}
+const { class: className = '' } = Astro.props
+---
+
+<div aria-hidden="true" class:list={['absolute inset-0 isolate overflow-hidden bg-ink', className]}>
+  <div class="absolute inset-0 bg-gradient-to-br from-ink via-ink-2 to-ink"></div>
+  <div class="absolute inset-0" style="background-image: radial-gradient(60% 55% at 82% 18%, rgb(212 168 69 / 0.22), transparent 70%)"></div>
+  <svg class="absolute inset-x-0 bottom-0 h-[55%] w-full text-poppy opacity-40" viewBox="0 0 400 120" preserveAspectRatio="none">
+    <path d="M0 96 L58 52 L104 78 L168 30 L226 70 L282 44 L340 74 L400 40" fill="none" stroke="currentColor" stroke-width="1.5" vector-effect="non-scaling-stroke" />
+    <path d="M0 120 L0 104 L58 66 L104 92 L168 46 L226 84 L282 60 L340 88 L400 56 L400 120 Z" fill="currentColor" opacity="0.08" />
+  </svg>
+</div>

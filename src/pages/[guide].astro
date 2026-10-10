@@ -8,7 +8,6 @@ import InquiryForm from '@/components/InquiryForm.astro'
 import ListingCard from '@/components/ListingCard.astro'
 import GuidesGrid from '@/components/GuidesGrid.astro'
 import { getActiveListings, getAreas, inArea } from '@/lib/listings'
-import { photo } from '@/lib/photos'
 import { SITE_URL, contact, pad2 } from '@/lib/site'
 
 export const getStaticPaths = (async () => {
@@ -41,8 +40,8 @@ const ld = {
 }
 ---
 
-<Base title={g.metaTitle} description={g.summary} image={photo(g.hero)} jsonLd={ld}>
-  <PageHero eyebrow={g.eyebrow} title={g.title} intro={g.intro} image={photo(g.hero)} crumbs={[{ label: 'Guides', href: '/guides' }, { label: g.cardTitle }]} />
+<Base title={g.metaTitle} description={g.summary} jsonLd={ld}>
+  <PageHero eyebrow={g.eyebrow} title={g.title} intro={g.intro} crumbs={[{ label: 'Guides', href: '/guides' }, { label: g.cardTitle }]} />
 
   <section class="bg-secondary py-16 text-foreground md:py-24">
     <div class="shell grid gap-12 lg:grid-cols-12 lg:gap-16">

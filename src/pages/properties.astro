@@ -5,7 +5,6 @@ import PageHero from '@/components/PageHero.astro'
 import ListingCard from '@/components/ListingCard.astro'
 import { SHOW_FOR_SALE, factLine, getActiveListings, getSoldListings, marketStats } from '@/lib/listings'
 import ComingSoon from '@/components/ComingSoon.astro'
-import { photo } from '@/lib/photos'
 import { SITE_URL, formatDate, formatPrice, formatPriceShort } from '@/lib/site'
 
 const [active, sold] = await Promise.all([getActiveListings(), getSoldListings()])
@@ -32,15 +31,12 @@ const select =
 <Base
   title="Properties for Sale in Tehachapi & Kern County"
   description="Explore current listings across Tehachapi, Bakersfield, and Kern County with Nathanael Harbison, REALTOR® DRE #02059393. Filter by city, price, bedrooms, and land."
-  image={photo('2300-weybridge-dr-1')}
-  heroImage={photo('2300-weybridge-dr-1')}
   jsonLd={ld}
 >
   <PageHero
     eyebrow="Tehachapi · Bakersfield · Kern County"
     title="Current Listings"
     intro="Every current listing, with photos, price, and property details. Filter to what fits, then open a property to see more or ask about a showing."
-    image={photo('2300-weybridge-dr-1')}
     crumbs={[{ label: 'Properties' }]}
   >
     {SHOW_FOR_SALE && (

@@ -1,7 +1,6 @@
 ---
-import { Image } from 'astro:assets'
+import BrandPanel from '@/components/BrandPanel.astro'
 import { ArrowRight } from '@lucide/astro'
-import { photo } from '@/lib/photos'
 import { services } from '@/lib/site'
 ---
 
@@ -11,13 +10,7 @@ import { services } from '@/lib/site'
       services.map((s) => (
         <li>
           <a href={s.href} class="group relative flex h-[26rem] items-end justify-center overflow-hidden bg-ink text-ink-foreground md:h-[36rem]">
-            <Image
-              src={photo(s.photo)}
-              alt={s.alt}
-              widths={[640, 960, 1280]}
-              sizes="(min-width: 768px) 33vw, 100vw"
-              class="absolute inset-0 h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-110"
-            />
+            <BrandPanel />
             <span aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/25 to-transparent transition-colors duration-700 group-hover:bg-ink/40" />
             <span class="relative flex flex-col items-center gap-4 px-8 pb-10 text-center">
               <span class="font-display text-4xl font-medium tracking-[0.08em] md:text-5xl">{s.label}</span>

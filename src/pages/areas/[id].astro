@@ -5,7 +5,6 @@ import PageHero from '@/components/PageHero.astro'
 import ListingCard from '@/components/ListingCard.astro'
 import InquiryForm from '@/components/InquiryForm.astro'
 import { getActiveListings, getAreas, getSoldListings, inArea, marketStats, type Area } from '@/lib/listings'
-import { photo } from '@/lib/photos'
 import { SITE_URL, formatPrice, formatPriceShort } from '@/lib/site'
 
 export const getStaticPaths = (async () => {
@@ -33,10 +32,9 @@ const ld = {
 <Base
   title={`${a.name} Homes & Land for Sale`}
   description={`${a.body} ${stats.count ? `${stats.count} current ${stats.count === 1 ? 'listing' : 'listings'}, median ask ${formatPriceShort(stats.median)}.` : ''} Real estate in ${a.name} with Nathanael Harbison.`}
-  image={photo(a.photo)}
   jsonLd={ld}
 >
-  <PageHero eyebrow={a.tag} title={a.name} intro={a.body} image={photo(a.photo)} crumbs={[{ label: 'Neighborhoods', href: '/areas' }, { label: a.name }]}>
+  <PageHero eyebrow={a.tag} title={a.name} intro={a.body} crumbs={[{ label: 'Neighborhoods', href: '/areas' }, { label: a.name }]}>
     {
       stats.count > 0 && (
         <dl class="rise mt-10 flex flex-wrap gap-x-12 gap-y-6" style="animation-delay:240ms">

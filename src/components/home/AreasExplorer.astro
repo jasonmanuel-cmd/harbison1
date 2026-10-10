@@ -1,8 +1,7 @@
 ---
-import { Image } from 'astro:assets'
+import BrandPanel from '@/components/BrandPanel.astro'
 import { ChevronRight } from '@lucide/astro'
 import { getActiveListings, getAreas, inArea, marketStats } from '@/lib/listings'
-import { photo } from '@/lib/photos'
 import { formatPriceShort } from '@/lib/site'
 
 const [areas, listings] = await Promise.all([getAreas(), getActiveListings()])
@@ -38,18 +37,12 @@ const rows = areas.map((a) => ({ area: a, stats: marketStats(listings.filter((l)
       <div class="relative aspect-[4/5] overflow-hidden bg-ink text-ink-foreground sm:aspect-[4/3] lg:aspect-auto lg:h-full lg:min-h-[36rem]">
         {
           rows.map(({ area }, i) => (
-            <Image
-              data-area-img
-              src={photo(area.data.photo)}
-              alt={i === 0 ? `Home in ${area.data.name}` : ''}
-              widths={[640, 1024, 1600]}
-              sizes="(min-width: 1024px) 60vw, 100vw"
-              loading={i === 0 ? 'eager' : 'lazy'}
-              class:list={[
-                'absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[1200ms] ease-out',
+            <div data-area-img class:list={[
+                'absolute inset-0 h-full w-full transition-[opacity,transform] duration-[1200ms] ease-out',
                 i === 0 ? 'scale-100 opacity-100' : 'scale-110 opacity-0',
-              ]}
-            />
+              ]}>
+              <BrandPanel />
+            </div>
           ))
         }
         <div aria-hidden="true" class="absolute inset-0 bg-ink/40"></div>

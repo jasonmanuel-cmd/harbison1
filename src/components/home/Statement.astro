@@ -1,17 +1,9 @@
 ---
-import { Image } from 'astro:assets'
-import { photo } from '@/lib/photos'
+import BrandPanel from '@/components/BrandPanel.astro'
 ---
 
 <section aria-label="The Harbison Standard" class="relative isolate flex min-h-[75svh] items-center justify-center overflow-hidden bg-ink text-ink-foreground">
-  <Image
-    src={photo('2300-weybridge-dr-2')}
-    alt=""
-    aria-hidden="true"
-    widths={[960, 1600, 2400]}
-    sizes="100vw"
-    class="parallax absolute inset-0 -z-10 h-full w-full object-cover"
-  />
+  <BrandPanel class="-z-10" />
   <div aria-hidden="true" class="absolute inset-0 -z-10 bg-ink/60"></div>
   <div data-reveal class="mx-auto max-w-4xl px-5 py-24 text-center">
     <p class="eyebrow text-ink-foreground/80">The Harbison Standard</p>

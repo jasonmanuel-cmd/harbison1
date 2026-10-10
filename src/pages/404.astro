@@ -1,12 +1,9 @@
 ---
 import Base from '@/layouts/Base.astro'
-import { photo } from '@/lib/photos'
-import { Image } from 'astro:assets'
 ---
 
 <Base title="Page not found" description="That page doesn’t exist. Explore current properties across Kern County." noindex>
   <section class="relative isolate flex min-h-svh items-center overflow-hidden bg-ink text-ink-foreground">
-    <Image src={photo('chalet-property-1')} alt="" aria-hidden="true" widths={[960, 1920]} sizes="100vw" class="absolute inset-0 -z-10 h-full w-full object-cover opacity-30" />
     <div class="shell py-32">
       <p class="eyebrow text-poppy">404</p>
       <h1 class="mt-5 max-w-3xl text-5xl font-medium leading-tight tracking-wide md:text-7xl">Wide open land. No page here.</h1>
