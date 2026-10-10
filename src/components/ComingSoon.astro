@@ -1,0 +1,22 @@
+---
+import { contact } from '@/lib/site'
+
+interface Props {
+  eyebrow?: string
+}
+const { eyebrow = 'Properties' } = Astro.props
+---
+
+<section aria-labelledby="coming-soon-heading" class="bg-background py-24 md:py-32">
+  <div class="shell flex flex-col items-center text-center">
+    <p class="eyebrow text-muted-foreground">{eyebrow}</p>
+    <h2 id="coming-soon-heading" class="mt-5 text-5xl font-medium tracking-wide md:text-7xl">Coming soon</h2>
+    <p class="mt-6 max-w-xl leading-relaxed text-muted-foreground text-pretty">
+      No homes are listed for sale on this site right now. Tell Nathanael what you're looking for, and he'll reach out when a property fits.
+    </p>
+    <div class="mt-10 flex flex-wrap justify-center gap-3">
+      <a href="/contact" class="pill bg-poppy text-ink hover:bg-ink hover:text-ink-foreground">Let’s connect</a>
+      <a href={contact.phoneHref} class="pill border border-ink/30 hover:border-ink hover:bg-ink hover:text-ink-foreground">Call or text</a>
+    </div>
+  </div>
+</section>

@@ -3,7 +3,8 @@ import { Search, SlidersHorizontal } from '@lucide/astro'
 import Base from '@/layouts/Base.astro'
 import PageHero from '@/components/PageHero.astro'
 import ListingCard from '@/components/ListingCard.astro'
-import { factLine, getActiveListings, getSoldListings, marketStats } from '@/lib/listings'
+import { SHOW_FOR_SALE, factLine, getActiveListings, getSoldListings, marketStats } from '@/lib/listings'
+import ComingSoon from '@/components/ComingSoon.astro'
 import { photo } from '@/lib/photos'
 import { SITE_URL, formatDate, formatPrice, formatPriceShort } from '@/lib/site'
 
@@ -15,7 +16,7 @@ const priceSteps = [100_000, 250_000, 400_000, 500_000, 750_000, 1_000_000, 2_00
 const ld = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
-  name: 'Current listings — Harbison Standard',
+  name: 'Properties — Harbison Standard',
   itemListElement: active.map((l, i) => ({
     '@type': 'ListItem',
     position: i + 1,
@@ -42,14 +43,19 @@ const select =
     image={photo('2300-weybridge-dr-1')}
     crumbs={[{ label: 'Properties' }]}
   >
+    {SHOW_FOR_SALE && (
     <dl class="rise mt-10 flex flex-wrap gap-x-12 gap-y-6" style="animation-delay:240ms">
       <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/60">Active</dt><dd class="mt-1 font-display text-3xl">{stats.count}</dd></div>
       <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/60">Median ask</dt><dd class="mt-1 font-display text-3xl">{formatPriceShort(stats.median)}</dd></div>
       <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/60">Median $/sq ft</dt><dd class="mt-1 font-display text-3xl">${stats.medianPpsf}</dd></div>
       <div><dt class="eyebrow text-[0.65rem] text-ink-foreground/60">Range</dt><dd class="mt-1 font-display text-3xl">{formatPriceShort(stats.min)}–{formatPriceShort(stats.max)}</dd></div>
     </dl>
+    )}
   </PageHero>
 
+  {!SHOW_FOR_SALE && <ComingSoon eyebrow="Current listings" />}
+
+  {SHOW_FOR_SALE && (
   <listing-filter class="block bg-background">
     <form data-filters role="search" aria-label="Filter properties" class="sticky top-[4.5rem] z-30 border-b border-border bg-background/90 backdrop-blur-md md:top-[5.5rem]">
       <div class="shell flex flex-wrap items-center gap-3 py-4">
@@ -116,6 +122,7 @@ const select =
       </div>
     </section>
   </listing-filter>
+  )}
 
   <section id="sold" class="scroll-mt-16 bg-secondary py-16 md:py-24" aria-labelledby="sold-heading">
     <div class="shell">

@@ -4,8 +4,15 @@ import { listingPhotos } from './photos'
 export type Listing = CollectionEntry<'listings'>
 export type Area = CollectionEntry<'areas'>
 
+/**
+ * While false, no for-sale homes are shown anywhere: pages, cards, stats, sitemap
+ * and the property pages themselves. Sold homes are unaffected. Set to true to restore.
+ */
+export const SHOW_FOR_SALE = false
+
 /** Active and pending listings, newest first. */
 export async function getActiveListings(): Promise<Listing[]> {
+  if (!SHOW_FOR_SALE) return []
   const all = await getCollection('listings', (l) => l.data.status !== 'sold')
   return all.sort((a, b) => (b.data.listedAt?.getTime() ?? 0) - (a.data.listedAt?.getTime() ?? 0) || b.data.price - a.data.price)
 }

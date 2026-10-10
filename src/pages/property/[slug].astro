@@ -8,7 +8,7 @@ import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import InquiryForm from '@/components/InquiryForm.astro'
 import ListingCard from '@/components/ListingCard.astro'
 import PaymentEstimator from '@/components/PaymentEstimator.astro'
-import { factLine, getActiveListings, similar, type Listing } from '@/lib/listings'
+import { SHOW_FOR_SALE, factLine, getActiveListings, similar, type Listing } from '@/lib/listings'
 import { listingPhotos } from '@/lib/photos'
 import { contact, formatDate, formatPrice } from '@/lib/site'
 import { abs, propertySchema } from '@/lib/seo'
@@ -16,7 +16,7 @@ import { abs, propertySchema } from '@/lib/seo'
 export const getStaticPaths = (async () => {
   // Sold listings get a page too: they are proof of track record, and people
   // search for them by address after seeing the sign out front.
-  const listings = await getCollection('listings')
+  const listings = (await getCollection('listings')).filter((l) => SHOW_FOR_SALE || l.data.status === 'sold')
   return listings.map((listing) => ({ params: { slug: listing.id }, props: { listing } }))
 }) satisfies GetStaticPaths
 

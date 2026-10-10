@@ -4,8 +4,10 @@ import { formatPriceShort } from '@/lib/site'
 
 const [active, areas] = await Promise.all([getActiveListings(), getAreas()])
 const stats = marketStats(active)
+import { SHOW_FOR_SALE } from '@/lib/listings'
+
 const items = [
-  { value: stats.count, label: 'Active properties' },
+  ...(SHOW_FOR_SALE ? [{ value: stats.count, label: 'Active properties' }] : []),
   { value: areas.length, label: 'Neighborhoods covered' },
   { value: 24, suffix: ' hr', label: 'Typical reply time' },
 ]

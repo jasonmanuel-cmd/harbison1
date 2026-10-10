@@ -2,7 +2,7 @@
 
 > Nathanael Harbison, REALTOR® (California DRE #02059393) helps buyers,
 > sellers, and investors in Tehachapi, Bakersfield, and Kern County, California.
-> Current listings, sold history, and direct contact.
+> Sold history, neighborhood guides, and direct contact. For-sale listings are paused.
 
 This file describes the site for language models and answer engines. It is a
 hand-written summary, not generated, and it is served from the site root at
@@ -31,9 +31,9 @@ that stay off the MLS and off the portals.
 ## Pages
 
 - [Home](https://www.harbisonstandard.com/): overview of the agent, services,
-  current listings, service area, and FAQ.
-- [Properties](https://www.harbisonstandard.com/properties): every current
-  listing, plus a sold-and-closed list with addresses, prices, and dates.
+  service area, and FAQ.
+- [Properties](https://www.harbisonstandard.com/properties): a coming-soon notice
+  while no homes are listed for sale, plus a sold-and-closed list with addresses, prices, and dates.
 - [Neighborhoods](https://www.harbisonstandard.com/areas): Tehachapi,
   Stallion Springs, Golden Hills, Cummings Valley, Bakersfield, Seven Oaks, and
   Stockdale — each with its current listings and a median asking price
