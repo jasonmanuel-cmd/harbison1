@@ -1,5 +1,4 @@
 ---
-import BrandPanel from '@/components/BrandPanel.astro'
 import { ChevronRight } from '@lucide/astro'
 import { getActiveListings, getAreas, inArea, marketStats } from '@/lib/listings'
 import { formatPriceShort } from '@/lib/site'
@@ -41,7 +40,6 @@ const rows = areas.map((a) => ({ area: a, stats: marketStats(listings.filter((l)
                 'absolute inset-0 h-full w-full transition-[opacity,transform] duration-[1200ms] ease-out',
                 i === 0 ? 'scale-100 opacity-100' : 'scale-110 opacity-0',
               ]}>
-              <BrandPanel />
             </div>
           ))
         }

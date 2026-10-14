@@ -1,0 +1,19 @@
+---
+import { contact } from '@/lib/site'
+---
+
+<section aria-labelledby="cta-heading" class="bg-ink py-24 text-ink-foreground md:py-32">
+  <div class="shell flex flex-col items-center text-center">
+    <p class="eyebrow text-poppy">Next step</p>
+    <h2 id="cta-heading" class="mt-5 max-w-3xl text-4xl font-medium tracking-wide text-balance md:text-6xl">
+      Tell Nathanael what you’re <span class="italic text-poppy">looking for.</span>
+    </h2>
+    <p class="mt-6 max-w-xl leading-relaxed text-ink-foreground/80 text-pretty">
+      Buying, selling, or investing in Kern County. One conversation is enough to know what makes sense.
+    </p>
+    <div class="mt-10 flex w-full max-w-md flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row">
+      <a href="/contact" class="pill bg-poppy text-ink hover:bg-ink-foreground">Let’s connect</a>
+      <a href={contact.phoneHref} class="pill border border-ink-foreground/60 hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink">Call or text {contact.phone}</a>
+    </div>
+  </div>
+</section>
