@@ -34,6 +34,8 @@ export default defineConfig({
       ANALYTICS_SALT: envField.string({ context: 'server', access: 'secret', optional: true }),
       HQ_PASSWORD: envField.string({ context: 'server', access: 'secret', optional: true }),
       HQ_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
+      SHARED_CRM_URL: envField.string({ context: 'server', access: 'secret', optional: true }),
+      SHARED_CRM_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },
   vite: {

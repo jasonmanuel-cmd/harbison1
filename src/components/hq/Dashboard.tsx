@@ -415,7 +415,7 @@ function LeadsPanel({ reloadKey, onSaved }: { reloadKey: number; onSaved: () => 
 
 // ---------------------------------------------------------------- dashboard
 
-export default function Dashboard() {
+export default function Dashboard({ sharedCrm = false }: { sharedCrm?: boolean }) {
   const [days, setDays] = useState(30)
   const [data, setData] = useState<Analytics | null>(null)
   const [error, setError] = useState('')
@@ -509,7 +509,13 @@ export default function Dashboard() {
         <section className="mb-8">
           <h2 className="font-display text-lg uppercase tracking-[0.18em] text-ink-foreground/70">Leads</h2>
           <div className="mt-4">
-            <LeadsPanel reloadKey={reloadKey} onSaved={() => void load()} />
+            {sharedCrm ? (
+              <div className="border border-ink-foreground/20 p-5">
+                <p>Both websites now use Call Harbison HQ for lead intake and follow-up.</p>
+                <a className="mt-3 inline-block text-poppy underline underline-offset-4" href="https://www.callharbison.com/hq">Open the shared CRM →</a>
+                <p className="mt-3 text-sm text-ink-foreground/70">This dashboard continues to show Harbison Standard website analytics. Historical leads remain in the original database until imported.</p>
+              </div>
+            ) : <LeadsPanel reloadKey={reloadKey} onSaved={() => void load()} />}
           </div>
         </section>
 

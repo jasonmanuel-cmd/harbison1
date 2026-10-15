@@ -2,6 +2,7 @@
 import Base from '@/layouts/Base.astro'
 import Dashboard from '@/components/hq/Dashboard'
 import { isAuthenticated } from '@/lib/server/hq-auth'
+import { getSecret } from 'astro:env/server'
 
 export const prerender = false
 
@@ -12,6 +13,6 @@ Astro.response.headers.set('Cache-Control', 'no-store')
 
 <Base title="HQ Dashboard" description="Internal CRM and site analytics." noindex bare>
   <div class="min-h-screen bg-ink text-ink-foreground">
-    <Dashboard client:only="react" />
+    <Dashboard sharedCrm={Boolean(getSecret('SHARED_CRM_URL') || getSecret('SHARED_CRM_SECRET'))} client:only="react" />
   </div>
 </Base>

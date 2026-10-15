@@ -195,7 +195,21 @@ const tone = dark
 </inquiry-form>
 
 <script>
-  import { getSessionId } from '@/scripts/analytics'
+  import { analyticsAllowed, getSessionId } from '@/scripts/analytics'
+
+  // Keep campaign context during this tab's visit, subject to the existing privacy choices.
+  const campaignKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']
+  let campaign: Record<string, string> = {}
+  if (analyticsAllowed()) {
+    try {
+      campaign = JSON.parse(sessionStorage.getItem('hs_lead_campaign') || '{}')
+      const query = new URLSearchParams(location.search)
+      if (campaignKeys.some((key) => query.has(key))) {
+        campaign = Object.fromEntries(campaignKeys.map((key) => [key, (query.get(key) || '').slice(0, 200)]))
+        sessionStorage.setItem('hs_lead_campaign', JSON.stringify(campaign))
+      }
+    } catch { campaign = {} }
+  }
 
   const LABELS: Record<string, string> = {
     goal: 'Goal',
@@ -271,6 +285,10 @@ const tone = dark
       const data = Object.fromEntries(new FormData(form)) as Record<string, string>
       const body: Record<string, string | undefined> = {
         ...data,
+        ...(analyticsAllowed() ? campaign : {}),
+        submission_id: this.dataset.submissionId ||= crypto.randomUUID(),
+        source: `https://www.harbisonstandard.com${location.pathname}`,
+        referrer: analyticsAllowed() ? document.referrer : undefined,
         goal: data.goal || this.dataset.defaultGoal || undefined,
         interest: this.dataset.interest || undefined,
         // Attributes the lead to the visit that produced it in /hq.
