@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { getSecret } from 'astro:env/server'
 import { saveLead } from '@/lib/server/supabase'
 import { clientKey, hit } from '@/lib/server/rate-limit'
-import { saveToSharedCrm, sharedCrmConfigured } from '@/lib/server/shared-crm'
+import { authorizedCrmCheck, saveToSharedCrm, sharedCrmConfigured, verifySharedCrm } from '@/lib/server/shared-crm'
 
 export const prerender = false
 
@@ -64,6 +64,15 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ error: 'Invalid inquiry', code: 'BAD_REQUEST' }, 400)
   }
 
+  const sharedConfig = { url: getSecret('SHARED_CRM_URL'), secret: getSecret('SHARED_CRM_SECRET') }
+  if (body.kind === 'verify') {
+    if (!authorizedCrmCheck(request.headers.get('authorization'), sharedConfig.secret)) return json({ ok: false }, 401)
+    try {
+      await verifySharedCrm(sharedConfig)
+      return json({ ok: true, verified: true, cleaned: true }, 200)
+    } catch { return json({ ok: false, error: 'Shared CRM verification failed' }, 502) }
+  }
+
   // Honeypot: a real visitor never sees or fills this field. Report success so
   // the bot moves on, but deliver nothing.
   if (typeof body.company === 'string' && body.company.trim()) {
@@ -97,7 +106,6 @@ export const POST: APIRoute = async ({ request }) => {
   const interest = fields.interest || ''
   const source = 'harbison-astro-site'
   const sessionId = typeof body.session_id === 'string' ? body.session_id.slice(0, 64) : undefined
-  const sharedConfig = { url: getSecret('SHARED_CRM_URL'), secret: getSecret('SHARED_CRM_SECRET') }
   const useShared = sharedCrmConfigured(sharedConfig)
   const submissionId = typeof body.submission_id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.submission_id)
     ? body.submission_id : randomUUID()

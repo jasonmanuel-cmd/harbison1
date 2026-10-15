@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { saveToSharedCrm } from '../src/lib/server/shared-crm.ts'
+import { authorizedCrmCheck, saveToSharedCrm, verifySharedCrm } from '../src/lib/server/shared-crm.ts'
 
 const id = '00000000-0000-4000-8000-000000000001'
 const config = { url: 'https://www.callharbison.com/api/intake', secret: 'test-only-secret-longer-than-32-characters' }
@@ -26,4 +26,15 @@ test('Standard rejects incomplete config, insecure destinations, false success a
     await assert.rejects(saveToSharedCrm({}, id, config, async () => Response.json(reply)), /confirm/)
   }
   await assert.rejects(saveToSharedCrm({}, id, config, async () => Response.json({ ok: false }, { status: 502 })), /confirm/)
+})
+
+test('private diagnostic requires the shared secret and confirms safe downstream cleanup', async () => {
+  assert.equal(authorizedCrmCheck(null, config.secret), false)
+  assert.equal(authorizedCrmCheck('Bearer wrong', config.secret), false)
+  assert.equal(authorizedCrmCheck(`Bearer ${config.secret}`, config.secret), true)
+  await verifySharedCrm(config, async (_url, init) => {
+    assert.deepEqual(JSON.parse(init.body), { kind: 'verify' })
+    return Response.json({ ok: true, verified: true, cleaned: true })
+  })
+  await assert.rejects(verifySharedCrm(config, async () => Response.json({ ok: true, verified: true, cleaned: false })), /failed/)
 })
