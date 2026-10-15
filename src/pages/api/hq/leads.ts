@@ -1,4 +1,5 @@
 import type { APIRoute, AstroCookies } from 'astro'
+import { getSecret } from 'astro:env/server'
 import { isAuthenticated } from '@/lib/server/hq-auth'
 import { deleteLead, listLeads, supabaseConfigured, updateLead } from '@/lib/server/supabase'
 
@@ -37,6 +38,7 @@ export const GET: APIRoute = async ({ cookies }) => {
 export const PATCH: APIRoute = async ({ request, cookies }) => {
   const denied = guard(cookies)
   if (denied) return denied
+  if (getSecret('SHARED_CRM_URL') || getSecret('SHARED_CRM_SECRET')) return json({ error: 'Manage leads in Call Harbison HQ.' }, 410)
 
   let body: { id?: unknown; status?: unknown; notes?: unknown }
   try {
@@ -82,6 +84,7 @@ export const PATCH: APIRoute = async ({ request, cookies }) => {
 export const DELETE: APIRoute = async ({ request, cookies }) => {
   const denied = guard(cookies)
   if (denied) return denied
+  if (getSecret('SHARED_CRM_URL') || getSecret('SHARED_CRM_SECRET')) return json({ error: 'Manage leads in Call Harbison HQ.' }, 410)
 
   let body: { id?: unknown }
   try {
