@@ -15,7 +15,8 @@ Popular videos are a curated snapshot of the channel’s Popular tab in
 `src/data/popular-videos.json`; rankings do not refresh automatically.
 YouTube’s player loads only after a visitor chooses a video. The hero uses muted,
 inline MP4 playback with a poster fallback and a manual play/pause control;
-reduced-motion visitors see a still image until they choose play.
+phones, data-saving connections, and reduced-motion visitors see a still
+image until they choose play. Desktop and tablet retain automatic playback.
 
 For production-like local audits:
 

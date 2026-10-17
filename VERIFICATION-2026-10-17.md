@@ -11,10 +11,13 @@ These are local lab results, not a guarantee of identical deployed or real-devic
 
 | Page | Profile | Performance | Accessibility | Best practices | SEO |
 | --- | --- | --- | --- | --- | --- |
-| home | mobile | 91 | 100 | 100 | 100 |
+| home | mobile | 99 | 100 | 100 | 100 |
 | home | desktop | 100 | 100 | 100 | 100 |
 | bio | mobile | 100 | 100 | 100 | 100 |
 | bio | desktop | 100 | 100 | 100 | 100 |
+
+The final phone-specific homepage pass scored 99 after font preloading,
+offscreen rendering containment, and phone tap-to-play were added.
 
 Run `pwsh scripts/audit-all.ps1` to reproduce all four audits. The script fails
 if a score is below 90. Raw reports are generated in the ignored `audits/` folder.
@@ -26,7 +29,8 @@ if a score is below 90. Raw reports are generated in the ignored `audits/` folde
 - Homepage and bio navigation, phone/email links, and five social links inspected.
 - Hero MP4: H.264 High, yuv420p, 1280×720, 20 seconds, fast-start metadata.
 - Hero plays muted and inline; pause/play control verified. Blocked autoplay and
-  reduced motion retain the visible poster and provide manual play.
+  reduced motion retain the visible poster and provide manual play. Phones and
+  data-saving connections use tap-to-play; desktop and tablet autoplay.
 - YouTube loads on selection; each button points directly to its chosen video.
   The playlist parameter was removed after detecting that YouTube could start a
   different item from its queue.

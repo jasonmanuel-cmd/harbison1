@@ -118,7 +118,11 @@ const posterMobile = await getImage({ src: poster, width: 900, format: 'webp', q
       }
       sync()
       const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
-      if (!reducedMotion) {
+      const phone = matchMedia('(max-width: 760px)').matches
+      const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData
+      // Phones use tap-to-play: reliable under iPhone Low Power Mode and lighter
+      // on mobile data. Desktop/tablet keep the automatic background video.
+      if (!reducedMotion && !phone && !saveData) {
         const defer = () => setTimeout(() => { if (!userControlled) start() }, 2500)
         if (document.readyState === 'complete') defer()
         else window.addEventListener('load', defer, { once: true })
