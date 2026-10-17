@@ -15,6 +15,7 @@ import { abs, agentSchema, graph, personSchema } from '@/lib/seo'
 import headshot from '@/assets/headshot.webp'
 
 interface Props {
+  nativeNavigation?: boolean
   title: string
   description: string
   /** Social share image. Defaults to the site hero. */
@@ -30,7 +31,7 @@ interface Props {
   heroImage?: ImageMetadata
 }
 
-const { title, description, image, imageAlt, jsonLd, noindex = false, bare = false, overlayHeader = true, heroImage } = Astro.props
+const { title, description, image, imageAlt, jsonLd, noindex = false, bare = false, overlayHeader = true, heroImage, nativeNavigation = false } = Astro.props
 const preloaded = heroImage && (await getImage({ src: heroImage, widths: [480, 800, 1200, 2000], sizes: '(max-width: 767px) 80vw, 100vw', format: 'webp', quality: 60 }))
 
 const canonical = abs(Astro.url.pathname.replace(/\/$/, '') || '/')
@@ -57,7 +58,7 @@ const ld = [identity, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [
 ---
 
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="en" class="no-js" data-native-navigation={nativeNavigation || undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -96,7 +97,7 @@ const ld = [identity, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [
       // The client router copies <html> attributes from each new page, so strip it again after every swap.
       document.addEventListener('astro:after-swap', () => document.documentElement.classList.remove('no-js'))
     </script>
-    <ClientRouter />
+    {!nativeNavigation && <ClientRouter />}
   </head>
   <body>
     <a
@@ -162,15 +163,17 @@ const ld = [identity, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [
 
       const isAdmin = () => location.pathname.startsWith('/hq')
 
-      document.addEventListener('astro:page-load', () => {
+      function initPage() {
         bindReveal()
         bindCounters()
         // Admin views would pollute the visitor data, so HQ is never tracked.
-        if (!isAdmin()) {
+        if (!isAdmin() && !['localhost', '127.0.0.1'].includes(location.hostname)) {
           initAnalytics()
           trackPageView(document.title)
         }
-      })
+      }
+      document.addEventListener('astro:page-load', initPage)
+      if (document.documentElement.hasAttribute('data-native-navigation')) initPage()
     </script>
     <!-- Simple Analytics: privacy-first, honours Do Not Track -->
     <script is:inline data-collect-dnt="true">
@@ -188,6 +191,6 @@ const ld = [identity, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [
       })
     </script>
     <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif?collect-dnt=true" alt="" width="1" height="1" referrerpolicy="no-referrer-when-downgrade" /></noscript>
-    <SpeedInsights />
+    {process.env.VERCEL === '1' && <SpeedInsights />}
   </body>
 </html>

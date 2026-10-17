@@ -3,10 +3,10 @@ import { getImage } from 'astro:assets'
 import { Pause, Play } from '@lucide/astro'
 import poster from '@/assets/hero-poster.jpg'
 
-const posterImg = await getImage({ src: poster, width: 1920, format: 'webp', quality: 72 })
-const posterMobile = await getImage({ src: poster, width: 900, format: 'webp', quality: 70 })
+const posterImg = await getImage({ src: poster, width: 1920, format: 'webp', quality: 55 })
+const posterMobile = await getImage({ src: poster, width: 900, format: 'webp', quality: 50 })
 
-const split = (word: string, start: number) => word.split('').map((char, i) => ({ char, delay: start + i * 55 }))
+
 ---
 
 <section id="top" aria-labelledby="hero-heading" class="relative flex h-svh min-h-[36rem] items-center justify-center overflow-hidden bg-ink text-ink-foreground">
@@ -30,7 +30,7 @@ const split = (word: string, start: number) => word.split('').map((char, i) => (
       playsinline
       preload="none"
       data-src="/video/hero.mp4"
-      poster={posterImg.src}></video>
+      ></video>
   </hero-video>
 
   <div aria-hidden="true" class="absolute inset-x-0 top-0 z-[2] h-[45%] bg-gradient-to-b from-ink/80 via-ink/35 to-transparent md:h-[55%] md:from-ink/75 md:via-ink/40"></div>
@@ -40,7 +40,7 @@ const split = (word: string, start: number) => word.split('').map((char, i) => (
 
   <div class="shell relative z-10 flex h-full flex-col justify-between pb-[max(5.25rem,calc(env(safe-area-inset-bottom)+4.5rem))] pt-24 md:justify-start md:gap-5 md:pb-0 md:pt-[17vh]">
     <div class="flex flex-col items-center text-center">
-      <p class="eyebrow rise text-[0.65rem] tracking-[0.2em] text-ink-foreground/85 sm:text-xs sm:tracking-[0.32em]" style="animation-delay:200ms">
+      <p class="eyebrow text-[0.65rem] tracking-[0.2em] text-ink-foreground/85 sm:text-xs sm:tracking-[0.32em]" style="animation-delay:200ms">
         Tehachapi · Bakersfield · Kern County
       </p>
       <h1
@@ -49,26 +49,26 @@ const split = (word: string, start: number) => word.split('').map((char, i) => (
       >
         <span class="sr-only">Harbison Standard: Real Estate in Tehachapi &amp; Kern County</span>
         <span aria-hidden="true" class="block overflow-hidden whitespace-nowrap px-[0.04em] pb-[0.06em]">
-          {split('Harbison', 250).map(({ char, delay }) => <span class="letter" style={`animation-delay:${delay}ms`}>{char}</span>)}
+          Harbison
         </span>
         <span aria-hidden="true" class="block overflow-hidden whitespace-nowrap px-[0.04em] pb-[0.06em]">
-          {split('Standard', 650).map(({ char, delay }) => <span class="letter gold-outline" style={`animation-delay:${delay}ms`}>{char}</span>)}
+          Standard
         </span>
       </h1>
-      <span aria-hidden="true" class="rise mt-6 hidden h-0.5 w-24 bg-gradient-to-r from-poppy to-poppy-light md:block" style="animation-delay:1000ms"></span>
+      <span aria-hidden="true" class="mt-6 hidden h-0.5 w-24 bg-gradient-to-r from-poppy to-poppy-light md:block" style="animation-delay:1000ms"></span>
     </div>
 
     <div class="flex flex-col items-center text-center">
-      <p class="rise flex flex-wrap items-center justify-center gap-x-2 text-pretty text-base leading-snug text-ink-foreground/95 sm:text-lg md:text-xl" style="animation-delay:1300ms">
+      <p class="flex flex-wrap items-center justify-center gap-x-2 text-pretty text-base leading-snug text-ink-foreground/95 sm:text-lg md:text-xl" style="animation-delay:1300ms">
         <span>It’s not what you do.</span>
         <span>It’s <span class="font-display font-bold italic text-poppy">how</span> you do it.</span>
       </p>
-      <div class="rise mt-4 flex w-full max-w-sm gap-2 sm:w-auto sm:max-w-none sm:gap-3 md:mt-5" style="animation-delay:1000ms">
-        <a href="/properties" class="pill min-w-0 flex-1 whitespace-nowrap bg-poppy px-3 text-[0.68rem] tracking-[0.12em] text-ink hover:bg-ink-foreground sm:flex-none sm:px-8 sm:text-xs sm:tracking-[0.2em]">
-          View properties
+      <div class="mt-4 flex w-full max-w-sm gap-2 sm:w-auto sm:max-w-none sm:gap-3 md:mt-5" style="animation-delay:1000ms">
+        <a href="#standard" class="pill min-w-0 flex-1 whitespace-nowrap bg-poppy px-3 text-[0.68rem] tracking-[0.12em] text-ink hover:bg-ink-foreground sm:flex-none sm:px-8 sm:text-xs sm:tracking-[0.2em]">
+          Our approach
         </a>
-        <a href="/contact" class="pill min-w-0 flex-1 whitespace-nowrap border border-ink-foreground/70 px-3 text-[0.68rem] tracking-[0.12em] hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink sm:flex-none sm:px-8 sm:text-xs sm:tracking-[0.2em]">
-          Let’s connect
+        <a href="/about" class="pill min-w-0 flex-1 whitespace-nowrap border border-ink-foreground/70 px-3 text-[0.68rem] tracking-[0.12em] hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink sm:flex-none sm:px-8 sm:text-xs sm:tracking-[0.2em]">
+          Meet Nathanael
         </a>
       </div>
     </div>
@@ -85,41 +85,51 @@ const split = (word: string, start: number) => word.split('').map((char, i) => (
     <span class="sr-only">Pause background video</span>
   </button>
 
-  <a href="#standard" class="absolute bottom-8 right-8 z-10 hidden flex-col items-center gap-3 md:flex" aria-label="Scroll to content">
+  <a href="#videos" class="absolute bottom-8 right-8 z-10 hidden flex-col items-center gap-3 md:flex" aria-label="Scroll to content">
     <span class="eyebrow text-ink-foreground/80">Scroll</span>
     <span class="block h-14 w-px overflow-hidden bg-ink-foreground/20"><span class="scroll-cue block h-full w-full bg-ink-foreground"></span></span>
   </a>
 </section>
 
 <script>
-  /**
-   * The hero clip plays on every device, including phones. It is fetched after
-   * first paint so the optimized poster (the same opening frame) is what the
-   * page renders first. The clip is silent and decorative; the pause button
-   * gives anyone who wants stillness a way to stop it, which is why it is not
-   * switched off by the reduced-motion preference.
-   */
+  // Keep the poster visible if Safari blocks autoplay or reduced motion is enabled.
   class HeroVideo extends HTMLElement {
     connectedCallback() {
+      if (this.dataset.bound) return
+      this.dataset.bound = 'true'
       const video = this.querySelector('video')!
       const toggle = this.closest('section')?.querySelector<HTMLButtonElement>('[data-hero-toggle]')
-
-      video.addEventListener('canplay', () => video.setAttribute('data-ready', ''), { once: true })
-      const start = () => {
-        video.src = video.dataset.src!
-        void video.play().catch(() => {})
+      let userControlled = false
+      const sync = () => {
+        toggle?.setAttribute('aria-pressed', String(video.paused))
+        const label = toggle?.querySelector('.sr-only')
+        if (label) label.textContent = video.paused ? 'Play background video' : 'Pause background video'
       }
-      if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 1500 })
-      else setTimeout(start, 600)
+      video.addEventListener('playing', () => { video.setAttribute('data-ready', ''); sync() })
+      video.addEventListener('pause', sync)
+      video.addEventListener('error', () => { video.removeAttribute('data-ready'); sync() })
+      const start = () => {
+        if (!this.isConnected) return
+        video.muted = true
+        video.defaultMuted = true
+        video.playsInline = true
+        if (!video.src) video.src = video.dataset.src!
+        void video.play().then(sync).catch(sync)
+      }
+      sync()
+      const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (!reducedMotion) {
+        const defer = () => setTimeout(() => { if (!userControlled) start() }, 2500)
+        if (document.readyState === 'complete') defer()
+        else window.addEventListener('load', defer, { once: true })
+      }
 
       toggle?.addEventListener('click', () => {
-        const pause = toggle.getAttribute('aria-pressed') !== 'true'
-        toggle.setAttribute('aria-pressed', String(pause))
-        toggle.querySelector('.sr-only')!.textContent = pause ? 'Play background video' : 'Pause background video'
-        if (pause) video.pause()
-        else void video.play().catch(() => {})
+        userControlled = true
+        if (video.paused) start()
+        else video.pause()
       })
     }
   }
-  customElements.define('hero-video', HeroVideo)
+  if (!customElements.get('hero-video')) customElements.define('hero-video', HeroVideo)
 </script>

@@ -20,7 +20,7 @@ export const GET: APIRoute = () =>
       ],
       shortcuts: [
         { name: 'Call Nathanael', short_name: 'Call', url: contact.phoneHref },
-        { name: 'Browse listings', short_name: 'Listings', url: '/properties' },
+        { name: 'Connect with Nathanael', short_name: 'Connect', url: '/#connect' },
       ],
     }),
     { headers: { 'Content-Type': 'application/manifest+json' } },

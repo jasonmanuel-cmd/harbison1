@@ -1,0 +1,18 @@
+---
+import { ArrowUpRight, CirclePlay, MapPin, Camera, Users, BriefcaseBusiness } from '@lucide/astro'
+import { contact } from '@/lib/site'
+const profiles = [
+  { label: 'YouTube', detail: 'Real estate, local perspective & more', href: contact.youtube, icon: CirclePlay },
+  { label: 'Google Business', detail: 'Find Harbison & read client reviews', href: contact.reviews, icon: MapPin },
+  { label: 'Instagram', detail: 'Follow along', href: contact.instagram, icon: Camera },
+  { label: 'Facebook', detail: 'Stay connected', href: contact.facebook, icon: Users },
+  { label: 'LinkedIn', detail: 'Connect professionally', href: contact.linkedin, icon: BriefcaseBusiness },
+]
+---
+    <section id="connect" class="connections wrap" aria-labelledby="connect-title">
+      <p class="kicker">Find me online</p><h2 id="connect-title">Watch. Follow. Connect.</h2><p class="subtext">Get to know me and stay in touch wherever you feel at home.</p>
+      <div class="profile-links">
+        {profiles.map(({ label, detail, href, icon: Icon }) => <a class="profile-link" href={href} target="_blank" rel="noopener noreferrer"><Icon class="profile-icon" size={25} /><span><strong>{label}</strong><small>{detail}</small></span><ArrowUpRight class="profile-arrow" size={21} /><span class="sr-only"> (opens in a new tab)</span></a>)}
+      </div>
+      <div class="direct-contact"><p>Prefer a conversation?</p><a href={contact.phoneHref}>{contact.phone}</a><a href={`mailto:${contact.email}`}>{contact.email}</a></div>
+    </section>

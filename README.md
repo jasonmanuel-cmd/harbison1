@@ -5,6 +5,31 @@ real estate practice serving Tehachapi, Bakersfield, and Kern County, CA.
 
 Live: https://www.harbisonstandard.com
 
+## Public site
+
+The homepage explains Harbison Standard and retains the original hero video.
+`/about` contains Nathanael’s bio, contact details, and social profiles. Former
+property, guide, neighborhood, and legal routes redirect to the homepage.
+
+Popular videos are a curated snapshot of the channel’s Popular tab in
+`src/data/popular-videos.json`; rankings do not refresh automatically.
+YouTube’s player loads only after a visitor chooses a video. The hero uses muted,
+inline MP4 playback with a poster fallback and a manual play/pause control;
+reduced-motion visitors see a still image until they choose play.
+
+For production-like local audits:
+
+```powershell
+npm run build
+python scripts/preview-production.py
+# In another terminal:
+pwsh scripts/audit-all.ps1
+```
+
+The preview uses gzip and immutable caching for hashed assets, as the deployment
+CDN does. The audit checks both public routes on mobile and desktop and fails
+if any performance, accessibility, best-practices, or SEO score is below 90.
+
 ### Shared CRM
 
 The shared lead destination is Call Harbison HQ at https://www.callharbison.com/hq.
@@ -39,10 +64,9 @@ npm run build      # production build
 Requires Node 22.12+.
 
 The site is static-first: every content page is prerendered to HTML at build
-time, and only the API routes and `/hq` render per request. Public pages ship no
-framework JavaScript — carousels, filters, the photo viewer, the payment
-estimator and the lead form are small native custom elements. React loads only
-on `/hq`.
+time, and only the API routes and `/hq` render per request. The public site uses normal browser navigation and small native scripts for
+the background video, YouTube selection, and analytics. No React runtime is
+loaded on either public page. The local HQ routes redirect to Call Harbison.
 
 ### Audits
 

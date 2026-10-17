@@ -10,11 +10,11 @@ export const contact = {
   smsHref: 'sms:+16614727499',
   email: 'nate85.realtor@gmail.com',
   dre: '02059393',
-  youtube: 'https://www.youtube.com/@Nathanaelharbison',
+  youtube: 'https://www.youtube.com/@NathanaelRealEstate',
   instagram: 'https://www.instagram.com/nathanaelharbison',
   facebook: 'https://www.facebook.com/nate85.realtor',
   linkedin: 'https://www.linkedin.com/in/nathanael-harbison',
-  reviews: 'https://www.google.com/search?q=Harbison+Standard+reviews',
+  reviews: 'https://share.google/lv8AvSPXSSrPLItKX',
 }
 
 export const serviceArea = ['Tehachapi, CA', 'Bakersfield, CA', 'California City, CA', 'Stallion Springs, CA', 'Kern County, CA']
@@ -39,7 +39,7 @@ export const menuLinks = [
 ]
 
 export const socials = [
-  { href: contact.reviews, label: 'Google reviews' },
+  { href: contact.reviews, label: 'Google Business' },
   { href: contact.youtube, label: 'YouTube' },
   { href: contact.instagram, label: 'Instagram' },
   { href: contact.facebook, label: 'Facebook' },

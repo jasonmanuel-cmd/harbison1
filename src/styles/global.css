@@ -1,4 +1,10 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
+/* Only the current public pages need utilities; the retired catalog components
+   remain in source for reference without increasing the landing page CSS. */
+@source '../layouts';
+@source '../pages';
+@source '../components/ProfileLinks.astro';
+@source '../components/home/Hero.astro';
 
 @theme {
   --font-sans: 'Nunito Sans Variable', system-ui, sans-serif;

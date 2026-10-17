@@ -2,8 +2,26 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "astro",
   "redirects": [
-    { "source": "/hq", "destination": "https://www.callharbison.com/hq", "permanent": true },
-    { "source": "/hq/:path*", "destination": "https://www.callharbison.com/hq", "permanent": true }
+    {
+      "source": "/hq",
+      "destination": "https://www.callharbison.com/hq",
+      "permanent": true
+    },
+    {
+      "source": "/hq/:path*",
+      "destination": "https://www.callharbison.com/hq",
+      "permanent": true
+    },
+    {
+      "source": "/areas/:path+",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/property/:path+",
+      "destination": "/",
+      "permanent": true
+    }
   ],
   "headers": [
     {

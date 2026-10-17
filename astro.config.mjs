@@ -11,6 +11,11 @@ export default defineConfig({
   output: 'static',
   adapter: vercel(),
   trailingSlash: 'never',
+  redirects: Object.fromEntries([
+    '/properties', '/areas',
+    '/guides', '/contact', '/privacy', '/terms', '/accessibility',
+    '/relocate', '/private-sale', '/off-market-deals', '/why-tehachapi', '/land',
+  ].map((path) => [path, '/'])),
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'hover',
