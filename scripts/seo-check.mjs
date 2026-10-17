@@ -20,6 +20,10 @@ for (const f of pages) {
   const r = route(f)
   const h = readFileSync(f, 'utf8')
   const noindex = /name="robots"[^>]*noindex/.test(h)
+  if (noindex) {
+    console.log(`${r.padEnd(34)} intentionally excluded from indexing`)
+    continue
+  }
   const title = meta(h, /<title>([^<]*)<\/title>/)
   const desc = meta(h, /<meta name="description" content="([^"]*)"/)
   const canon = meta(h, /<link rel="canonical" href="([^"]*)"/)
@@ -27,6 +31,7 @@ for (const f of pages) {
   else if (title.length > 70) flag(r, `title ${title.length} chars (>70): ${title}`)
   if (!desc) flag(r, 'no meta description')
   else if (desc.length < 70 || desc.length > 165) flag(r, `description ${desc.length} chars`)
+  else if (/…$|\.\.\.$/.test(desc)) flag(r, 'description ends with an automatic truncation')
   const want = r === '/' ? SITE : SITE + r.replace(/\/$/, '')
   if (r !== '/404.html' && r !== '/404' && canon !== want) flag(r, `canonical ${canon} != ${want}`)
   if (!/<html[^>]*lang="en"/.test(h)) flag(r, 'missing lang')
@@ -47,14 +52,23 @@ for (const f of pages) {
   // structured data
   const ld = [...h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
   const types = []
+  const entities = []
   for (const m of ld) {
     try {
       const j = JSON.parse(m[1])
-      for (const n of j['@graph'] || [j]) types.push([].concat(n['@type']).join('/'))
+      for (const n of j['@graph'] || [j]) {
+        types.push([].concat(n['@type']).join('/'))
+        entities.push(n)
+      }
     } catch { flag(r, 'invalid JSON-LD') }
   }
   if (!noindex && !types.length) flag(r, 'no JSON-LD')
-  if (!noindex && !types.includes('BreadcrumbList') && r !== '/' && r !== '/404.html') flag(r, 'no BreadcrumbList')
+  // Breadcrumb markup is optional; this two-page design has no breadcrumb UI.
+  const business = entities.find((n) => n['@type'] === 'Organization')
+  const person = entities.find((n) => n['@type'] === 'Person')
+  if (!business?.sameAs?.includes('https://share.google/lv8AvSPXSSrPLItKX')) flag(r, 'missing Google Business identity reference')
+  if (!person?.sameAs?.some((u) => u.includes('dre.ca.gov/PublicASP/pplinfo.asp?License_id=02059393'))) flag(r, 'missing DRE identity reference')
+  if (!h.includes('id="privacy"') || !h.includes('data-privacy-optout')) flag(r, 'missing privacy disclosure or opt-out')
   // chrome consistency
   const hd = meta(h, /(<header[\s\S]*?<\/header>)/)
   const ft = meta(h, /(<footer[\s\S]*?<\/footer>)/)

@@ -1,0 +1,45 @@
+---
+import { contact } from '@/lib/site'
+---
+<details id="privacy" class="footer-privacy">
+  <summary>Privacy &amp; site analytics</summary>
+  <div class="privacy-copy">
+    <p>We use first-party analytics to understand visits, referral sources, approximate location, browser and device type, and time spent on the site. Our analytics uses a session identifier in your browser’s session storage and a daily-changing hash instead of storing raw IP addresses. Our own analytics does not use cookies.</p>
+    <p>Vercel hosts this website, and Supabase provides the analytics storage when enabled. Hosting and video providers may process connection information when their resources load. Video images can load from YouTube; playing a video or visiting a social profile is also subject to that provider’s privacy practices.</p>
+    <p>We respect supported Do Not Track and Global Privacy Control signals. You can also disable site analytics in this browser below. This preference is stored locally on this browser.</p>
+    <button type="button" data-privacy-optout>Opt out of site analytics</button>
+    <p>If you contact Nathanael by phone or email, the information you choose to share is used to respond to your inquiry. For privacy questions, email <a href={`mailto:${contact.email}`}>{contact.email}</a>.</p>
+  </div>
+</details>
+
+<script>
+  import { analyticsAllowed, optOutOfAnalytics } from '@/scripts/analytics'
+
+  const notice = document.querySelector<HTMLDetailsElement>('#privacy')
+  const button = notice?.querySelector<HTMLButtonElement>('[data-privacy-optout]')
+  const disabled = () => {
+    if (!button) return
+    button.textContent = 'Site analytics is disabled in this browser'
+    button.disabled = true
+  }
+  if (!analyticsAllowed()) disabled()
+  button?.addEventListener('click', () => {
+    const saved = optOutOfAnalytics()
+    disabled()
+    if (button && !saved) button.textContent = 'Site analytics is disabled for this page; browser storage is unavailable'
+  })
+  const openLinkedNotice = () => {
+    if (notice && location.hash === '#privacy') notice.open = true
+  }
+  openLinkedNotice()
+  window.addEventListener('hashchange', openLinkedNotice)
+</script>
+
+<style>
+  .footer-privacy{flex-basis:100%;border-top:1px solid #ffffff26;padding-top:10px;margin-top:4px;font-size:12px;line-height:1.8}
+  summary{cursor:pointer;min-height:44px;align-content:center;width:fit-content;color:#d7dce5}
+  .privacy-copy{max-width:820px;padding-bottom:12px;font-size:13px;color:#d7dce5}
+  .privacy-copy p+p{margin-top:14px}.privacy-copy a{overflow-wrap:anywhere;text-decoration:underline;text-underline-offset:3px}
+  button{display:block;min-height:44px;margin-block:12px;text-decoration:underline;text-underline-offset:4px;cursor:pointer;color:#f1d68a}
+  button:disabled{cursor:default;text-decoration:none;color:#d7dce5}
+</style>

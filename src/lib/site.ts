@@ -10,6 +10,7 @@ export const contact = {
   smsHref: 'sms:+16614727499',
   email: 'nate85.realtor@gmail.com',
   dre: '02059393',
+  licenseUrl: 'https://www2.dre.ca.gov/PublicASP/pplinfo.asp?License_id=02059393',
   youtube: 'https://www.youtube.com/@NathanaelRealEstate',
   instagram: 'https://www.instagram.com/nathanaelharbison',
   facebook: 'https://www.facebook.com/nate85.realtor',

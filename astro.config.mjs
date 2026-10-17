@@ -11,11 +11,12 @@ export default defineConfig({
   output: 'static',
   adapter: vercel(),
   trailingSlash: 'never',
-  redirects: Object.fromEntries([
-    '/properties', '/areas',
-    '/guides', '/contact', '/privacy', '/terms', '/accessibility',
-    '/relocate', '/private-sale', '/off-market-deals', '/why-tehachapi', '/land',
-  ].map((path) => [path, '/'])),
+  // Only redirect content with a genuine replacement. Retired catalog and
+  // guide URLs naturally return the custom 404 instead of an unrelated home.
+  redirects: {
+    '/contact': '/#connect',
+    '/privacy': '/#privacy',
+  },
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'hover',

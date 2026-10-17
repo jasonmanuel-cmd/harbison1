@@ -3,6 +3,7 @@ import { Image } from 'astro:assets'
 import { ArrowUpRight } from '@lucide/astro'
 import Base from '@/layouts/Base.astro'
 import logo from '@/assets/harbison-logo.webp'
+import PrivacyNotice from '@/components/PrivacyNotice.astro'
 import { contact } from '@/lib/site'
 type Props = import('astro/types').ComponentProps<typeof Base>
 ---
@@ -12,7 +13,7 @@ type Props = import('astro/types').ComponentProps<typeof Base>
       <nav aria-label="Main navigation"><a href="/">Home</a><a href="/about" aria-current={Astro.url.pathname === "/about" ? "page" : undefined}>Meet Nathanael</a><a class="header-contact" href={`mailto:${contact.email}`}>Let’s connect <ArrowUpRight size={17} /></a></nav>
     </header>
 <slot />
-    <footer class="landing-footer wrap"><span>© {new Date().getFullYear()} Harbison Standard</span><span>Nathanael Harbison · REALTOR® · DRE #{contact.dre}</span><span>Equal Housing Opportunity</span></footer>
+    <footer class="landing-footer wrap"><span>© {new Date().getFullYear()} Harbison Standard</span><span>Nathanael Harbison · REALTOR® · DRE #{contact.dre}</span><span>Equal Housing Opportunity</span><PrivacyNotice /></footer>
 </div></Base>
 <style is:global>
 .landing #top{background-image:none}

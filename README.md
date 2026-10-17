@@ -8,8 +8,9 @@ Live: https://www.harbisonstandard.com
 ## Public site
 
 The homepage explains Harbison Standard and retains the original hero video.
-`/about` contains Nathanael’s bio, contact details, and social profiles. Former
-property, guide, neighborhood, and legal routes redirect to the homepage.
+`/about` contains Nathanael’s bio, contact details, and social profiles. Retired property, guide, and neighborhood routes return the custom 404.
+`/contact` redirects to the contact section and `/privacy` to the in-page privacy
+disclosure; no extra public content page is added.
 
 Popular videos are a curated snapshot of the channel’s Popular tab in
 `src/data/popular-videos.json`; rankings do not refresh automatically.
@@ -241,3 +242,10 @@ src/scripts/       browser analytics
 supabase/          schema and the reconciliation migration
 scripts/           audits
 ```
+
+## SEO checks
+
+Run `npm run build` followed by `npm run audit:seo` to check built metadata,
+JSON-LD, canonical URLs, sitemap coverage, identity links, and the privacy
+controls. The brand uses Organization markup without an unverified office
+address; Nathanael is represented by a linked Person and public DRE record.

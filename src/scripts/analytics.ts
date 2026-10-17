@@ -18,6 +18,7 @@ const START_KEY = 'hs_t0'
 const LAST_KEY = 'hs_last'
 const PAGE_TOKEN_KEY = 'hs_ptok'
 const CONSENT_KEY = 'hs_analytics'
+let optedOutOnThisPage = false
 // Set once the acquisition 'start' event has been sent for this session. Kept
 // separate from LAST_KEY, which flush() clears on tab-hide — keying 'start' off
 // LAST_KEY re-sent it after every tab switch and overwrote the session's entry
@@ -34,6 +35,7 @@ export type TrackPayload = {
 }
 
 export function analyticsAllowed(): boolean {
+  if (optedOutOnThisPage) return false
   if (typeof window === 'undefined') return false
   const nav = navigator as Navigator & {
     globalPrivacyControl?: boolean
@@ -52,10 +54,13 @@ export function analyticsAllowed(): boolean {
 }
 
 export function optOutOfAnalytics() {
+  optedOutOnThisPage = true
   try {
     window.localStorage.setItem(CONSENT_KEY, 'off')
+    return true
   } catch {
-    /* ignore */
+    // The current page still honors the choice when persistence is blocked.
+    return false
   }
 }
 

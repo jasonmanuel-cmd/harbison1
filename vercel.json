@@ -11,16 +11,6 @@
       "source": "/hq/:path*",
       "destination": "https://www.callharbison.com/hq",
       "permanent": true
-    },
-    {
-      "source": "/areas/:path+",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/property/:path+",
-      "destination": "/",
-      "permanent": true
     }
   ],
   "headers": [

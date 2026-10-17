@@ -31,7 +31,9 @@ export const SITE_DESCRIPTION =
 
 export function agentSchema(image: string) {
   return {
-    '@type': 'RealEstateAgent',
+    // Describe the brand without implying a public office at an unverified
+    // street address. The linked Person carries Nathanael's professional role.
+    '@type': 'Organization',
     '@id': orgId,
     name: SITE_NAME,
     description: SITE_DESCRIPTION,
@@ -40,19 +42,15 @@ export function agentSchema(image: string) {
     email: contact.email,
     image,
     logo: abs('/icon-512.png'),
-    priceRange: '$$',
-    address: { '@type': 'PostalAddress', addressLocality: 'Tehachapi', addressRegion: 'CA', addressCountry: 'US' },
-    geo: { '@type': 'GeoCoordinates', latitude: 35.068, longitude: -118.4468 },
     areaServed: [
       { '@type': 'City', name: 'Tehachapi' },
       { '@type': 'City', name: 'Bakersfield' },
-      { '@type': 'City', name: 'Newbury Park' },
       { '@type': 'AdministrativeArea', name: 'Kern County, California' },
     ],
     // Referenced by id, so the person node is the single definition of who this is.
     founder: personRef(),
     employee: personRef(),
-    sameAs: [contact.instagram, contact.facebook, contact.linkedin, contact.youtube],
+    sameAs: [contact.reviews, contact.instagram, contact.facebook, contact.linkedin, contact.youtube],
   }
 }
 
@@ -77,7 +75,7 @@ export function personSchema(image: string) {
       'Relocation',
       'Private and off-market sales',
     ],
-    sameAs: [contact.instagram, contact.facebook, contact.linkedin, contact.youtube],
+    sameAs: [contact.licenseUrl, contact.instagram, contact.facebook, contact.linkedin, contact.youtube],
   }
 }
 
