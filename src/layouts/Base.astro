@@ -1,7 +1,5 @@
 ---
-import '@fontsource-variable/syne'
 import '@fontsource-variable/nunito-sans'
-import syneFont from '@fontsource-variable/syne/files/syne-latin-wght-normal.woff2?url'
 import nunitoFont from '@fontsource-variable/nunito-sans/files/nunito-sans-latin-wght-normal.woff2?url'
 import '@/styles/global.css'
 
@@ -64,7 +62,6 @@ const ld = [identity, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#0c1a3a" />
-    <link rel="preload" as="font" type="font/woff2" href={syneFont} crossorigin="anonymous" />
     <link rel="preload" as="font" type="font/woff2" href={nunitoFont} crossorigin="anonymous" />
     <title>{fullTitle}</title>
     <meta name="description" content={metaDescription} />

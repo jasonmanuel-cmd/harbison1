@@ -8,7 +8,7 @@
 
 @theme {
   --font-sans: 'Nunito Sans Variable', system-ui, sans-serif;
-  --font-display: 'Syne Variable', system-ui, sans-serif;
+  --font-display: 'Nunito Sans Variable', system-ui, sans-serif;
 
   --color-background: #ffffff;
   --color-foreground: #0c1a3a;
