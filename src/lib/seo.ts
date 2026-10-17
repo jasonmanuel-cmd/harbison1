@@ -45,6 +45,7 @@ export function agentSchema(image: string) {
     areaServed: [
       { '@type': 'City', name: 'Tehachapi' },
       { '@type': 'City', name: 'Bakersfield' },
+      { '@type': 'City', name: 'California City' },
       { '@type': 'AdministrativeArea', name: 'Kern County, California' },
     ],
     // Referenced by id, so the person node is the single definition of who this is.

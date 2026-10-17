@@ -10,7 +10,7 @@ const profiles = [
 ]
 ---
     <section id="connect" class="connections wrap" aria-labelledby="connect-title">
-      <p class="kicker">Find Nathanael online</p><h2 id="connect-title">Watch. Follow. Connect.</h2><p class="subtext">Explore Nathanael’s videos, follow his work, or get in touch directly.</p>
+      <p class="kicker">Find Nathanael online</p><h2 id="connect-title">Watch. Follow. Connect.</h2><p class="subtext">Explore Nathanael’s videos, follow his work, or get in touch directly. Serving Tehachapi, Bakersfield, California City, and Kern County.</p>
       <div class="profile-links">
         {profiles.map(({ label, detail, href, icon: Icon }) => <a class="profile-link" href={href} target="_blank" rel="noopener noreferrer"><Icon class="profile-icon" size={25} /><span><strong>{label}</strong><small>{detail}</small></span><ArrowUpRight class="profile-arrow" size={21} /><span class="sr-only"> (opens in a new tab)</span></a>)}
       </div>
