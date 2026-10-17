@@ -44,7 +44,9 @@ export function analyticsAllowed(): boolean {
   try {
     if (window.localStorage.getItem(CONSENT_KEY) === 'off') return false
   } catch {
-    /* storage blocked — treat as allowed, the beacon is harmless */
+    // Safari may deny storage in restricted browsing contexts. Skip analytics
+    // rather than letting session storage access interrupt the page.
+    return false
   }
   return true
 }

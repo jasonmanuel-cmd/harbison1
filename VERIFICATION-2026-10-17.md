@@ -36,7 +36,10 @@ if a score is below 90. Raw reports are generated in the ignored `audits/` folde
   different item from its queue.
 - Browser console checked for first-party runtime errors; none observed locally.
 - Production build succeeds; Astro check reports zero errors and zero warnings
-  (two existing hints); all three existing tests pass.
+  (two existing hints); all four tests pass, including a restricted-storage browser regression test.
+
+The site retains its own visitor analytics. Duplicate third-party analytics
+and performance collectors were removed to reduce production overhead.
 
 ## iPhone scope
 
