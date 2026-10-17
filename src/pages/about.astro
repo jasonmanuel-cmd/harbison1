@@ -16,3 +16,14 @@ import { contact, values } from '@/lib/site'
   <section class="standard" aria-labelledby="values-title"><div class="wrap"><p class="kicker">What you can expect</p><h2 id="values-title">A standard built around people.</h2><dl class="grid gap-8 mt-8 sm:grid-cols-2">{values.map(value => <div><dt class="font-display text-xl font-semibold">{value.title}</dt><dd class="mt-3 leading-relaxed">{value.body}</dd></div>)}</dl></div></section>
   <ProfileLinks />
 </Landing>
+
+<style>
+  #background-title {
+    /* Give Syne's wide letterforms room, including at browser text zoom. */
+    letter-spacing: normal;
+    font-variant-ligatures: none;
+    line-height: 1.35;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+  }
+</style>
