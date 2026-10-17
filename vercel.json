@@ -1,6 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "astro",
+  "redirects": [
+    { "source": "/hq", "destination": "https://www.callharbison.com/hq", "permanent": true },
+    { "source": "/hq/:path*", "destination": "https://www.callharbison.com/hq", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/_astro/(.*)",

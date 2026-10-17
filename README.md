@@ -11,9 +11,13 @@ The shared lead destination is Call Harbison HQ at https://www.callharbison.com/
 Set server-only `SHARED_CRM_URL=https://www.callharbison.com/api/intake` and
 `SHARED_CRM_SECRET` (the same 32+ character secret as HBH's `CRM_INGEST_SECRET`).
 Deploy HBH's intake bridge first. Once configured, Standard sends new inquiries
-to that CRM instead of its original lead table, and `/hq/dashboard` links there.
+to that CRM instead of its original lead table. `/hq` and `/hq/dashboard` redirect there.
 Keep Standard's existing `SUPABASE_*` values for analytics. Historical Standard
 leads remain in the original database until separately imported.
+
+Standard's analytics are available in the shared HQ's **Website stats** tab.
+Its API serves aggregates to the Call Harbison server using the existing shared
+secret; database credentials and raw session records stay server-side.
 
 Buyer fields and messages are preserved in CRM notes and an initial activity
 snapshot. Existing Formspree notifications remain active; configuring the bridge

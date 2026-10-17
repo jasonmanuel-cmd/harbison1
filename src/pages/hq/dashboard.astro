@@ -1,18 +1,5 @@
 ---
-import Base from '@/layouts/Base.astro'
-import Dashboard from '@/components/hq/Dashboard'
-import { isAuthenticated } from '@/lib/server/hq-auth'
-import { getSecret } from 'astro:env/server'
-
 export const prerender = false
-
-// Guarded on the server as well as in the API, so the shell never renders unauthenticated.
-if (!isAuthenticated(Astro.cookies)) return Astro.redirect('/hq')
 Astro.response.headers.set('Cache-Control', 'no-store')
+return Astro.redirect('https://www.callharbison.com/hq', 308)
 ---
-
-<Base title="HQ Dashboard" description="Internal CRM and site analytics." noindex bare>
-  <div class="min-h-screen bg-ink text-ink-foreground">
-    <Dashboard sharedCrm={Boolean(getSecret('SHARED_CRM_URL') || getSecret('SHARED_CRM_SECRET'))} client:only="react" />
-  </div>
-</Base>
