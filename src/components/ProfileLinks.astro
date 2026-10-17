@@ -2,7 +2,7 @@
 import { ArrowUpRight, CirclePlay, MapPin, Camera, Users, BriefcaseBusiness } from '@lucide/astro'
 import { contact } from '@/lib/site'
 const profiles = [
-  { label: 'YouTube', detail: 'Real estate, local perspective & more', href: contact.youtube, icon: CirclePlay },
+  { label: 'YouTube', detail: 'Real estate, homebuilding & project videos', href: contact.youtube, icon: CirclePlay },
   { label: 'Google Business', detail: 'View the Google Business profile', href: contact.reviews, icon: MapPin },
   { label: 'Instagram', detail: 'Follow along', href: contact.instagram, icon: Camera },
   { label: 'Facebook', detail: 'Stay connected', href: contact.facebook, icon: Users },
@@ -10,9 +10,9 @@ const profiles = [
 ]
 ---
     <section id="connect" class="connections wrap" aria-labelledby="connect-title">
-      <p class="kicker">Find me online</p><h2 id="connect-title">Watch. Follow. Connect.</h2><p class="subtext">Get to know me and stay in touch wherever you feel at home.</p>
+      <p class="kicker">Find Nathanael online</p><h2 id="connect-title">Watch. Follow. Connect.</h2><p class="subtext">Explore Nathanael’s videos, follow his work, or get in touch directly.</p>
       <div class="profile-links">
         {profiles.map(({ label, detail, href, icon: Icon }) => <a class="profile-link" href={href} target="_blank" rel="noopener noreferrer"><Icon class="profile-icon" size={25} /><span><strong>{label}</strong><small>{detail}</small></span><ArrowUpRight class="profile-arrow" size={21} /><span class="sr-only"> (opens in a new tab)</span></a>)}
       </div>
-      <div class="direct-contact"><p>Prefer a conversation?</p><a href={contact.phoneHref}>{contact.phone}</a><a href={`mailto:${contact.email}`}>{contact.email}</a></div>
+      <div class="direct-contact"><p>Have a real estate question? Call or email Nathanael.</p><a href={contact.phoneHref}>{contact.phone}</a><a href={`mailto:${contact.email}`}>{contact.email}</a></div>
     </section>

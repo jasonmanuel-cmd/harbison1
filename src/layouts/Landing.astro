@@ -10,7 +10,7 @@ type Props = import('astro/types').ComponentProps<typeof Base>
 <Base {...Astro.props} bare nativeNavigation><div class="landing">
     <header class="landing-header wrap">
       <a href="/" aria-label="Harbison Standard home"><Image src={logo} alt="Harbison Standard" width={280} class="brand" /></a>
-      <nav aria-label="Main navigation"><a href="/">Home</a><a href="/about" aria-current={Astro.url.pathname === "/about" ? "page" : undefined}>Meet Nathanael</a><a class="header-contact" href={`mailto:${contact.email}`}>Let’s connect <ArrowUpRight size={17} /></a></nav>
+      <nav aria-label="Main navigation"><a href="/">Home</a><a href="/about" aria-current={Astro.url.pathname === "/about" ? "page" : undefined}>Meet Nathanael</a><a class="header-contact" href={`mailto:${contact.email}`}>Email Nathanael <ArrowUpRight size={17} /></a></nav>
     </header>
 <slot />
     <footer class="landing-footer wrap"><span>© {new Date().getFullYear()} Harbison Standard</span><span>Nathanael Harbison · REALTOR® · DRE #{contact.dre}</span><span>Equal Housing Opportunity</span><PrivacyNotice /></footer>
