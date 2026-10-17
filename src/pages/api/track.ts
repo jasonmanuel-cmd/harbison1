@@ -3,6 +3,7 @@ import type { APIRoute } from 'astro'
 import { getSecret } from 'astro:env/server'
 import { clientKey, hit } from '@/lib/server/rate-limit'
 import { bumpSession, recordDwell, recordVisit, supabaseConfigured, upsertSession } from '@/lib/server/supabase'
+import { authorizedCrmCheck } from '@/lib/server/shared-crm'
 
 export const prerender = false
 
@@ -18,6 +19,7 @@ const json = (body: unknown, status = 200) =>
  */
 
 type Body = {
+  site?: string
   sid?: string
   type?: 'start' | 'pageview' | 'heartbeat' | 'end'
   path?: string
@@ -93,8 +95,10 @@ const clientIp = (req: Request) => clientKey(req)
 const clean = (v: unknown, max = 200) => (typeof v === 'string' ? v.trim().slice(0, max) : undefined)
 
 export const POST: APIRoute = async ({ request }) => {
+  const bridge = authorizedCrmCheck(request.headers.get('authorization'), getSecret('SHARED_CRM_SECRET'))
   // Real visitors send a few beacons per page; this only stops floods.
-  if (!hit('track', clientKey(request), 120, 60_000).allowed) {
+  const rateKey = bridge ? request.headers.get('x-analytics-visitor') || clientKey(request) : clientKey(request)
+  if (!hit('track', rateKey, 120, 60_000).allowed) {
     return json({ ok: false }, 429)
   }
   if (!supabaseConfigured) {
@@ -109,21 +113,30 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ ok: false }, 400)
   }
 
+  if (!body || typeof body !== 'object') return json({ ok: false }, 400)
   const sid = clean(body.sid, 64)
   const type = body.type
   if (!sid || !type) return json({ ok: false }, 400)
 
-  const path = clean(body.path, 300) || '/'
+  if (body.site && (body.site !== 'call_harbison' || !bridge)) return json({ ok: false }, 403)
+  const ua = bridge ? request.headers.get('x-analytics-user-agent') || '' : request.headers.get('user-agent') || ''
+  if (parseUa(ua).device === 'bot') return json({ ok: true, stored: false }, 202)
+  const rawPath = clean(body.path, 300) || '/'
+  if (!rawPath.startsWith('/') || rawPath.startsWith('//') || /^\/(hq|api)(\/|$)/.test(rawPath)) return json({ ok: false }, 400)
+  if (!['start', 'pageview', 'heartbeat', 'end'].includes(type)) return json({ ok: false }, 400)
+  // Trusted bridge records are namespaced by canonical URL using existing text columns.
+  const path = body.site === 'call_harbison' ? `https://www.callharbison.com${rawPath}` : rawPath
   const pageToken = clean(body.pageToken, 64)
   const now = new Date().toISOString()
 
   try {
     if (type === 'start') {
-      const { device, browser, os } = parseUa(request.headers.get('user-agent') || '')
+      const { device, browser, os } = parseUa(ua)
       await upsertSession(sid, {
         created_at: now,
         last_seen_at: now,
-        visitor_hash: visitorHash(clientIp(request)),
+        visitor_hash: bridge && /^[a-f0-9]{64}$/.test(request.headers.get('x-analytics-visitor') || '')
+          ? request.headers.get('x-analytics-visitor') : visitorHash(clientIp(request)),
         referrer_host: clean(body.referrerHost, 120) ?? null,
         referrer_type: body.referrerType ?? 'direct',
         utm_source: clean(body.utm?.source, 100) ?? null,
@@ -135,7 +148,11 @@ export const POST: APIRoute = async ({ request }) => {
         device_type: device,
         browser,
         os,
-        ...geo(request),
+        ...(bridge ? {
+          country: clean(request.headers.get('x-analytics-country'), 80) || null,
+          region: clean(request.headers.get('x-analytics-region'), 100) || null,
+          city: clean(request.headers.get('x-analytics-city'), 100) || null,
+        } : geo(request)),
       })
     } else if (type === 'pageview') {
       // pageToken is what lets the later heartbeat update this same row.
@@ -147,16 +164,14 @@ export const POST: APIRoute = async ({ request }) => {
       })
       await bumpSession(sid, { pageViews: 1, exitPath: path })
     } else if (type === 'heartbeat' || type === 'end') {
-      // Both do the same thing: attribute the time just spent to the page view
-      // that is now finished. Every earlier page sent its own heartbeat as the
-      // visitor navigated away, so the client total is deliberately ignored —
-      // adding it would count the same seconds twice.
+      // Each heartbeat replaces this page's cumulative active-time snapshot.
+      // Reports sum visit snapshots, so tab-hide/pagehide cannot double-count time.
       const dwell = Math.min(Math.max(Number(body.durationSeconds) || 0, 0), 1800)
       if (dwell > 0 && pageToken) {
         await recordDwell(pageToken, dwell)
       }
       if (dwell > 0) {
-        await bumpSession(sid, { durationSeconds: dwell, exitPath: path })
+        await bumpSession(sid, { exitPath: path })
       }
     }
 

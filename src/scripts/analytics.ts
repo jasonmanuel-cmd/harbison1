@@ -15,8 +15,6 @@
 
 const SESSION_KEY = 'hs_sid'
 const START_KEY = 'hs_t0'
-const LAST_KEY = 'hs_last'
-const PAGE_TOKEN_KEY = 'hs_ptok'
 const CONSENT_KEY = 'hs_analytics'
 let optedOutOnThisPage = false
 // Set once the acquisition 'start' event has been sent for this session. Kept
@@ -37,6 +35,9 @@ export type TrackPayload = {
 export function analyticsAllowed(): boolean {
   if (optedOutOnThisPage) return false
   if (typeof window === 'undefined') return false
+  const hostname = window.location?.hostname
+  if (hostname && !['www.harbisonstandard.com', 'harbisonstandard.com'].includes(hostname)) return false
+  if (/^\/(hq|api)(\/|$)/.test(window.location?.pathname || '')) return false
   const nav = navigator as Navigator & {
     globalPrivacyControl?: boolean
     doNotTrack?: string | null
@@ -90,10 +91,12 @@ export function getSessionId(): string | null {
 function sessionId(): string {
   try {
     let id = window.sessionStorage.getItem(SESSION_KEY)
-    if (!id) {
+    const started = Number(window.sessionStorage.getItem(START_KEY)) || 0
+    if (!id || Date.now() - started > 30 * 60000 || new Date(started).getUTCDate() !== new Date().getUTCDate()) {
       id = crypto.randomUUID()
       window.sessionStorage.setItem(SESSION_KEY, id)
       window.sessionStorage.setItem(START_KEY, String(Date.now()))
+      window.sessionStorage.removeItem(STARTED_KEY)
     }
     return id
   } catch {
@@ -101,20 +104,16 @@ function sessionId(): string {
   }
 }
 
-function send(payload: Record<string, unknown>, useBeacon = false) {
+let queue = Promise.resolve()
+let page: { sid: string; token: string; path: string; seconds: number; activeAt: number | null } | null = null
+function send(payload: Record<string, unknown>) {
   const body = JSON.stringify(payload)
-  if (useBeacon && navigator.sendBeacon) {
-    navigator.sendBeacon('/api/track', new Blob([body], { type: 'application/json' }))
-    return
-  }
-  void fetch('/api/track', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body,
-    keepalive: useBeacon,
-  }).catch(() => {
-    /* analytics must never surface an error to the visitor */
-  })
+  // Session creation must finish before its first page view (foreign key).
+  queue = queue.catch(() => {}).then(async () => {
+    const response = await fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true })
+    const result = await response.json()
+    if (!response.ok || !result.stored) throw new Error('Analytics unavailable')
+  }).catch(() => { try { window.sessionStorage.removeItem(STARTED_KEY) } catch {} })
 }
 
 function classifyReferrer(host: string | null): string {
@@ -130,6 +129,7 @@ export function trackPageView(title?: string) {
   if (!analyticsAllowed()) return
   const sid = sessionId()
   const now = Date.now()
+  flush()
 
   // First view of this session also captures the acquisition context.
   const isFirst = !window.sessionStorage.getItem(STARTED_KEY)
@@ -153,18 +153,8 @@ export function trackPageView(title?: string) {
     })
   }
 
-  // Charge the time spent on the previous page to that page. The token lets the
-  // server update the existing row rather than adding another one.
-  const last = window.sessionStorage.getItem(LAST_KEY)
-  const lastToken = window.sessionStorage.getItem(PAGE_TOKEN_KEY)
-  if (last && lastToken) {
-    const dwell = Math.min(Math.round((now - Number(last)) / 1000), 1800)
-    if (dwell > 1) {
-      send({ sid, type: 'heartbeat', pageToken: lastToken, durationSeconds: dwell })
-    }
-  }
-
   const pageToken = crypto.randomUUID()
+  page = { sid, token: pageToken, path: window.location.pathname, seconds: 0, activeAt: document.hidden ? null : now }
   send({
     sid,
     type: 'pageview',
@@ -172,34 +162,12 @@ export function trackPageView(title?: string) {
     title: title ?? document.title,
     pageToken,
   })
-  window.sessionStorage.setItem(LAST_KEY, String(now))
-  window.sessionStorage.setItem(PAGE_TOKEN_KEY, pageToken)
 }
 
 function flush() {
-  if (!analyticsAllowed()) return
-  const sid = (() => {
-    try {
-      return window.sessionStorage.getItem(SESSION_KEY)
-    } catch {
-      return null
-    }
-  })()
-  if (!sid) return
-
-  const last = Number(window.sessionStorage.getItem(LAST_KEY) || Date.now())
-  const lastDwell = Math.min(Math.round((Date.now() - last) / 1000), 1800)
-  const pageToken = window.sessionStorage.getItem(PAGE_TOKEN_KEY)
-
-  if (pageToken) {
-    send({ sid, type: 'end', path: window.location.pathname, pageToken, durationSeconds: lastDwell }, true)
-  }
-  try {
-    window.sessionStorage.removeItem(LAST_KEY)
-    window.sessionStorage.removeItem(PAGE_TOKEN_KEY)
-  } catch {
-    /* ignore */
-  }
+  if (!analyticsAllowed() || !page) return
+  if (page.activeAt !== null) { page.seconds += Math.max(0, (Date.now() - page.activeAt) / 1000); page.activeAt = null }
+  send({ sid: page.sid, type: 'heartbeat', path: page.path, pageToken: page.token, durationSeconds: Math.min(1800, Math.round(page.seconds)) })
 }
 
 let initialized = false
@@ -211,5 +179,7 @@ export function initAnalytics() {
   // Safari/Chrome sometimes skip pagehide; backstop on visibility change.
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') flush()
+    else if (page) page.activeAt = Date.now()
   })
+  setInterval(() => { if (!document.hidden && page) { flush(); page.activeAt = Date.now() } }, 15000)
 }

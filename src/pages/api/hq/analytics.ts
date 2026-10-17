@@ -3,6 +3,7 @@ import { isAuthenticated } from '@/lib/server/hq-auth'
 import { fetchSessions, fetchVisits, supabaseConfigured } from '@/lib/server/supabase'
 import { getSecret } from 'astro:env/server'
 import { authorizedCrmCheck } from '@/lib/server/shared-crm'
+import { recordedTraffic } from '@/lib/server/analytics-data'
 
 export const prerender = false
 
@@ -66,21 +67,26 @@ export const GET: APIRoute = async ({ request, cookies }) => {
   }
 
   const days = Math.min(Math.max(Number(new URL(request.url).searchParams.get('days')) || 30, 1), 365)
+  const site = new URL(request.url).searchParams.get('site') || 'harbison_standard'
+  if (!['harbison_standard', 'call_harbison'].includes(site)) return json({ error: 'Unknown website' }, 400)
 
   let sessions: Session[]
   let visits: Visit[]
   try {
-    const [rawSessions, rawVisits] = await Promise.all([fetchSessions(days), fetchVisits(days)])
-    sessions = rawSessions as Session[]
-    visits = rawVisits as Visit[]
+    const [rawSessions, rawVisits] = await Promise.all([fetchSessions(days, site), fetchVisits(days, site)])
+    ;({ sessions, visits } = recordedTraffic(rawSessions as Session[], rawVisits as Visit[], site))
   } catch (err) {
     console.error('[hq] analytics fetch failed:', err instanceof Error ? err.message : err)
     return json({ error: 'Failed to load analytics' }, 502)
   }
 
-  const durations = sessions.map((s) => s.duration_seconds ?? 0).filter((d) => d > 0)
+  const dwell = new Map<string, number>()
+  visits.forEach(v => dwell.set(v.session_id, (dwell.get(v.session_id) || 0) + Math.max(0, v.duration_seconds || 0)))
+  const durations = sessions.map(s => dwell.get(s.session_id) || 0)
   const totalDuration = durations.reduce((a, b) => a + b, 0)
-  const pageViews = sessions.reduce((a, s) => a + (s.page_views ?? 0), 0)
+  const pageViews = visits.length
+  const views = new Map<string, number>()
+  visits.forEach(v => views.set(v.session_id, (views.get(v.session_id) || 0) + 1))
   const uniqueVisitors = new Set(sessions.map((s) => s.visitor_hash).filter(Boolean)).size
 
   // Daily series, oldest first, one bucket per calendar day in the window.
@@ -93,8 +99,8 @@ export const GET: APIRoute = async ({ request, cookies }) => {
     const bucket = daily.get(s.created_at.slice(0, 10))
     if (!bucket) continue
     bucket.sessions += 1
-    bucket.pageViews += s.page_views ?? 0
-    bucket.duration += s.duration_seconds ?? 0
+    bucket.pageViews += views.get(s.session_id) || 0
+    bucket.duration += dwell.get(s.session_id) || 0
   }
 
   const topPages = tally(visits.map((v) => v.path)).slice(0, 15)
@@ -107,6 +113,9 @@ export const GET: APIRoute = async ({ request, cookies }) => {
   }
 
   return json({
+    site,
+    generatedAt: new Date().toISOString(),
+    source: 'Recorded first-party page views; known bots excluded. Daily unique visitor estimates; untracked visits are not included.',
     days,
     totals: {
       sessions: sessions.length,

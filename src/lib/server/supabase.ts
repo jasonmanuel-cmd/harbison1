@@ -151,16 +151,22 @@ export function recordDwell(pageToken: string, seconds: number): Promise<Row[]> 
 
 // ---------------------------------------------------------------- reads for /hq
 
-export function fetchSessions(days: number): Promise<Row[]> {
-  const since = new Date(Date.now() - days * 864e5).toISOString()
-  return rest<Row[]>(
-    `sessions?select=*&created_at=gte.${since}&order=created_at.desc&limit=20000`,
-  )
+async function analyticsRows(table: string, select: string, days: number, site: string): Promise<Row[]> {
+  const start = new Date()
+  start.setUTCHours(0, 0, 0, 0)
+  start.setUTCDate(start.getUTCDate() - days + 1)
+  const column = table === 'sessions' ? 'entry_path' : 'path'
+  const filters = site === 'call_harbison' ? `${column}=like.https://www.callharbison.com/*`
+    : `or=(${column}.is.null,${column}.not.like.https://www.callharbison.com/*)`
+  const rows: Row[] = []
+  // PostgREST caps individual reads; paginate rather than silently undercounting.
+  for (let offset = 0; offset < 100000; offset += 1000) {
+    const page = await rest<Row[]>(`${table}?select=${select}&created_at=gte.${start.toISOString()}&${filters}&order=created_at.desc,id.desc&limit=1000&offset=${offset}`)
+    rows.push(...page)
+    if (page.length < 1000) return rows
+  }
+  throw new Error('Analytics range exceeds supported row count; select a shorter range')
 }
 
-export function fetchVisits(days: number): Promise<Row[]> {
-  const since = new Date(Date.now() - days * 864e5).toISOString()
-  return rest<Row[]>(
-    `visits?select=id,session_id,path,title,duration_seconds&created_at=gte.${since}&order=created_at.desc&limit=100000`,
-  )
-}
+export const fetchSessions = (days: number, site = 'harbison_standard') => analyticsRows('sessions', '*', days, site)
+export const fetchVisits = (days: number, site = 'harbison_standard') => analyticsRows('visits', 'id,session_id,path,title,duration_seconds', days, site)
