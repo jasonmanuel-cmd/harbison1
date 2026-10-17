@@ -1,11 +1,13 @@
 import type { APIRoute } from 'astro'
 import { isAuthenticated } from '@/lib/server/hq-auth'
 import { fetchSessions, fetchVisits, supabaseConfigured } from '@/lib/server/supabase'
+import { getSecret } from 'astro:env/server'
+import { authorizedCrmCheck } from '@/lib/server/shared-crm'
 
 export const prerender = false
 
 const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
+  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } })
 
 type Session = {
   session_id: string
@@ -54,7 +56,9 @@ function median(values: number[]): number {
 }
 
 export const GET: APIRoute = async ({ request, cookies }) => {
-  if (!isAuthenticated(cookies)) {
+  // Shared HQ fetches only aggregates server-to-server. The secret stays out of browser JavaScript.
+  const sharedHq = authorizedCrmCheck(request.headers.get('authorization'), getSecret('SHARED_CRM_SECRET'))
+  if (!sharedHq && !isAuthenticated(cookies)) {
     return json({ error: 'Not signed in' }, 401)
   }
   if (!supabaseConfigured) {
@@ -112,7 +116,6 @@ export const GET: APIRoute = async ({ request, cookies }) => {
       avgDurationSeconds: sessions.length ? Math.round(totalDuration / sessions.length) : 0,
       medianDurationSeconds: median(durations),
       pagesPerSession: sessions.length ? Number((pageViews / sessions.length).toFixed(2)) : 0,
-      leads: 0,
     },
     daily: [...daily.values()],
     referrers: tally(sessions.map((s) => s.referrer_type)).map(([key, value]) => ({ key, value })),
