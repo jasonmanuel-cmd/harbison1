@@ -1,5 +1,6 @@
 ---
 import { getImage } from 'astro:assets'
+import '@fontsource-variable/syne'
 import { Pause, Play } from '@lucide/astro'
 import poster from '@/assets/hero-poster.jpg'
 
@@ -90,6 +91,12 @@ const posterMobile = await getImage({ src: poster, width: 900, format: 'webp', q
     <span class="block h-14 w-px overflow-hidden bg-ink-foreground/20"><span class="scroll-cue block h-full w-full bg-ink-foreground"></span></span>
   </a>
 </section>
+
+<style>
+  #hero-heading {
+    font-family: 'Syne Variable', system-ui, sans-serif;
+  }
+</style>
 
 <script>
   // Keep the poster visible if Safari blocks autoplay or reduced motion is enabled.
