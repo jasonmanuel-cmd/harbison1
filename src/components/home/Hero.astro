@@ -3,6 +3,14 @@ import { getImage } from 'astro:assets'
 import '@fontsource-variable/syne'
 import { Pause, Play } from '@lucide/astro'
 import poster from '@/assets/hero-poster.jpg'
+import { pathFor, t, type Lang } from '@/i18n'
+
+interface Props {
+  lang?: Lang
+}
+const { lang = 'en' } = Astro.props
+const copy = t(lang).hero
+const aboutPath = pathFor('/about', lang)
 
 const posterImg = await getImage({ src: poster, width: 1920, format: 'webp', quality: 55 })
 const posterMobile = await getImage({ src: poster, width: 900, format: 'webp', quality: 50 })
@@ -42,13 +50,13 @@ const posterMobile = await getImage({ src: poster, width: 900, format: 'webp', q
   <div class="shell relative z-10 flex h-full flex-col justify-between pb-[max(5.25rem,calc(env(safe-area-inset-bottom)+4.5rem))] pt-24 md:justify-start md:gap-5 md:pb-0 md:pt-[17vh]">
     <div class="flex flex-col items-center text-center">
       <p class="eyebrow text-[0.65rem] tracking-[0.2em] text-ink-foreground/85 sm:text-xs sm:tracking-[0.32em]" style="animation-delay:200ms">
-        Tehachapi · Bakersfield · Kern County
+        {copy.eyebrow}
       </p>
       <h1
         id="hero-heading"
         class="mt-3 flex flex-col items-center font-display text-[clamp(2rem,10vw,4.5rem)] font-extrabold uppercase leading-[0.9] tracking-[-0.04em] md:mt-4 md:flex-row md:gap-[0.3em] md:text-[clamp(2rem,4.9vw,5.5rem)]"
       >
-        <span class="sr-only">Harbison Standard: Real Estate in Tehachapi &amp; Kern County</span>
+        <span class="sr-only">{copy.srTitle}</span>
         <span aria-hidden="true" class="block overflow-hidden whitespace-nowrap px-[0.04em] pb-[0.06em]">
           Harbison
         </span>
@@ -61,15 +69,15 @@ const posterMobile = await getImage({ src: poster, width: 900, format: 'webp', q
 
     <div class="flex flex-col items-center text-center">
       <p class="flex flex-wrap items-center justify-center gap-x-2 text-pretty text-base leading-snug text-ink-foreground/95 sm:text-lg md:text-xl" style="animation-delay:1300ms">
-        <span>It’s not what you do.</span>
-        <span>It’s <span class="font-display font-bold italic text-poppy">how</span> you do it.</span>
+        <span>{copy.line1}</span>
+        <span>{copy.line2Before}<span class="font-display font-bold italic text-poppy">{copy.line2Em}</span>{copy.line2After}</span>
       </p>
       <div class="mt-4 flex w-full max-w-sm gap-2 sm:w-auto sm:max-w-none sm:gap-3 md:mt-5" style="animation-delay:1000ms">
         <a href="#standard" class="pill min-w-0 flex-1 whitespace-nowrap bg-poppy px-3 text-[0.68rem] tracking-[0.12em] text-ink hover:bg-ink-foreground sm:flex-none sm:px-8 sm:text-xs sm:tracking-[0.2em]">
-          Our approach
+          {copy.approach}
         </a>
-        <a href="/about" class="pill min-w-0 flex-1 whitespace-nowrap border border-ink-foreground/70 px-3 text-[0.68rem] tracking-[0.12em] hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink sm:flex-none sm:px-8 sm:text-xs sm:tracking-[0.2em]">
-          Meet Nathanael
+        <a href={aboutPath} class="pill min-w-0 flex-1 whitespace-nowrap border border-ink-foreground/70 px-3 text-[0.68rem] tracking-[0.12em] hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink sm:flex-none sm:px-8 sm:text-xs sm:tracking-[0.2em]">
+          {copy.meet}
         </a>
       </div>
     </div>
@@ -78,16 +86,18 @@ const posterMobile = await getImage({ src: poster, width: 900, format: 'webp', q
   <button
     type="button"
     data-hero-toggle
+    data-label-pause={copy.pause}
+    data-label-play={copy.play}
     aria-pressed="false"
     class="group/toggle absolute bottom-[calc(max(5.25rem,env(safe-area-inset-bottom)+4.5rem)+8.5rem)] right-5 z-10 flex size-11 items-center justify-center rounded-full border border-ink-foreground/50 bg-ink/40 backdrop-blur-sm transition-colors hover:border-ink-foreground hover:bg-ink-foreground hover:text-ink md:bottom-8 md:left-8 md:right-auto"
   >
     <Pause class="size-4 group-aria-pressed/toggle:hidden" aria-hidden="true" />
     <Play class="hidden size-4 group-aria-pressed/toggle:block" aria-hidden="true" />
-    <span class="sr-only">Pause background video</span>
+    <span class="sr-only">{copy.pause}</span>
   </button>
 
-  <a href="#videos" class="absolute bottom-8 right-8 z-10 hidden flex-col items-center gap-3 md:flex" aria-label="Scroll to content">
-    <span class="eyebrow text-ink-foreground/80">Scroll</span>
+  <a href="#videos" class="absolute bottom-8 right-8 z-10 hidden flex-col items-center gap-3 md:flex" aria-label={copy.scrollAria}>
+    <span class="eyebrow text-ink-foreground/80">{copy.scroll}</span>
     <span class="block h-14 w-px overflow-hidden bg-ink-foreground/20"><span class="scroll-cue block h-full w-full bg-ink-foreground"></span></span>
   </a>
 </section>
@@ -110,7 +120,7 @@ const posterMobile = await getImage({ src: poster, width: 900, format: 'webp', q
       const sync = () => {
         toggle?.setAttribute('aria-pressed', String(video.paused))
         const label = toggle?.querySelector('.sr-only')
-        if (label) label.textContent = video.paused ? 'Play background video' : 'Pause background video'
+        if (label) label.textContent = (video.paused ? toggle?.dataset.labelPlay : toggle?.dataset.labelPause) ?? ''
       }
       video.addEventListener('playing', () => { video.setAttribute('data-ready', ''); sync() })
       video.addEventListener('pause', sync)

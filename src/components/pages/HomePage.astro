@@ -1,0 +1,79 @@
+---
+import Landing from '@/layouts/Landing.astro'
+import Hero from '@/components/home/Hero.astro'
+import ProfileLinks from '@/components/ProfileLinks.astro'
+import { ArrowUpRight } from '@lucide/astro'
+import { contact } from '@/lib/site'
+import { websiteSchema } from '@/lib/seo'
+import { pathFor, t, type Lang } from '@/i18n'
+import popularVideos from '@/data/popular-videos.json'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const copy = t(lang)
+const home = copy.home
+const aboutPath = pathFor('/about', lang)
+const popularEmbed = `https://www.youtube-nocookie.com/embed/${popularVideos[0].id}`
+---
+<Landing title={home.title} description={home.description} jsonLd={websiteSchema()}>
+  <Hero lang={lang} />
+  <section id="videos" class="videos" aria-labelledby="videos-title">
+    <div class="wrap">
+      <p class="kicker">{home.videosKicker}</p>
+      <h2 id="videos-title">{home.videosTitle}</h2>
+      <p class="subtext" style="color:#43506a">{home.videosText}</p>
+      <div id="popular-player" class="video-shell" data-src={popularEmbed} data-iframe-title={home.iframeTitle}>
+        <button type="button" class="video-poster" data-play-popular aria-label={home.playVideo(popularVideos[0].title)}>
+          <img src={`https://i.ytimg.com/vi_webp/${popularVideos[0].id}/hqdefault.webp`} alt={home.posterAlt} width="480" height="360" loading="lazy" decoding="async" />
+          <span class="video-play" aria-hidden="true">▶</span>
+          <span class="video-caption">{popularVideos[0].title}</span>
+        </button>
+      </div>
+      <div class="popular-choices" aria-label={home.chooseVideo}>
+        {popularVideos.map((video, index) => <button type="button" data-popular-video data-src={`https://www.youtube-nocookie.com/embed/${video.id}`} aria-pressed={index === 0 ? 'true' : 'false'}><span>{String(index + 1).padStart(2, '0')}</span>{video.title}</button>)}
+      </div>
+      <a class="video-channel" href={`${contact.youtube}/videos`} target="_blank" rel="noopener noreferrer">{home.allVideos} <ArrowUpRight size={18} /><span class="sr-only">{copy.newTab}</span></a>
+    </div>
+  </section>
+  <section id="standard" class="home-brand wrap" aria-labelledby="standard-title">
+    <p class="kicker">{home.standardKicker}</p>
+    <h2 id="standard-title">{home.standardTitleLine1}<br /><span>{home.standardTitleLine2}</span></h2>
+    <p class="intro-text" style="margin-top:24px;max-width:780px">{home.standardText}</p>
+    <div class="brand-values">
+      {home.values.map((value) => <div><h3>{value.title}</h3><p>{value.body}</p></div>)}
+    </div>
+    <a class="contact-button" href={aboutPath}>{home.meet} <ArrowUpRight size={19} /></a>
+  </section>
+  <ProfileLinks lang={lang} />
+</Landing>
+
+<script>
+  function bindPopularVideos() {
+    const shell = document.querySelector<HTMLElement>('#popular-player')
+    const buttons = document.querySelectorAll<HTMLButtonElement>('[data-popular-video]')
+    const load = (src: string) => {
+      if (!shell) return
+      const player = document.createElement('iframe')
+      player.className = 'video-frame'
+      player.title = shell.dataset.iframeTitle ?? ''
+      player.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+      player.referrerPolicy = 'strict-origin-when-cross-origin'
+      player.allowFullscreen = true
+      player.src = src
+      shell.replaceChildren(player)
+    }
+    shell?.querySelector('[data-play-popular]')?.addEventListener('click', () => load(shell.dataset.src!))
+    buttons.forEach(button => button.addEventListener('click', () => {
+      load(button.dataset.src!)
+      buttons.forEach(item => item.setAttribute('aria-pressed', String(item === button)))
+    }))
+  }
+  document.addEventListener('astro:page-load', bindPopularVideos)
+  if (document.documentElement.hasAttribute('data-native-navigation')) bindPopularVideos()
+</script>
+<style>
+.video-shell{aspect-ratio:16/9;position:relative;background:#0c1a3a;margin-block:28px 20px;overflow:hidden;border-radius:3px}.video-shell :global(iframe){width:100%;height:100%;margin:0;position:absolute;inset:0}.video-poster{width:100%;height:100%;position:absolute;inset:0;cursor:pointer;color:#fff;text-align:left}.video-poster img{width:100%;height:100%;object-fit:cover}.video-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:76px;height:54px;border-radius:12px;background:#c80000;font-size:26px}.video-caption{position:absolute;inset:auto 0 0;padding:30px 20px 16px;background:linear-gradient(transparent,#000e);font-size:clamp(12px,2vw,18px);font-weight:700}
+.popular-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:28px}.popular-choices button{display:flex;align-items:flex-start;gap:14px;text-align:left;padding:16px;border:1px solid #0c1a3a33;border-radius:3px;font-size:14px;line-height:1.6;cursor:pointer}.popular-choices button span{font-weight:700;color:#735a24}.popular-choices button:hover,.popular-choices button[aria-pressed=true]{background:#0c1a3a;color:#fff}.popular-choices button[aria-pressed=true] span,.popular-choices button:hover span{color:#f1d68a}@media(max-width:760px){.popular-choices{grid-template-columns:1fr}}
+</style>

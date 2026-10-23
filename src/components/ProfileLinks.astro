@@ -1,18 +1,26 @@
 ---
 import { ArrowUpRight, CirclePlay, MapPin, Camera, Users, BriefcaseBusiness } from '@lucide/astro'
 import { contact } from '@/lib/site'
+import { t, type Lang } from '@/i18n'
+
+interface Props {
+  lang?: Lang
+}
+const { lang = 'en' } = Astro.props
+const ui = t(lang)
+const copy = ui.connect
 const profiles = [
-  { label: 'YouTube', detail: 'Real estate, homebuilding & project videos', href: contact.youtube, icon: CirclePlay },
-  { label: 'Google Business', detail: 'View the Google Business profile', href: contact.reviews, icon: MapPin },
-  { label: 'Instagram', detail: 'Follow along', href: contact.instagram, icon: Camera },
-  { label: 'Facebook', detail: 'Stay connected', href: contact.facebook, icon: Users },
-  { label: 'LinkedIn', detail: 'Connect professionally', href: contact.linkedin, icon: BriefcaseBusiness },
+  { label: 'YouTube', detail: copy.youtube, href: contact.youtube, icon: CirclePlay },
+  { label: 'Google Business', detail: copy.google, href: contact.reviews, icon: MapPin },
+  { label: 'Instagram', detail: copy.instagram, href: contact.instagram, icon: Camera },
+  { label: 'Facebook', detail: copy.facebook, href: contact.facebook, icon: Users },
+  { label: 'LinkedIn', detail: copy.linkedin, href: contact.linkedin, icon: BriefcaseBusiness },
 ]
 ---
     <section id="connect" class="connections wrap" aria-labelledby="connect-title">
-      <p class="kicker">Find Nathanael online</p><h2 id="connect-title">Watch. Follow. Connect.</h2><p class="subtext">Explore Nathanael’s videos, follow his work, or get in touch directly. Serving Tehachapi, Bakersfield, California City, and Kern County.</p>
+      <p class="kicker">{copy.kicker}</p><h2 id="connect-title">{copy.title}</h2><p class="subtext">{copy.text}</p>
       <div class="profile-links">
-        {profiles.map(({ label, detail, href, icon: Icon }) => <a class="profile-link" href={href} target="_blank" rel="noopener noreferrer"><Icon class="profile-icon" size={25} /><span><strong>{label}</strong><small>{detail}</small></span><ArrowUpRight class="profile-arrow" size={21} /><span class="sr-only"> (opens in a new tab)</span></a>)}
+        {profiles.map(({ label, detail, href, icon: Icon }) => <a class="profile-link" href={href} target="_blank" rel="noopener noreferrer"><Icon class="profile-icon" size={25} /><span><strong>{label}</strong><small>{detail}</small></span><ArrowUpRight class="profile-arrow" size={21} /><span class="sr-only">{ui.newTab}</span></a>)}
       </div>
-      <div class="direct-contact"><p>Have a real estate question? Call or email Nathanael.</p><a href={contact.phoneHref}>{contact.phone}</a><a href={`mailto:${contact.email}`}>{contact.email}</a></div>
+      <div class="direct-contact"><p>{copy.question}</p><a href={contact.phoneHref}>{contact.phone}</a><a href={`mailto:${contact.email}`}>{contact.email}</a></div>
     </section>

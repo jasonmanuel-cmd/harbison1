@@ -11,9 +11,14 @@ import SiteFooter from '@/components/SiteFooter.astro'
 import QuickContact from '@/components/QuickContact.astro'
 import { SITE_NAME } from '@/lib/site'
 import { abs, agentSchema, graph, personSchema } from '@/lib/seo'
+import { LANG_STORAGE_KEY, langFromPath, pathFor, t, type Lang } from '@/i18n'
 import headshot from '@/assets/headshot.webp'
 
 interface Props {
+  /** Page language. Defaults to the language implied by the URL (/es/... is Spanish). */
+  lang?: Lang
+  /** The page has an English and a Spanish version: emit hreflang links and the language memory. */
+  i18n?: boolean
   nativeNavigation?: boolean
   title: string
   description: string
@@ -30,7 +35,9 @@ interface Props {
   heroImage?: ImageMetadata
 }
 
-const { title, description, image, imageAlt, jsonLd, noindex = false, bare = false, overlayHeader = true, heroImage, nativeNavigation = false } = Astro.props
+const { title, description, image, imageAlt, jsonLd, noindex = false, bare = false, overlayHeader = true, heroImage, nativeNavigation = false, i18n = false } = Astro.props
+const lang: Lang = Astro.props.lang ?? langFromPath(Astro.url.pathname)
+const here = Astro.url.pathname
 const preloaded = heroImage && (await getImage({ src: heroImage, widths: [480, 800, 1200, 2000], sizes: '(max-width: 767px) 80vw, 100vw', format: 'webp', quality: 60 }))
 
 const canonical = abs(Astro.url.pathname.replace(/\/$/, '') || '/')
@@ -57,7 +64,7 @@ const ld = [identity, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [
 ---
 
 <!doctype html>
-<html lang="en" class="no-js" data-native-navigation={nativeNavigation || undefined}>
+<html lang={lang} class="no-js" data-native-navigation={nativeNavigation || undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -66,6 +73,15 @@ const ld = [identity, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [
     <title>{fullTitle}</title>
     <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonical} />
+    {
+      i18n && (
+        <>
+          <link rel="alternate" hreflang="en" href={abs(pathFor(here, 'en'))} />
+          <link rel="alternate" hreflang="es" href={abs(pathFor(here, 'es'))} />
+          <link rel="alternate" hreflang="x-default" href={abs(pathFor(here, 'en'))} />
+        </>
+      )
+    }
     {noindex && <meta name="robots" content="noindex, nofollow, noarchive" />}
 
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
@@ -78,7 +94,8 @@ const ld = [identity, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [
     <link rel="sitemap" href="/sitemap.xml" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale" content={lang === 'es' ? 'es_US' : 'en_US'} />
+    {i18n && <meta property="og:locale:alternate" content={lang === 'es' ? 'en_US' : 'es_US'} />}
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={metaDescription} />
@@ -97,13 +114,21 @@ const ld = [identity, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [
       // The client router copies <html> attributes from each new page, so strip it again after every swap.
       document.addEventListener('astro:after-swap', () => document.documentElement.classList.remove('no-js'))
     </script>
+    {
+      i18n && lang === 'en' && (
+        // A visitor who chose Spanish earlier lands on the Spanish version of this page. Crawlers keep no storage, so they always see English here.
+        <script is:inline define:vars={{ key: LANG_STORAGE_KEY }}>
+          {`try{if(localStorage.getItem(key)==='es'){var p=location.pathname.replace(/\\/$/,'');location.replace('/es'+(p==='/'||p===''?'':p)+location.search+location.hash)}}catch(e){}`}
+        </script>
+      )
+    }
     {!nativeNavigation && <ClientRouter />}
   </head>
   <body>
     <a
       href="#main"
       class="label sr-only z-[100] bg-poppy px-5 py-3 text-ink focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
-      >Skip to content</a
+      >{t(lang).skipToContent}</a
     >
     {!bare && <SiteHeader overlay={overlayHeader} />}
     <main id="main" class="relative">
@@ -120,6 +145,7 @@ const ld = [identity, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [
 
     <script>
       import { initAnalytics, trackPageView } from '@/scripts/analytics'
+      import { LANG_STORAGE_KEY } from '@/i18n'
 
       // Scroll reveal. Re-bound on every client-side navigation.
       let io: IntersectionObserver | undefined
@@ -160,6 +186,17 @@ const ld = [identity, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [
         })
         els.forEach((el) => obs.observe(el))
       }
+
+      // Remember the language the visitor picks with the header switch.
+      document.addEventListener('click', (event) => {
+        const link = (event.target as Element | null)?.closest<HTMLElement>('[data-lang-pref]')
+        if (!link) return
+        try {
+          localStorage.setItem(LANG_STORAGE_KEY, link.dataset.langPref!)
+        } catch {
+          // Storage can be unavailable (private mode); the switch still works, it just isn't remembered.
+        }
+      })
 
       const isAdmin = () => location.pathname.startsWith('/hq')
 

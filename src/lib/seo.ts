@@ -89,7 +89,8 @@ export function websiteSchema() {
     url: SITE_URL,
     name: SITE_NAME,
     publisher: agentRef(),
-    inLanguage: 'en-US',
+    // The site is published in English and Spanish.
+    inLanguage: ['en-US', 'es-US'],
   }
 }
 

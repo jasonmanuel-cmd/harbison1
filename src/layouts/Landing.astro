@@ -5,15 +5,22 @@ import Base from '@/layouts/Base.astro'
 import logo from '@/assets/harbison-logo.webp'
 import PrivacyNotice from '@/components/PrivacyNotice.astro'
 import { contact } from '@/lib/site'
+import { langFromPath, pathFor, t } from '@/i18n'
 type Props = import('astro/types').ComponentProps<typeof Base>
+const lang = langFromPath(Astro.url.pathname)
+const ui = t(lang)
+const otherLang = lang === 'en' ? 'es' : 'en'
+const homePath = pathFor('/', lang)
+const aboutPath = pathFor('/about', lang)
+const switchPath = pathFor(Astro.url.pathname, otherLang)
 ---
-<Base {...Astro.props} bare nativeNavigation><div class="landing">
+<Base {...Astro.props} lang={lang} i18n bare nativeNavigation><div class="landing">
     <header class="landing-header wrap">
-      <a href="/" aria-label="Harbison Standard home"><Image src={logo} alt="Harbison Standard" width={280} class="brand" /></a>
-      <nav aria-label="Main navigation"><a href="/">Home</a><a href="/about" aria-current={Astro.url.pathname === "/about" ? "page" : undefined}>Meet Nathanael</a><a class="header-contact" href={`mailto:${contact.email}`}>Email Nathanael <ArrowUpRight size={17} /></a></nav>
+      <a href={homePath} aria-label={ui.header.homeAria}><Image src={logo} alt={ui.header.logoAlt} width={280} class="brand" /></a>
+      <nav aria-label={ui.header.navAria}><a href={homePath} aria-current={Astro.url.pathname === homePath ? "page" : undefined}>{ui.header.home}</a><a href={aboutPath} aria-current={Astro.url.pathname === aboutPath ? "page" : undefined}>{ui.header.meet}</a><a class="header-contact" href={`mailto:${contact.email}`}>{ui.header.email} <ArrowUpRight size={17} /></a><a class="lang-switch" href={switchPath} hreflang={otherLang} lang={otherLang} data-lang-pref={otherLang} aria-label={ui.switchAria}>{ui.switchLabel}</a></nav>
     </header>
 <slot />
-    <footer class="landing-footer wrap"><span>© {new Date().getFullYear()} Harbison Standard</span><span>Nathanael Harbison · REALTOR® · DRE #{contact.dre}</span><span>Equal Housing Opportunity</span><PrivacyNotice /></footer>
+    <footer class="landing-footer wrap"><span>© {new Date().getFullYear()} Harbison Standard</span><span>Nathanael Harbison · REALTOR® · DRE #{contact.dre}</span><span>{ui.footer.equalHousing}</span><PrivacyNotice lang={lang} /></footer>
 </div></Base>
 <style is:global>
 .landing #top{background-image:none}
@@ -29,7 +36,7 @@ type Props = import('astro/types').ComponentProps<typeof Base>
 .landing-header nav{display:flex;align-items:center;gap:24px;font-size:14px}.landing-header nav a[aria-current=page]{color:#f1d68a}.landing-header{position:relative;z-index:20}.home-brand{padding-block:72px}.brand-values{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:35px}.brand-values h3{font-size:21px;color:#f1d68a;margin-bottom:12px}.brand-values p{line-height:1.8;color:#d7dce5}.bio-copy p+p{margin-top:22px}.bio-copy{font-size:17px;line-height:1.9;color:#d7dce5}.bio-body{padding-bottom:65px}.videos{background:#f5f3ee;color:#0c1a3a;padding-block:64px}.videos .kicker{color:#735a24}.video-frame{width:100%;aspect-ratio:16/9;border:0;margin-block:28px 20px;border-radius:3px;background:#0c1a3a}.video-channel{display:inline-flex;align-items:center;gap:12px;font-weight:700;text-decoration:underline;text-underline-offset:5px}
 @media(max-width:760px){.landing-header{align-items:flex-start;gap:16px}.landing-header nav{gap:10px 16px;flex-wrap:wrap;justify-content:flex-end;font-size:12px}.landing-header nav .header-contact{display:none}.brand-values{grid-template-columns:1fr}.home-brand,.videos{padding-block:45px}}
 
-.landing-header nav a{display:inline-flex;align-items:center;min-height:44px}.landing-header nav{min-width:0}.intro>div,.portrait,.standard-inner>div{min-width:0}.intro h1{overflow-wrap:anywhere}.landing-footer{padding-bottom:max(25px,env(safe-area-inset-bottom))}
+.landing-header nav a{display:inline-flex;align-items:center;min-height:44px}.landing-header nav .lang-switch{border:1px solid #f1d68a66;border-radius:999px;padding-inline:14px;color:#f1d68a;font-weight:700;white-space:nowrap}.landing-header nav .lang-switch:hover{background:#f1d68a;color:#0c1a3a}.landing-header nav{min-width:0}.intro>div,.portrait,.standard-inner>div{min-width:0}.intro h1{overflow-wrap:anywhere}.landing-footer{padding-bottom:max(25px,env(safe-area-inset-bottom))}
 @media(min-width:761px) and (max-width:1024px){.intro{gap:32px}.intro h1{font-size:44px}.brand-values{gap:24px}.profile-link{gap:12px;padding:18px}}
 @media(max-width:380px){.brand{width:135px}.landing-header nav{font-size:11px;gap:4px 12px}.intro h1{font-size:36px}}
 </style>

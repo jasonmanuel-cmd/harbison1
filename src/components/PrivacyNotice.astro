@@ -1,14 +1,21 @@
 ---
 import { contact } from '@/lib/site'
+import { t, type Lang } from '@/i18n'
+
+interface Props {
+  lang?: Lang
+}
+const { lang = 'en' } = Astro.props
+const copy = t(lang).privacy
 ---
 <details id="privacy" class="footer-privacy">
-  <summary>Privacy &amp; site analytics</summary>
+  <summary>{copy.summary}</summary>
   <div class="privacy-copy">
-    <p>We use first-party analytics to understand visits, referral sources, approximate location, browser and device type, and time spent on the site. Our analytics uses a session identifier in your browser’s session storage and a daily-changing hash instead of storing raw IP addresses. Our own analytics does not use cookies.</p>
-    <p>Vercel hosts this website, and Supabase provides the analytics storage when enabled. Hosting and video providers may process connection information when their resources load. Video images can load from YouTube; playing a video or visiting a social profile is also subject to that provider’s privacy practices.</p>
-    <p>We respect supported Do Not Track and Global Privacy Control signals. You can also disable site analytics in this browser below. This preference is stored locally on this browser.</p>
-    <button type="button" data-privacy-optout>Opt out of site analytics</button>
-    <p>If you contact Nathanael by phone or email, the information you choose to share is used to respond to your inquiry. For privacy questions, email <a href={`mailto:${contact.email}`}>{contact.email}</a>.</p>
+    <p>{copy.p1}</p>
+    <p>{copy.p2}</p>
+    <p>{copy.p3}</p>
+    <button type="button" data-privacy-optout data-disabled-label={copy.disabled} data-no-storage-label={copy.disabledNoStorage}>{copy.optOut}</button>
+    <p>{copy.p4Before}<a href={`mailto:${contact.email}`}>{contact.email}</a>{copy.p4After}</p>
   </div>
 </details>
 
@@ -19,14 +26,14 @@ import { contact } from '@/lib/site'
   const button = notice?.querySelector<HTMLButtonElement>('[data-privacy-optout]')
   const disabled = () => {
     if (!button) return
-    button.textContent = 'Site analytics is disabled in this browser'
+    button.textContent = button.dataset.disabledLabel ?? ''
     button.disabled = true
   }
   if (!analyticsAllowed()) disabled()
   button?.addEventListener('click', () => {
     const saved = optOutOfAnalytics()
     disabled()
-    if (button && !saved) button.textContent = 'Site analytics is disabled for this page; browser storage is unavailable'
+    if (button && !saved) button.textContent = button.dataset.noStorageLabel ?? ''
   })
   const openLinkedNotice = () => {
     if (notice && location.hash === '#privacy') notice.open = true
