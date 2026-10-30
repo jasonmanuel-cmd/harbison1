@@ -54,46 +54,6 @@ export const values = [
   { title: 'Local understanding', body: 'Grounded knowledge of Kern County and Tehachapi.' },
 ]
 
-/**
- * Client quotes stay hidden until each one is confirmed to come from a real client
- * who agreed to its use. Publishing unverified reviews is prohibited under the FTC's
- * rule on fake reviews. Set to true only after that check.
- */
-export const SHOW_TESTIMONIALS = false
-
-export const testimonials = [
-  {
-    quote:
-      'Nathanael was honest, responsive, and easy to work with from start to finish. He understood what we were looking for and didn’t waste our time with properties that didn’t fit.',
-    who: 'Buyer · Bakersfield',
-  },
-  {
-    quote:
-      'We weren’t sure whether to fix things up or sell as-is. Nathanael helped us think it through clearly and never made us feel pressured.',
-    who: 'Seller · Time-sensitive sale',
-  },
-  {
-    quote:
-      'After three years of ownership, we wanted guidance on whether to hold or sell. Nathanael laid out the numbers and let us decide. That straight talk is exactly what we needed.',
-    who: 'Investor · California City',
-  },
-  {
-    quote:
-      'Our inherited home felt overwhelming. Nathanael helped us understand the options and what the property was actually worth. We felt supported every step.',
-    who: 'Seller · Inherited property',
-  },
-  {
-    quote:
-      'Coming from Los Angeles, we didn’t know the Bakersfield market. Nathanael showed us what our budget could actually buy and helped us understand the neighborhoods.',
-    who: 'Buyer · Relocated from LA',
-  },
-  {
-    quote:
-      'Nathanael brought calm, clarity, and practical advice throughout the sale. We always felt like we understood what was happening and why.',
-    who: 'Seller · Kern County',
-  },
-]
-
 export const faqs = [
   {
     q: 'Who is Nathanael Harbison?',
