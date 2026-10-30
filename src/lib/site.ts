@@ -16,6 +16,8 @@ export const contact = {
   facebook: 'https://www.facebook.com/nate85.realtor',
   linkedin: 'https://www.linkedin.com/in/nathanael-harbison',
   reviews: 'https://share.google/lv8AvSPXSSrPLItKX',
+  // Link only. Zillow's terms bar copying its reviews, ratings or logo onto this site.
+  zillowReviews: 'https://www.zillow.com/profile/nate85%20realtor',
 }
 
 export const serviceArea = ['Tehachapi, CA', 'Bakersfield, CA', 'California City, CA', 'Stallion Springs, CA', 'Kern County, CA']

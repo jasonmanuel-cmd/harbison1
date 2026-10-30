@@ -26,3 +26,20 @@ test('no placeholder testimonial text remains in the source', () => {
     for (const quote of PLACEHOLDER_QUOTES) assert.equal(text.includes(quote), false, `${file} contains a placeholder testimonial: "${quote}"`)
   }
 })
+
+test('the Zillow reviews link is a text-only button in both languages', async () => {
+  const { contact } = await import('../src/lib/site.ts')
+  const { t } = await import('../src/i18n/index.ts')
+  assert.equal(contact.zillowReviews, 'https://www.zillow.com/profile/nate85%20realtor')
+  assert.equal(t('en').connect.zillow, 'Read Nathanael’s reviews on Zillow')
+  assert.ok(t('es').connect.zillow.length > 0)
+  assert.notEqual(t('es').connect.zillow, t('en').connect.zillow)
+
+  const source = readFileSync('src/components/ProfileLinks.astro', 'utf8')
+  const link = source.match(/<a [^>]*href=\{contact\.zillowReviews\}[^>]*>[\s\S]*?<\/a>/)
+  assert.ok(link, 'ProfileLinks should render the Zillow link')
+  assert.match(link[0], /target="_blank"/)
+  assert.match(link[0], /rel="noopener noreferrer"/)
+  // Zillow's terms bar copying its reviews, ratings or logo, so the link carries only text and an arrow icon.
+  assert.doesNotMatch(link[0], /<img|<Image|zillow-logo/i)
+})

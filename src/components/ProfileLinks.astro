@@ -22,5 +22,6 @@ const profiles = [
       <div class="profile-links">
         {profiles.map(({ label, detail, href, icon: Icon }) => <a class="profile-link" href={href} target="_blank" rel="noopener noreferrer"><Icon class="profile-icon" size={25} /><span><strong>{label}</strong><small>{detail}</small></span><ArrowUpRight class="profile-arrow" size={21} /><span class="sr-only">{ui.newTab}</span></a>)}
       </div>
+      <a class="contact-button" href={contact.zillowReviews} target="_blank" rel="noopener noreferrer">{copy.zillow} <ArrowUpRight size={19} /></a>
       <div class="direct-contact"><p>{copy.question}</p><a href={contact.phoneHref}>{contact.phone}</a><a href={`mailto:${contact.email}`}>{contact.email}</a></div>
     </section>
