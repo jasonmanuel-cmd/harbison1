@@ -1,26 +1,32 @@
 [
   {
     "id": "DqEkc595r-Q",
-    "title": "Talking to a Master Cabinet Builder | Inside the Custom Cabinet Workshop"
+    "title": "Talking to a Master Cabinet Builder | Inside the Custom Cabinet Workshop",
+    "short": false
   },
   {
     "id": "FjJS3vAz1dY",
-    "title": "Inside a $3 Million Ladera Heights Home Renovation | Phase 1 Construction Walkthrough"
+    "title": "Inside a $3 Million Ladera Heights Home Renovation | Phase 1 Construction Walkthrough",
+    "short": false
   },
   {
     "id": "8AlM4xnlZVY",
-    "title": "Drywall Secrets: How a 2-Man Crew Finished a Whole House in 4 Days!"
+    "title": "Drywall Secrets: How a 2-Man Crew Finished a Whole House in 4 Days!",
+    "short": false
   },
   {
     "id": "j7ZgstNITXw",
-    "title": "Stucco foam board (Short)"
+    "title": "Stucco foam board",
+    "short": true
   },
   {
     "id": "giQ-4DAV4Wg",
-    "title": "Fire suppression bucket test! (Short)"
+    "title": "Fire suppression bucket test!",
+    "short": true
   },
   {
     "id": "_uVbBf1Z_fg",
-    "title": "How to prep driveway for concrete (Short)"
+    "title": "How to prep driveway for concrete",
+    "short": true
   }
 ]
