@@ -12,8 +12,9 @@ The homepage explains Harbison Standard and retains the original hero video.
 `/contact` redirects to the contact section and `/privacy` to the in-page privacy
 disclosure; no extra public content page is added.
 
-Popular videos are a curated snapshot of the channel’s Popular tab in
-`src/data/popular-videos.json`; rankings do not refresh automatically.
+Popular videos are a curated snapshot of the channel in
+`src/data/popular-videos.json`: three long videos, then the three most-viewed Shorts
+(view counts as of 2026-10-30); rankings do not refresh automatically.
 YouTube’s player loads only after a visitor chooses a video. The hero uses muted,
 inline MP4 playback with a poster fallback and a manual play/pause control;
 phones, data-saving connections, and reduced-motion visitors see a still
