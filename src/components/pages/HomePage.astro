@@ -15,11 +15,14 @@ const { lang } = Astro.props
 const copy = t(lang)
 const home = copy.home
 const aboutPath = pathFor('/about', lang)
-const thumb = (id: string) => `https://i.ytimg.com/vi_webp/${id}/hqdefault.webp`
-// Long videos on the left, Shorts on the right (stacked on small screens).
-const panes = [
-  { key: 'long', label: home.longVideosLabel, choose: home.chooseVideo, all: home.allVideos, channelPath: 'videos', items: popularVideos.filter((v) => !v.short) },
-  { key: 'short', label: home.shortsLabel, choose: home.chooseShort, all: home.allShorts, channelPath: 'shorts', items: popularVideos.filter((v) => v.short) },
+// One preview that walks through all six videos: the three long videos first, then the three Shorts.
+const longVideos = popularVideos.filter((v) => !v.short)
+const shortVideos = popularVideos.filter((v) => v.short)
+const ordered = [...longVideos, ...shortVideos]
+const thumb = (v: { id: string; short?: boolean }) => v.short ? `https://i.ytimg.com/vi_webp/${v.id}/oar2.webp` : `https://i.ytimg.com/vi_webp/${v.id}/hqdefault.webp`
+const groups = [
+  { label: home.longVideosLabel, choose: home.chooseVideo, all: home.allVideos, channelPath: 'videos', items: longVideos, offset: 0 },
+  { label: home.shortsLabel, choose: home.chooseShort, all: home.allShorts, channelPath: 'shorts', items: shortVideos, offset: longVideos.length },
 ]
 ---
 <Landing title={home.title} description={home.description} jsonLd={websiteSchema()}>
@@ -29,23 +32,26 @@ const panes = [
       <p class="kicker">{home.videosKicker}</p>
       <h2 id="videos-title">{home.videosTitle}</h2>
       <p class="subtext" style="color:#43506a">{home.videosText}</p>
-      <div class="video-split">
-        {panes.map((pane) => (
-          <div class={`video-pane video-pane-${pane.key}`} data-video-pane data-pane={pane.key}>
-            <h3 class="pane-label">{pane.label}</h3>
-            <div class="video-shell" data-iframe-title={home.iframeTitle}>
-              <button type="button" class="video-poster" data-play-popular aria-label={home.playVideo(pane.items[0].title)}>
-                <img src={thumb(pane.items[0].id)} alt={home.posterAlt} width="480" height="360" loading="lazy" decoding="async" />
-                <span class="video-play" aria-hidden="true">▶</span>
-                <span class="video-caption" data-caption>{pane.items[0].title}</span>
-              </button>
+      <div class="video-layout" data-video-stage>
+        <div class="video-shell" data-iframe-title={home.iframeTitle}>
+          <button type="button" class="video-poster" data-play-popular aria-label={home.playVideo(ordered[0].title)}>
+            <img class="poster-bg" src={thumb(ordered[0])} alt="" aria-hidden="true" width="480" height="360" decoding="async" />
+            <img class="poster-main" src={thumb(ordered[0])} alt={home.posterAlt} width="480" height="360" loading="lazy" decoding="async" />
+            <span class="video-play" aria-hidden="true">▶</span>
+            <span class="video-caption" data-caption>{ordered[0].title}</span>
+          </button>
+        </div>
+        <div class="video-lists">
+          {groups.map((group) => (
+            <div class="video-group">
+              <h3 class="pane-label">{group.label}</h3>
+              <div class="popular-choices" aria-label={group.choose}>
+                {group.items.map((video, index) => <button type="button" data-popular-video data-id={video.id} data-title={video.title} data-short={video.short ? 'true' : 'false'} data-src={`https://www.youtube-nocookie.com/embed/${video.id}`} aria-pressed={group.offset + index === 0 ? 'true' : 'false'}><span>{String(group.offset + index + 1).padStart(2, '0')}</span>{video.title}</button>)}
+              </div>
+              <a class="video-channel" href={`${contact.youtube}/${group.channelPath}`} target="_blank" rel="noopener noreferrer">{group.all} <ArrowUpRight size={18} /><span class="sr-only">{copy.newTab}</span></a>
             </div>
-            <div class="popular-choices" aria-label={pane.choose}>
-              {pane.items.map((video, index) => <button type="button" data-popular-video data-id={video.id} data-title={video.title} data-src={`https://www.youtube-nocookie.com/embed/${video.id}`} aria-pressed={index === 0 ? 'true' : 'false'}><span>{String(index + 1).padStart(2, '0')}</span>{video.title}</button>)}
-            </div>
-            <a class="video-channel" href={`${contact.youtube}/${pane.channelPath}`} target="_blank" rel="noopener noreferrer">{pane.all} <ArrowUpRight size={18} /><span class="sr-only">{copy.newTab}</span></a>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   </section>
@@ -62,98 +68,101 @@ const panes = [
 </Landing>
 
 <script>
-  // Each video pane (long videos, Shorts) previews its three videos in turn every few seconds. The rotation stops for good
-  // once a visitor picks a video or plays one, pauses while the pane is hovered or focused, and never runs for people who
-  // ask for reduced motion. The YouTube player itself still loads only after a click.
+  // One preview walks through all six videos (long videos, then Shorts) every few seconds. It pauses while the section is
+  // hovered or focused, off screen or in a hidden tab, stops for good once a visitor picks or plays a video, and never runs
+  // for people who ask for reduced motion. The YouTube player itself still loads only after a click.
   const ROTATE_MS = 4000
   const timers: number[] = []
   function bindPopularVideos() {
     timers.splice(0).forEach((id) => window.clearInterval(id))
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    document.querySelectorAll<HTMLElement>('[data-video-pane]').forEach((pane) => {
-      const shell = pane.querySelector<HTMLElement>('.video-shell')
-      const poster = pane.querySelector<HTMLButtonElement>('[data-play-popular]')
-      const img = poster?.querySelector<HTMLImageElement>('img')
-      const caption = poster?.querySelector<HTMLElement>('[data-caption]')
-      const buttons = [...pane.querySelectorAll<HTMLButtonElement>('[data-popular-video]')]
-      if (!shell || !poster || !img || !caption || !buttons.length) return
-      const thumb = (id: string) => `https://i.ytimg.com/vi_webp/${id}/hqdefault.webp`
-      let current = 0
-      let stopped = false
-      let hovering = false
+    const stage = document.querySelector<HTMLElement>('[data-video-stage]')
+    const shell = stage?.querySelector<HTMLElement>('.video-shell')
+    const poster = stage?.querySelector<HTMLButtonElement>('[data-play-popular]')
+    const imgs = poster ? [...poster.querySelectorAll<HTMLImageElement>('img')] : []
+    const caption = poster?.querySelector<HTMLElement>('[data-caption]')
+    const buttons = stage ? [...stage.querySelectorAll<HTMLButtonElement>('[data-popular-video]')] : []
+    if (!stage || !shell || !poster || !imgs.length || !caption || !buttons.length) return
+    const thumb = (button: HTMLButtonElement) =>
+      `https://i.ytimg.com/vi_webp/${button.dataset.id}/${button.dataset.short === 'true' ? 'oar2' : 'hqdefault'}.webp`
+    let current = 0
+    let stopped = false
+    let hovering = false
 
-      const load = (src: string) => {
-        const player = document.createElement('iframe')
-        player.className = 'video-frame'
-        player.title = shell.dataset.iframeTitle ?? ''
-        player.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-        player.referrerPolicy = 'strict-origin-when-cross-origin'
-        player.allowFullscreen = true
-        player.src = src
-        shell.replaceChildren(player)
-      }
-      const show = (index: number) => {
-        current = index
-        const button = buttons[index]
-        const id = button.dataset.id!
-        const title = button.dataset.title ?? ''
-        img.classList.add('is-swapping')
-        window.setTimeout(() => {
-          img.src = thumb(id)
-          caption.textContent = title
-          poster.setAttribute('aria-label', poster.getAttribute('aria-label')!.replace(/^(\S+ ).*$/, `$1${title}`))
-          img.classList.remove('is-swapping')
-        }, 180)
-        buttons.forEach((item, i) => item.classList.toggle('is-preview', i === index))
-      }
-      const stop = () => { stopped = true }
-
-      poster.addEventListener('click', () => {
-        stop()
-        load(buttons[current].dataset.src!)
-        buttons.forEach((item, i) => { item.setAttribute('aria-pressed', String(i === current)); item.classList.remove('is-preview') })
-      })
-      buttons.forEach((button, index) => button.addEventListener('click', () => {
-        stop()
-        current = index
-        load(button.dataset.src!)
-        buttons.forEach((item) => { item.setAttribute('aria-pressed', String(item === button)); item.classList.remove('is-preview') })
-      }))
-
-      if (reduceMotion || buttons.length < 2) return
-      buttons.forEach((b) => { new Image().src = thumb(b.dataset.id!) })
-      // While previewing, only the previewed item is highlighted; picking or playing one makes it the pressed item.
-      buttons.forEach((item, i) => { item.setAttribute('aria-pressed', 'false'); item.classList.toggle('is-preview', i === 0) })
-      pane.addEventListener('pointerenter', () => { hovering = true })
-      pane.addEventListener('pointerleave', () => { hovering = false })
-      pane.addEventListener('focusin', () => { hovering = true })
-      pane.addEventListener('focusout', () => { hovering = false })
-      let visible = true
-      if ('IntersectionObserver' in window) {
-        new IntersectionObserver((entries) => { visible = entries[0].isIntersecting }).observe(pane)
-      }
-      // Stagger the two panes so they do not flip at the same instant.
-      const offset = pane.dataset.pane === 'short' ? 1500 : 0
+    const load = (src: string) => {
+      const player = document.createElement('iframe')
+      player.className = 'video-frame'
+      player.title = shell.dataset.iframeTitle ?? ''
+      player.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+      player.referrerPolicy = 'strict-origin-when-cross-origin'
+      player.allowFullscreen = true
+      player.src = src
+      shell.replaceChildren(player)
+    }
+    const show = (index: number) => {
+      current = index
+      const button = buttons[index]
+      imgs.forEach((img) => img.classList.add('is-swapping'))
       window.setTimeout(() => {
-        timers.push(window.setInterval(() => {
-          if (stopped || hovering || !visible || document.hidden) return
-          show((current + 1) % buttons.length)
-        }, ROTATE_MS))
-      }, offset)
+        imgs.forEach((img) => { img.src = thumb(button) })
+        caption.textContent = button.dataset.title ?? ''
+        poster.classList.toggle('is-short', button.dataset.short === 'true')
+        poster.setAttribute('aria-label', poster.getAttribute('aria-label')!.replace(/^(\S+ ).*$/, `$1${button.dataset.title ?? ''}`))
+        imgs.forEach((img) => img.classList.remove('is-swapping'))
+      }, 180)
+      buttons.forEach((item, i) => item.classList.toggle('is-preview', i === index))
+    }
+    const stop = () => { stopped = true }
+
+    poster.addEventListener('click', () => {
+      stop()
+      load(buttons[current].dataset.src!)
+      buttons.forEach((item, i) => { item.setAttribute('aria-pressed', String(i === current)); item.classList.remove('is-preview') })
     })
+    buttons.forEach((button, index) => button.addEventListener('click', () => {
+      stop()
+      current = index
+      load(button.dataset.src!)
+      buttons.forEach((item) => { item.setAttribute('aria-pressed', String(item === button)); item.classList.remove('is-preview') })
+    }))
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || buttons.length < 2) return
+    // While previewing, only the previewed item is highlighted; picking or playing one makes it the pressed item.
+    buttons.forEach((item, i) => { item.setAttribute('aria-pressed', 'false'); item.classList.toggle('is-preview', i === 0) })
+    stage.addEventListener('pointerenter', () => { hovering = true })
+    stage.addEventListener('pointerleave', () => { hovering = false })
+    stage.addEventListener('focusin', () => { hovering = true })
+    stage.addEventListener('focusout', () => { hovering = false })
+    let visible = false
+    let started = false
+    const start = () => {
+      if (started) return
+      started = true
+      buttons.forEach((b) => { new Image().src = thumb(b) })
+      timers.push(window.setInterval(() => {
+        if (stopped || hovering || !visible || document.hidden) return
+        show((current + 1) % buttons.length)
+      }, ROTATE_MS))
+    }
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => { visible = entries[0].isIntersecting; if (visible) start() }).observe(stage)
+    } else {
+      visible = true
+      start()
+    }
   }
   document.addEventListener('astro:page-load', bindPopularVideos)
   if (document.documentElement.hasAttribute('data-native-navigation')) bindPopularVideos()
 </script>
 <style>
-.video-split{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:clamp(20px,3vw,40px);align-items:start;margin-top:28px}
-.video-pane{min-width:0}.pane-label{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#735a24;margin:0}
-.video-shell{aspect-ratio:16/9;position:relative;background:#0c1a3a;margin-block:12px 14px;overflow:hidden;border-radius:3px}.video-shell :global(iframe){width:100%;height:100%;margin:0;position:absolute;inset:0}
-.video-pane-short .video-shell{aspect-ratio:9/16;max-width:340px;margin-inline:auto}
-.video-poster{width:100%;height:100%;position:absolute;inset:0;cursor:pointer;color:#fff;text-align:left}.video-poster img{width:100%;height:100%;object-fit:cover;transition:opacity .18s ease}.video-poster img.is-swapping{opacity:0}
+.video-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:clamp(20px,3vw,40px);align-items:start;margin-top:28px}
+.video-lists{display:grid;gap:22px;min-width:0}.video-group{min-width:0}.pane-label{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#735a24;margin:0 0 10px}
+.video-shell{aspect-ratio:16/9;position:relative;background:#0c1a3a;overflow:hidden;border-radius:3px}.video-shell :global(iframe){width:100%;height:100%;margin:0;position:absolute;inset:0}
+.video-poster{width:100%;height:100%;position:absolute;inset:0;cursor:pointer;color:#fff;text-align:left;overflow:hidden}
+.video-poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .18s ease}.video-poster img.is-swapping{opacity:0}
+.video-poster .poster-bg{display:none}.video-poster.is-short .poster-bg{display:block;inset:-8%;width:116%;height:116%;filter:blur(22px) brightness(.55)}.video-poster.is-short .poster-main{object-fit:contain}
 .video-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:76px;height:54px;border-radius:12px;background:#c80000;font-size:26px}
 .video-caption{position:absolute;inset:auto 0 0;padding:30px 20px 16px;background:linear-gradient(transparent,#000e);font-size:clamp(12px,2vw,18px);font-weight:700}
-.popular-choices{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin-bottom:18px}.popular-choices button{display:flex;align-items:flex-start;gap:14px;text-align:left;padding:14px 16px;border:1px solid #0c1a3a33;border-radius:3px;font-size:14px;line-height:1.5;cursor:pointer;transition:background .2s ease,color .2s ease}.popular-choices button span{font-weight:700;color:#735a24}.popular-choices button:hover,.popular-choices button[aria-pressed=true],.popular-choices button.is-preview{background:#0c1a3a;color:#fff}.popular-choices button[aria-pressed=true] span,.popular-choices button:hover span,.popular-choices button.is-preview span{color:#f1d68a}
-@media(max-width:900px){.video-split{grid-template-columns:minmax(0,1fr)}}
+.popular-choices{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-bottom:10px}.popular-choices button{display:flex;align-items:flex-start;gap:14px;text-align:left;padding:12px 14px;border:1px solid #0c1a3a33;border-radius:3px;font-size:14px;line-height:1.5;cursor:pointer;transition:background .2s ease,color .2s ease}.popular-choices button span{font-weight:700;color:#735a24}.popular-choices button:hover,.popular-choices button[aria-pressed=true],.popular-choices button.is-preview{background:#0c1a3a;color:#fff}.popular-choices button[aria-pressed=true] span,.popular-choices button:hover span,.popular-choices button.is-preview span{color:#f1d68a}
+@media(max-width:900px){.video-layout{grid-template-columns:minmax(0,1fr)}}
 @media(prefers-reduced-motion:reduce){.video-poster img,.popular-choices button{transition:none}}
 </style>
