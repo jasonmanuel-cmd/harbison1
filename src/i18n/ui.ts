@@ -68,6 +68,7 @@ const en = {
     instagram: 'Follow along',
     facebook: 'Stay connected',
     linkedin: 'Connect professionally',
+    zillow: 'Read Nathanael’s reviews on Zillow',
     question: 'Have a real estate question? Call or email Nathanael.',
   },
   about: {
@@ -171,6 +172,7 @@ const es: Dict = {
     instagram: 'Síganos',
     facebook: 'Manténgase en contacto',
     linkedin: 'Conecte profesionalmente',
+    zillow: 'Lea las reseñas de Nathanael en Zillow',
     question: '¿Tiene alguna pregunta sobre bienes raíces? Llame o escriba a Nathanael.',
   },
   about: {
