@@ -82,6 +82,18 @@ const groups = [
     const caption = poster?.querySelector<HTMLElement>('[data-caption]')
     const buttons = stage ? [...stage.querySelectorAll<HTMLButtonElement>('[data-popular-video]')] : []
     if (!stage || !shell || !poster || !imgs.length || !caption || !buttons.length) return
+    // A failed remote thumbnail must not prevent visitors from playing the video.
+    imgs.forEach((img) => {
+      const fallback = () => {
+        if (img.getAttribute('src') === '/images/hero-1600.webp') {
+          img.style.visibility = 'hidden'
+          return
+        }
+        img.src = '/images/hero-1600.webp'
+      }
+      img.addEventListener('error', fallback)
+      if (img.complete && img.naturalWidth === 0) fallback()
+    })
     const thumb = (button: HTMLButtonElement) =>
       `https://i.ytimg.com/vi_webp/${button.dataset.id}/${button.dataset.short === 'true' ? 'oar2' : 'hqdefault'}.webp`
     let current = 0
@@ -103,7 +115,7 @@ const groups = [
       const button = buttons[index]
       imgs.forEach((img) => img.classList.add('is-swapping'))
       window.setTimeout(() => {
-        imgs.forEach((img) => { img.src = thumb(button) })
+        imgs.forEach((img) => { img.style.visibility = ''; img.src = thumb(button) })
         caption.textContent = button.dataset.title ?? ''
         poster.classList.toggle('is-short', button.dataset.short === 'true')
         poster.setAttribute('aria-label', poster.getAttribute('aria-label')!.replace(/^(\S+ ).*$/, `$1${button.dataset.title ?? ''}`))
