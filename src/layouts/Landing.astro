@@ -20,7 +20,7 @@ const switchPath = pathFor(Astro.url.pathname, otherLang)
       <nav aria-label={ui.header.navAria}><a href={homePath} aria-current={Astro.url.pathname === homePath ? "page" : undefined}>{ui.header.home}</a><a href={aboutPath} aria-current={Astro.url.pathname === aboutPath ? "page" : undefined}>{ui.header.meet}</a><a class="header-contact" href={`mailto:${contact.email}`}>{ui.header.email} <ArrowUpRight size={17} /></a><a class="lang-switch" href={switchPath} hreflang={otherLang} lang={otherLang} data-lang-pref={otherLang} aria-label={ui.switchAria}>{ui.switchLabel}</a></nav>
     </header>
 <slot />
-    <footer class="landing-footer wrap"><span>© {new Date().getFullYear()} Harbison Standard</span><span>Nathanael Harbison · REALTOR® · DRE #{contact.dre}</span><span>{ui.footer.equalHousing}</span><PrivacyNotice lang={lang} /></footer>
+    <footer class="landing-footer wrap"><span>© {new Date().getFullYear()} Harbison Standard</span><span>Nathanael Harbison · REALTOR® · DRE #{contact.dre} · <a href="https://www2.dre.ca.gov/publicasp/pplinfo.asp?License_id=02227690">The Mora Partners Inc. — DRE #02227690</a></span><span>{ui.footer.equalHousing}</span><PrivacyNotice lang={lang} /></footer>
 </div></Base>
 <style is:global>
 .landing #top{background-image:none}
