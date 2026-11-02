@@ -4,6 +4,7 @@ import { getSecret } from 'astro:env/server'
 import { saveLead } from '@/lib/server/supabase'
 import { clientKey, hit } from '@/lib/server/rate-limit'
 import { authorizedCrmCheck, saveToSharedCrm, sharedCrmConfigured, verifySharedCrm } from '@/lib/server/shared-crm'
+import { readJsonBody, BodyError } from '@/lib/server/request-body'
 
 export const prerender = false
 
@@ -36,13 +37,20 @@ const FIELD_LIMITS: Record<string, number> = {
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const CHOICES: Record<string, readonly string[]> = {
+  goal: ['Buying', 'Selling', 'Investing', 'Something else'],
+  timeline: ['As soon as possible', 'Within 3 months', '3-6 months', '6-12 months', 'Just researching'],
+  financing_status: ['Pre-approved', 'Talking with a lender', 'Cash buyer', 'Need a lender introduction', 'Not sure yet'],
+  property_type: ['Single-family home', 'Land / acreage', 'Condo / townhome', 'Investment property', 'Open to options'],
+  acreage_requirement: ['Standard lot', 'Large lot', '0.5+ acre', '1+ acre', '2+ acres', '5+ acres', '10+ acres', 'Not sure'],
+  age_range: ['Under 25', '25-34', '35-44', '45-54', '55-64', '65+', 'Prefer not to say'],
+}
 
 const json = (body: unknown, status: number) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
 
 export const POST: APIRoute = async ({ request }) => {
-  // Five inquiries per device per ten minutes. Enough for a real visitor, and stops
-  // anyone flooding the inbox or the Formspree quota.
+  // Best-effort instance-local limit, not a deployment-wide abuse quota.
   const limited = hit('lead', clientKey(request), 5, 10 * 60_000)
   if (!limited.allowed) {
     return new Response(JSON.stringify({ error: 'Too many messages from this device. Please try again later, or call or text directly.', code: 'RATE_LIMITED' }), {
@@ -56,8 +64,9 @@ export const POST: APIRoute = async ({ request }) => {
 
   let body: Record<string, unknown>
   try {
-    body = await request.json()
-  } catch {
+    body = await readJsonBody(request) as Record<string, unknown>
+  } catch (err) {
+    if (err instanceof BodyError) return json({ error: err.message, code: 'BAD_REQUEST' }, err.status)
     return json({ error: 'Invalid inquiry', code: 'BAD_REQUEST' }, 400)
   }
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
@@ -84,22 +93,32 @@ export const POST: APIRoute = async ({ request }) => {
     const value = body[key]
     if (value === undefined || value === null) continue
     if (typeof value !== 'string') return json({ error: `Invalid ${key}`, code: 'BAD_REQUEST' }, 400)
-    const trimmed = value.trim().slice(0, max)
+    const trimmed = value.trim()
+    if (trimmed.length > max) return json({ error: `${key} is too long`, code: 'BAD_REQUEST' }, 400)
     if (trimmed) fields[key] = trimmed
   }
 
   // The form offers "1+", "2+" … — keep the number, which is how the CRM column is typed.
   if (body.bedrooms !== undefined && body.bedrooms !== null && body.bedrooms !== '') {
-    const match = /^([1-9][0-9]?)\+?$/.exec(String(body.bedrooms).trim())
+    if (typeof body.bedrooms !== 'string' && typeof body.bedrooms !== 'number') {
+      return json({ error: 'Invalid bedrooms', code: 'BAD_REQUEST' }, 400)
+    }
+    const match = /^([1-5])\+?$/.exec(String(body.bedrooms).trim())
     if (!match) return json({ error: 'Invalid bedrooms', code: 'BAD_REQUEST' }, 400)
     fields.bedrooms = match[1]
   }
 
+  for (const [key, choices] of Object.entries(CHOICES)) {
+    if (fields[key] && !choices.includes(fields[key])) return json({ error: `Invalid ${key}`, code: 'BAD_REQUEST' }, 400)
+  }
   if (!fields.name) return json({ error: 'Please add your name.', code: 'BAD_REQUEST' }, 400)
   if (!fields.email || !EMAIL_RE.test(fields.email)) {
     return json({ error: 'Please enter a valid email address.', code: 'BAD_REQUEST' }, 400)
   }
   fields.email = fields.email.toLowerCase()
+  if (!fields.phone || !/^[+()\d\s.-]+$/.test(fields.phone) || !/^\d{7,15}$/.test(fields.phone.replace(/\D/g, ''))) {
+    return json({ error: 'Please enter a valid phone number.', code: 'BAD_REQUEST' }, 400)
+  }
   if (fields.age_range === 'Prefer not to say') delete fields.age_range
 
   const goal = fields.goal || 'Something else'
@@ -120,7 +139,7 @@ export const POST: APIRoute = async ({ request }) => {
   // Store in the CRM before answering. Awaited, not fire-and-forget: on serverless
   // hosting the function can be frozen once the response is sent, so an unawaited
   // write may never finish and the visitor would be told "sent" with nothing stored.
-  // A CRM failure does not block the email, so the inquiry is never lost.
+  // A CRM failure does not block the email attempt. Either service can fail.
   let stored = false
   let duplicate = false
   try {
@@ -151,12 +170,13 @@ export const POST: APIRoute = async ({ request }) => {
       stored = row !== null
     }
   } catch (err: unknown) {
-    console.error('[lead] CRM storage failed:', err instanceof Error ? err.message : err)
+    console.error('[lead] CRM storage failed')
   }
   // Never log the visitor's details here; the inquiry itself is in the email and the CRM.
   if (!stored) console.error('[lead] inquiry was not stored in the CRM; delivering by email only')
-  // A shared-CRM retry has already been saved. Never repeat its email notification.
-  if (duplicate) return json({ ok: true, stored: true, duplicate: true }, 200)
+  // A duplicate proves persistence only, not notification. Without a durable
+  // delivery receipt, neither resend blindly nor claim an email was accepted.
+  if (duplicate) return json({ ok: true, stored: true, duplicate: true, notification: 'unknown' }, 202)
 
   // `null` drops a line; empty strings are intentional blank lines.
   const opt = (value: string | undefined, text: string) => (value ? text : null)
@@ -204,14 +224,13 @@ export const POST: APIRoute = async ({ request }) => {
       signal: AbortSignal.timeout(15000),
     })
     if (!response.ok) {
-      const text = await response.text().catch(() => '')
-      console.error(`[lead] Formspree responded ${response.status}: ${text.slice(0, 300)}`)
+      console.error(`[lead] Formspree responded ${response.status}`)
       // `stored` tells the form whether the lead already exists, so it never asks the visitor to resend.
       return json({ ok: false, stored, error: 'Failed to send inquiry', code: 'UPSTREAM_ERROR' }, 502)
     }
-    return json({ ok: true, stored }, 201)
+    return json({ ok: true, stored, notification: 'accepted' }, 201)
   } catch (err) {
-    console.error('[lead] Form delivery failed:', err instanceof Error ? err.message : err)
+    console.error('[lead] Form delivery outcome unknown')
     return json({ ok: false, stored, error: 'Lead service unavailable', code: 'SERVICE_UNAVAILABLE' }, 503)
   }
 }

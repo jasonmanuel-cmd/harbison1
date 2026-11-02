@@ -33,12 +33,16 @@ The preview uses gzip and immutable caching for hashed assets, as the deployment
 CDN does. The audit checks both public routes on mobile and desktop and fails
 if any performance, accessibility, best-practices, or SEO score is below 90.
 
+### Current contact flow
+
+The public pages (/ and /about, plus their Spanish versions) offer phone and email links. No InquiryForm or ContactSection is mounted. /contact redirects to /#connect, not to a Call Harbison form. Retained lead API/components are not evidence of public website capture. /hq redirects are a separate staff flow. Restoring a public form requires a product decision.
+
 ### Shared CRM
 
 The shared lead destination is Call Harbison HQ at https://www.callharbison.com/hq.
 Set server-only `SHARED_CRM_URL=https://www.callharbison.com/api/intake` and
 `SHARED_CRM_SECRET` (the same 32+ character secret as HBH's `CRM_INGEST_SECRET`).
-Deploy HBH's intake bridge first. Once configured, Standard sends new inquiries
+The receiving intake bridge must already be available. When the retained API is called and configured, Standard sends those inquiries
 to that CRM instead of its original lead table. `/hq` and `/hq/dashboard` redirect there.
 Keep Standard's existing `SUPABASE_*` values for analytics. Historical Standard
 leads remain in the original database until separately imported.
@@ -48,7 +52,7 @@ Its API serves aggregates to the Call Harbison server using the existing shared
 secret; database credentials and raw session records stay server-side.
 
 Buyer fields and messages are preserved in CRM notes and an initial activity
-snapshot. Existing Formspree notifications remain active; configuring the bridge
+snapshot. The retained API attempts existing Formspree notifications; configuring the bridge
 does not activate customer SMS or marketing consent. Run `npm test` for the bridge
 client checks. See HBH's `docs/SHARED-CRM.md` for the release and broker-review runbook.
 
@@ -88,17 +92,19 @@ gradient (the neighborhood cards) is reported even though it is readable.
 in `audits/`. Unclosed or mis-nested tags fail the build — Astro's compiler is
 strict about them.
 
-## Content
+## Retained content (not public routes)
 
 | What | Where | Notes |
 | --- | --- | --- |
 | Listings | `src/content/listings/*.json` | Validated by the Zod schema in `src/content.config.ts`; the build fails on a missing or mistyped field |
 | Photos | `src/assets/property/<slug>-<n>.jpg` | Discovered per listing and encoded to responsive WebP at build time |
-| Guides | `src/content/guides/*.md` | Front matter only → `/private-sale`, `/land`, … |
-| Neighborhoods | `src/content/areas.json` | → `/areas/<id>`; stats are computed from the listings |
+| Guides | `src/content/guides/*.md` | Retained data; former guide URLs are retired |
+| Neighborhoods | `src/content/areas.json` | Retained data; former area URLs are retired |
 | Contact details, FAQ, testimonials | `src/lib/site.ts` | |
 
-**Add a listing:** drop photos into `src/assets/property/` as
+These files/components are retained for possible future work; editing them does not restore retired routes. The following is a historical data format, not an instruction to publish inventory.
+
+**Listing format:** drop photos into `src/assets/property/` as
 `my-new-listing-1.jpg`, `-2.jpg`, … and create
 `src/content/listings/my-new-listing.json`:
 
@@ -123,32 +129,17 @@ strict about them.
 }
 ```
 
-**Mark as sold:** set `"status": "sold"` and add `"soldAt"`. The page stays live
-at the same URL with a Sold badge, and moves to the "Sold & closed" list.
+Changing retained listing status does not make a property URL public.
 
-## Lead capture
+## Retained lead API
 
-This is the part that matters most, so it is worth understanding before you
-change it.
+The retained InquiryForm is not mounted. Direct callers of /api/lead must send bounded JSON with name, email and a callable phone number. Optional strings are length-checked; invalid input is rejected, not silently truncated. A honeypot still discards bots. Rate limits are instance-local and are not a global abuse quota.
 
-Every form on the site — contact, the guide pages, each neighborhood and each
-property page — renders the same `src/components/InquiryForm.astro` and posts to
-the same `src/pages/api/lead.ts`. There is no second form path.
+When the API is called, it attempts CRM storage and then Formspree notification to the existing configured recipients. Either shared-CRM setting selects that path; incomplete shared configuration fails rather than falling back to local storage. Without either setting, legacy local storage remains available. Storage failure does not prevent an email attempt. Provider acceptance is not inbox receipt.
 
-A submission is delivered two ways, independently:
+A duplicate shared receipt proves storage only. The API returns HTTP 202 with stored=true and notification=unknown, without sending another email. The retained UI requests direct confirmation and does not claim a notification succeeded. This prevents false success and blind duplicate emails, but does not recover a missing notification. A durable delivery-state/outbox contract in the receiver is a deployment prerequisite for reliable automatic recovery; no schema or receiver changes are included here. Legacy local storage has no submission-ID idempotency and must not be used for automatic retries.
 
-1. **Email, via Formspree.** Always active. This is the primary channel and
-   does not depend on any other service. Form `xqpkdwrp` forwards to
-   `nate85.realtor@gmail.com`. Override with `FORMSPREE_FORM_ID` and
-   `NOTIFY_EMAIL`.
-2. **Supabase, for the `/hq` dashboard.** Best-effort. A storage failure is
-   caught and logged so it never blocks the email. The visitor's message and the
-   analytics session id are stored with the lead, so `/hq` can show what they
-   wrote and which visit produced it.
-
-If the API is unreachable the form shows a pre-filled `mailto:` button addressed
-straight to Nathanael, so an inquiry cannot be silently lost. A hidden honeypot
-field absorbs bot submissions without delivering them.
+The retained browser request has a 45-second deadline. A timeout or lost response may follow successful acceptance; its mailto fallback is an optional draft requiring a mail client and a user send action, not a delivery guarantee.
 
 ### Environment variables
 
@@ -159,24 +150,19 @@ read at request time through `astro:env`, never inlined into the build.
 | --- | --- | --- |
 | `FORMSPREE_FORM_ID` | no | Defaults to `xqpkdwrp` |
 | `NOTIFY_EMAIL` | no | Defaults to `nate85.realtor@gmail.com` |
-| `SUPABASE_URL` | for `/hq` | `https://<ref>.supabase.co` |
-| `SUPABASE_SERVICE_ROLE_KEY` | for `/hq` | **Server only** |
-| `HQ_PASSWORD` | for `/hq` | Unlocks the dashboard |
-| `HQ_SECRET` | recommended | Signs the `/hq` session cookie; falls back to `HQ_PASSWORD` |
+| `SUPABASE_URL` | analytics / legacy storage | `https://<ref>.supabase.co` |
+| `SUPABASE_SERVICE_ROLE_KEY` | analytics / legacy storage | **Server only** |
+| `HQ_PASSWORD` | legacy API auth only | Does not control the redirected HQ page |
+| `HQ_SECRET` | legacy API auth only | Retained cookie-signing helper |
 | `ANALYTICS_SALT` | recommended | Salts the daily IP hash |
 
-Two deliberate consequences of leaving these unset:
-
-- **No Supabase → `/hq` returns 503 and shows no leads.** Email still works.
-  This is the safe failure mode, not a broken one.
-- **No `HQ_PASSWORD` → `/hq` is locked permanently.** `isAuthenticated()`
-  returns false before any cookie check, so there is no way in.
+Standard's /hq routes redirect regardless of local Supabase or HQ password configuration. The receiving site's authentication and inbox must be checked separately; do not diagnose the current HQ using retained local dashboard instructions.
 
 `ANALYTICS_SALT` has a hardcoded fallback, so analytics works without it — but
 that fallback is a published constant in this repo, which makes unique-visitor
 hashes correlatable across every deployment of it. Set it to a random string.
 
-`HQ_PASSWORD` is stored in plaintext and compared in constant time. The cookie
+The retained legacy API auth helper compares `HQ_PASSWORD` in constant time. Its cookie
 is an HMAC over an expiry timestamp, valid 8 hours, `httpOnly` + `sameSite=lax`
 + `secure` in production.
 
@@ -187,10 +173,7 @@ is an HMAC over an expiry timestamp, valid 8 hours, `httpOnly` + `sameSite=lax`
 already holds real data (ref `pebqmuumwygrpjofdwfy`) — it only ever adds
 columns and backfills, never drops.
 
-**If you are deploying against an existing database, run
-`migration-existing-project.sql`.** It is fully idempotent. Skipping it is the
-reason a fresh deploy can serve a working site whose CRM silently stores
-nothing.
+Schema files are retained reference/migration artifacts. Do not run them automatically during deployment. Reconcile the target database and obtain explicit migration approval first.
 
 Postgres function `bump_session()` accumulates page views and dwell time. It
 exists because PostgREST cannot express `page_views = page_views + n`, and a
@@ -217,7 +200,7 @@ when the tab closes.
   count uniques.
 - Coarse geography comes from Vercel edge headers; country, region, city only.
 - Do Not Track and Global Privacy Control are both honoured, and the footer has
-  an opt-out.
+  an opt-out. These preferences also suppress session attribution from the retained form; restricted session storage skips tracking without interrupting the page.
 - Age is never inferred from traffic. The age-range field on the form is
   optional and self-reported by the visitor.
 

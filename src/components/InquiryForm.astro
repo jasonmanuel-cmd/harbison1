@@ -183,7 +183,7 @@ const tone = dark
   <div data-fallback hidden role="status" class:list={['flex flex-col items-center gap-4 py-10 text-center', tone.text]}>
     <p class="font-display text-2xl tracking-wide">Send this straight to Nathanael</p>
     <p class:list={['max-w-md text-sm leading-relaxed', tone.muted]}>
-      Our online form is temporarily unavailable. Your details are ready — this opens your email app with everything filled in, addressed to Nathanael directly.
+      We could not confirm the submission outcome; your details may already have reached us. Please contact Nathanael to confirm. This opens a draft in your email app; you must send it yourself.
     </p>
     <a data-mailto href={`mailto:${contact.email}`} class="pill mt-2 bg-poppy px-8 text-ink hover:bg-ink hover:text-ink-foreground">
       <Mail class="size-4" aria-hidden="true" /> Open email and send
@@ -305,18 +305,23 @@ const tone = dark
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),
+          signal: AbortSignal.timeout(45000),
         })
-        if (res.status === 400 || res.status === 429) {
+        if ([400, 408, 413, 415, 429].includes(res.status)) {
           const j = await res.json().catch(() => ({}))
           error.textContent = j.error || 'Please check the form and try again.'
           error.hidden = false
           return
         }
         const reply = await res.json().catch(() => ({}))
+        if (reply.stored === true && reply.notification === 'unknown') {
+          this.showPartial('Your details are saved.', 'We cannot confirm the email notification. Please contact Nathanael directly to confirm follow-up.')
+          return
+        }
         if (res.ok) {
           // Saved and emailed. If the copy in the CRM failed, say so, but the email got through.
           if (reply.stored === false) {
-            this.showPartial('Thank you, your message reached Nathanael.', 'Our system did not keep a copy, so if you have not heard back, please get in touch directly.')
+            this.showPartial('The email service accepted your message.', 'Our system did not keep a copy. We have not confirmed inbox delivery; please contact Nathanael directly if you have not heard back.')
           } else {
             this.show('sent')
           }
@@ -324,14 +329,13 @@ const tone = dark
         }
         if (reply.stored === true) {
           // Saved, but the email did not go through. Resending would create a duplicate.
-          this.showPartial('Your details were saved.', 'The email did not go through, but Nathanael has your information and will be in touch.')
+          this.showPartial('Your details were saved.', 'We could not confirm the email notification. Please contact Nathanael directly to confirm follow-up.')
           return
         }
         throw new Error(String(res.status))
       } catch {
-        // The lead service is unreachable. Fall back to a delivery path that
-        // really works — the visitor's own email client — rather than claiming
-        // a message was sent.
+        // A timeout can follow acceptance. Offer a user-sent draft without
+        // claiming either that delivery failed or that email guarantees delivery.
         const lines = Object.entries(body)
           .filter(([k, v]) => v && LABELS[k])
           .map(([k, v]) => `${LABELS[k]}: ${v}`)

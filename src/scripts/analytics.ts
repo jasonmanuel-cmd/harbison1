@@ -69,12 +69,11 @@ export function optOutOfAnalytics() {
  * The current session id, or null when storage is blocked.
  *
  * Exported so a lead submission can be attributed back to the visit that
- * produced it. Analytics being opted out must NOT suppress this — the id is
- * just a random UUID in sessionStorage, and the server only uses it to join
- * the lead to its own sessions row.
+ * produced it, only while analytics is allowed. Opt-out, DNT and GPC also
+ * suppress lead-to-session attribution.
  */
 export function getSessionId(): string | null {
-  if (typeof window === 'undefined') return null
+  if (!analyticsAllowed()) return null
   try {
     let id = window.sessionStorage.getItem(SESSION_KEY)
     if (!id) {
@@ -88,7 +87,7 @@ export function getSessionId(): string | null {
   }
 }
 
-function sessionId(): string {
+function sessionId(): string | null {
   try {
     let id = window.sessionStorage.getItem(SESSION_KEY)
     const started = Number(window.sessionStorage.getItem(START_KEY)) || 0
@@ -100,7 +99,7 @@ function sessionId(): string {
     }
     return id
   } catch {
-    return crypto.randomUUID()
+    return null
   }
 }
 
@@ -110,6 +109,7 @@ function send(payload: Record<string, unknown>) {
   const body = JSON.stringify(payload)
   // Session creation must finish before its first page view (foreign key).
   queue = queue.catch(() => {}).then(async () => {
+    if (!analyticsAllowed()) return
     const response = await fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true })
     const result = await response.json()
     if (!response.ok || !result.stored) throw new Error('Analytics unavailable')
@@ -128,13 +128,17 @@ function classifyReferrer(host: string | null): string {
 export function trackPageView(title?: string) {
   if (!analyticsAllowed()) return
   const sid = sessionId()
+  if (!sid) return
   const now = Date.now()
   flush()
 
   // First view of this session also captures the acquisition context.
-  const isFirst = !window.sessionStorage.getItem(STARTED_KEY)
+  let isFirst: boolean
+  try {
+    isFirst = !window.sessionStorage.getItem(STARTED_KEY)
+    if (isFirst) window.sessionStorage.setItem(STARTED_KEY, '1')
+  } catch { return }
   if (isFirst) {
-    window.sessionStorage.setItem(STARTED_KEY, '1')
     const params = new URLSearchParams(window.location.search)
     const referrerHost = document.referrer ? new URL(document.referrer).hostname : null
     send({

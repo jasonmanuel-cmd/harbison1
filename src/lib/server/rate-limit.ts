@@ -27,11 +27,14 @@ export function clientKey(request: Request): string {
 export function hit(name: string, key: string, limit: number, windowMs: number): { allowed: boolean; retryAfter: number } {
   const now = Date.now()
   const id = `${name}:${key}`
-  if (buckets.size > MAX_KEYS) {
+  if (buckets.size >= MAX_KEYS) {
     for (const [k, b] of buckets) if (b.resetAt <= now) buckets.delete(k)
   }
   const current = buckets.get(id)
   if (!current || current.resetAt <= now) {
+    // Fail closed for new keys when all slots are still active. Never grow the
+    // map without bound or evict an active offender to admit another request.
+    if (!current && buckets.size >= MAX_KEYS) return { allowed: false, retryAfter: Math.ceil(windowMs / 1000) }
     buckets.set(id, { count: 1, resetAt: now + windowMs })
     return { allowed: true, retryAfter: 0 }
   }

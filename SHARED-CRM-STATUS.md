@@ -1,5 +1,11 @@
 # Harbison Standard / Call Harbison — shared CRM status
 
+## Local reliability update — November 2, 2026 (not deployed)
+
+Current public contact is phone/email through ProfileLinks; no inquiry form is mounted. /contact leads to /#connect; only HQ routes redirect to Call Harbison. The earlier records below describe historical captures and verification, not current public-form availability.
+
+Duplicate storage receipts now report notification=unknown and HTTP 202 without blindly resending. No durable notification receipt or retry queue exists. Receiver-side delivery-state design and reconciliation remain required before automatic retries or restored public form capture. Existing recipients and receiver contract are unchanged. Local analytics honors opt-out for session attribution and handles partial storage denial. No live submissions or provider receipt checks were run.
+
 ## Project handoff — October 16, 2026
 
 This is the current operational record. Older sections below are dated snapshots,
